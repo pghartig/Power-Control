@@ -1,0 +1,9 @@
+	The objective of this project is to investigate methods for resource allocation in wireless communication systems. In particular,
+power allocation to femtocells in heterogeneous networks will be considered. Previous work has shown that in point-to-point
+communication systems, distributed update algorithms can be used in order to converge to a unique Nash Equilibrium 
+for transmission power under certain condiations of the femtrocell utility function. This work aims to extend these results of
+the point-to-point scenario to those  in which femtocell base stations may have multiple antennas with which to transmit to 
+multiple end users. The inclusion of multiple transmit antennas at base stations will also allow for investigating beam-forming schemes
+that may provide a balance between meeting interference constraints while increasing base station utility.
+	This work will incorporate deriving analytical expressions for various results as well as writing simulations for testing these
+results. 
