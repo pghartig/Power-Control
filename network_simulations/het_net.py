@@ -1,57 +1,73 @@
-import networkx as nx
 import numpy as np
 
 class het_network():
-    def __init__(self, num_femto_cells, num_femto_users, num_macro_users):
+    def __init__(self, num_femto_cells, num_macro_users):
+
         self.base_stations = []
-        self.macro_users
-        self.network = nx.DiGraph()
-
-        # setup macro cell users
-        self.network.add_nodes_from(np.arange(num_macro_users), type='macro_user')
-
-        # setup femto base stations and users
-        self.add_femto_cell_and_users(num_femto_cells, num_femto_users)
-
-        # Connect femto base stations to macro users
-        self.connect_macro_users()
-
-
-
-    def connect_macro_users(self):
-        test = list(self.network.nodes['type'])
-        for node1 in list(self.network.nodes['type']):
-            if node1.type == 'base_station':
-                for node2 in list(self.network.nodes):
-                    if node2.type == 'macro_user':
-                        network.add_edge(node1, node2, gain = 1)
-
-    def add_femto_cell_and_users(self, num_femto_cells, num_femto_users):
-        for i in range(num_femto_cells):
-            femto_cell = nx.DiGraph(name=i, type='base_station')
-            femto_cell.add_node(i, type='base_station')
-            for b in range(num_femto_users):
-                self.add_femto_user(femto_cell, i, b)
-
-            # self.network.add_node(femto_cell, femto_ID = i)
-            self.network = nx.union(self.network, femto_cell,rename=('N-', 'C-'))   # add in this way to allow for intercell interference
-
-    def add_femto_user(self, base_node: nx.DiGraph,ind,user_num):
-        base_node.add_node(user_num, type='femto_user', ID = (ind, user_num))
-        base_node.add_edge(0, user_num+1, type='channel', gain = 1)
-        base_node.add_edge(user_num+1, 0, type='channel', gain = 1)
+        num_femto_users, num_antenna = 3, 3
+        [self.base_stations.append(femto_cell(num_femto_users, num_antenna)) for i in range(num_femto_cells)]
+        self.macro_users = []
+        interference_threshold = 5
+        [self.macro_users.append(macro_user(interference_threshold)) for i in range(num_macro_users)]
 
     def get_femto_cells(self):
-        return None
+        return self.base_stations
 
     def allocate_power(self):
         return None
 
-
 class femto_cell():
-    def __init__(self, num_femto_users):
+    def __init__(self, num_femto_users, num_antenna):
         self.users = []
+        self.connect_users(num_femto_users)
+        self.number_antennas = num_antenna
+        self.macro_users = []
+
+    #TODO type this parameter as macro user
+    def reconize_macro_user(self, user):
+        self.macro_users.append(user)
+
+
+
+    def connect_users(self, num_femto_users):
+        for user in range(num_femto_users):
+            new_user = femto_user()
+            self.users.append(new_user)
+
+    def get_user_channel_matrices(self):
+        uplink = []
+        downlink = []
+        for i in self.users:
+            uplink.append(i.uplink_channel)
+            downlink.append(i.downlink_channel)
+        uplink = np.asarray(uplink)
+        downlink = np.asarray(downlink)
+        return uplink, downlink
+
+    def get_macro_channel_matrix(self):
+        uplink = []
+        downlink = []
+        for i in self.macro_users:
+            uplink.append(i.uplink_channel)
+            downlink.append(i.downlink_channel)
+        uplink = np.asarray(uplink)
+        downlink = np.asarray(downlink)
+        return uplink, downlink
 
 class macro_user():
+    def __init__(self, interference_threshold):
+        self.interference = 0
+        self.interference_threshold = interference_threshold
+        self.uplink_channel = 0
+        self.downlink_channel = 0
+
+    def get_channel_for_base_station(self,i):
+        return self.uplink_channel[:, i], self.downlink_channel[:, i]
+
 
 class femto_user():
+    def __init__(self):
+        self.SINR = 0
+        self.uplink_channel = 0
+        self.downlink_channel = 0
+

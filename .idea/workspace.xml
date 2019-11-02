@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3be4d5c8-508c-46da-8d66-8817d0e4b9b7" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/network_simulations/het_net.py" beforeDir="false" afterPath="$PROJECT_DIR$/network_simulations/het_net.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/network_setup_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/network_setup_test.py" afterDir="false" />
     </list>
@@ -26,20 +25,14 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/network_simulations/het_net.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="42">
-              <caret line="15" lean-forward="true" selection-start-line="15" selection-end-line="15" />
+            <state relative-caret-position="81">
+              <caret line="25" column="49" selection-start-line="25" selection-start-column="49" selection-end-line="25" selection-end-column="49" />
               <folding>
-                <element signature="e#0#21#0" expanded="true" />
+                <element signature="e#2027#2094#0" />
+                <element signature="e#991#1014#0" />
+                <element signature="e#1285#1547#0" />
+                <element signature="e#1057#1257#0" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../game_theory_com/lib/python3.7/site-packages/networkx/algorithms/operators/binary.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="116">
-              <caret line="77" selection-start-line="77" selection-end-line="77" />
             </state>
           </provider>
         </entry>
@@ -47,8 +40,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/network_setup_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="45">
-              <caret line="3" selection-start-line="3" selection-end-line="3" />
+            <state relative-caret-position="75">
+              <caret line="5" selection-start-line="5" selection-end-line="5" />
             </state>
           </provider>
         </entry>
@@ -156,24 +149,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="network_setup_test - 2019.11.02 at 12h 17m 59s.xml">
-      <configuration name="network_setup_test" configurationId="tests" />
-    </history-entry>
-    <history-entry file="network_setup_test - 2019.11.02 at 12h 24m 54s.xml">
-      <configuration name="network_setup_test" configurationId="tests" />
-    </history-entry>
-    <history-entry file="network_setup_test - 2019.11.02 at 13h 06m 29s.xml">
-      <configuration name="network_setup_test" configurationId="tests" />
-    </history-entry>
-    <history-entry file="network_setup_test - 2019.11.02 at 13h 36m 49s.xml">
-      <configuration name="network_setup_test" configurationId="tests" />
-    </history-entry>
-    <history-entry file="network_setup_test - 2019.11.02 at 13h 36m 54s.xml">
-      <configuration name="network_setup_test" configurationId="tests" />
-    </history-entry>
-    <history-entry file="network_setup_test - 2019.11.02 at 13h 37m 32s.xml">
-      <configuration name="network_setup_test" configurationId="tests" />
-    </history-entry>
     <history-entry file="network_setup_test - 2019.11.02 at 13h 38m 13s.xml">
       <configuration name="network_setup_test" configurationId="tests" />
     </history-entry>
@@ -186,9 +161,28 @@
     <history-entry file="network_setup_test - 2019.11.02 at 13h 41m 59s.xml">
       <configuration name="network_setup_test" configurationId="tests" />
     </history-entry>
+    <history-entry file="network_setup_test - 2019.11.02 at 13h 47m 08s.xml">
+      <configuration name="network_setup_test" configurationId="tests" />
+    </history-entry>
+    <history-entry file="network_setup_test - 2019.11.02 at 14h 04m 27s.xml">
+      <configuration name="network_setup_test" configurationId="tests" />
+    </history-entry>
+    <history-entry file="network_setup_test - 2019.11.02 at 14h 04m 51s.xml">
+      <configuration name="network_setup_test" configurationId="tests" />
+    </history-entry>
+    <history-entry file="network_setup_test - 2019.11.02 at 14h 05m 19s.xml">
+      <configuration name="network_setup_test" configurationId="tests" />
+    </history-entry>
+    <history-entry file="network_setup_test - 2019.11.02 at 14h 06m 37s.xml">
+      <configuration name="network_setup_test" configurationId="tests" />
+    </history-entry>
+    <history-entry file="network_setup_test - 2019.11.02 at 14h 08m 35s.xml">
+      <configuration name="network_setup_test" configurationId="tests" />
+    </history-entry>
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2494043" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -220,11 +214,6 @@
           <line>5</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/network_simulations/het_net.py</url>
-          <line>21</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
@@ -238,8 +227,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/network_setup_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" selection-start-line="3" selection-end-line="3" />
+        <state relative-caret-position="75">
+          <caret line="5" selection-start-line="5" selection-end-line="5" />
         </state>
       </provider>
     </entry>
@@ -250,12 +239,22 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/../../game_theory_com/lib/python3.7/site-packages/networkx/classes/reportviews.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="116">
+          <caret line="177" selection-start-line="177" selection-end-line="177" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/network_simulations/het_net.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="42">
-          <caret line="15" lean-forward="true" selection-start-line="15" selection-end-line="15" />
+        <state relative-caret-position="81">
+          <caret line="25" column="49" selection-start-line="25" selection-start-column="49" selection-end-line="25" selection-end-column="49" />
           <folding>
-            <element signature="e#0#21#0" expanded="true" />
+            <element signature="e#2027#2094#0" />
+            <element signature="e#991#1014#0" />
+            <element signature="e#1285#1547#0" />
+            <element signature="e#1057#1257#0" />
           </folding>
         </state>
       </provider>
