@@ -5,49 +5,57 @@
 %\usepackage{scribe}
 \usepackage{listings}
 
-%\Scribe{Your Name}
-%\Lecturer{Alexandre Street}
-%\LectureNumber{N}
-%\LectureDate{DATE}
-%\LectureTitle{A title for the lecture}
-%\Title{Model Setup}
-%\Author{Peter Hartig}
-
-%%\lstset{style=mystyle}
 
 \begin{document}
-%	\MakeScribeTop
-
-%#############################################################
-%#############################################################
-%#############################################################
-%#############################################################
-
-This is some warmup discussion before the first section.
-
-\section{Here's a section header}
-
-Here's some more text.
-% Here's a citation~\cite{Kar84a}.
-
-\subsection{Here's a subsection}
-
-You might like to put use subsectioning these too.  An alternate way to put in a small subheading for a paragraph is to use the \begin{verbatim} \paragraph \end{verbatim} command.  For example:
-
-\paragraph{A remembrance by Dantzig.}  The early days were full of intense excitement. Scientists, free at last from war-time pressures, entered the post-war period hungry for new areas of research. The computer came on the scene at just the right time. Economists and mathematicians were intrigued with the possibility that the fundamental problem of optimal allocation of scarce resources could be numerically solved. Not too long after my first meeting with Tucker there was a meeting of the Econometric Society in Wisconsin attended by well-known statisticians and mathematicians like Hotelling and von Neumann, and economists like Koopmans. I was a young unknown and I remember how frightened I was at the idea of presenting for the first time to such a distinguished audience, the concept of linear programming.
 
 
+\section{Game and System Setup}
 
-\section{Math stuff}
+This game considers a wireless communications network which includes a both macro cell and femto cell users.
 
-Please make an effort to typeset things nicely.  There are quite a few macros in the lpsdp.sty file.  Below are illustrated how to do some basic things; please study the \LaTeX\ carefully.
+\subsection{Players}
 
-Here's a typical LP in standard/equational form, with an equation number on one of the constraints.
+Individual femto cells are the players in this game.
+Here each player  $f \in \{1 ... F\}$ is considered to have a number of antennas $T_f$ with which to transmit to $K_f$ femto cell users.
+\\
+
+In this setting femto cells are assumed to be spaced far apart in distance permitting the simplification that 
+femto cell $f$ cause no interference to the users of femto cell $j \in \{1 ... F\}\backslash f$
+\\
+
+
+Femto base stations with multiple antennas can beamform their transmission with transformation $U_f \in C_{T_f \times L_f}$.
+\\
+
+Femto base station $f$ has power constraint  $\sum^{L_f}_{i=1} p_{f,i} \leq P^{Total}_{f} $. 
+\\
+
+Femto base stations are assumed to have a utility function $U_f()$ based upon the quality of service provided to its users.
+\\
+
+Macro Cell user $m \in \{1 ... M\}$ experiences receiver interference to due transmission by  femto cell base stations. These macro cell users have limits to the amount of interference they will tolerate 
+$\sum^F_{f=1} \tilde{h_m^H} U_f x_f \leq I^{Threshold}_{m} $.
+\\
+
+Femto base station $f$ is assumed to have full channel information ($H_f$) for all user  with which it transmits. The received signal for user $j$ of femto base station $f$ experiences the inner product of $h^H_{fj}u_{fj}$
+\\
+
+
+Femto cell $f$ is assumed to have full channel information ($\tilde{H_f}$) for all user with which it interferes .
+\\
+
+
+Users of femto cell $f$ have SINR $\gamma_{f,i} = p_{f,i}|h^H_{fi}u_{fi}|^2/\sigma^2_noise$   $i \in \{1 ... L_f\}$
+with AWGN $\sim \mathcal{N}(0,\sigma^2_n)$
+\\
+
+\subsection{Optimization Problem}
+
+Each player $f$ attempts to maximize utility function $U_f()$ while playing a strategy that falls in the region constrained by the interference caused to macro cell users.
+
+
+\section{Solving}
 
 
 
-           % assuming yours is named mybib.bib
-
-
-%%%%%%%%%%% end of doc
 \end{document}
