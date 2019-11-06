@@ -5,6 +5,8 @@
 %\usepackage{scribe}
 \usepackage{listings}
 \usepackage{amssymb}
+\usepackage{amsmath}
+
 
 
 
@@ -47,13 +49,33 @@ Femto cell $f$ is assumed to have full channel information ($\tilde{H_f}$) for a
 \\
 
 
-Users of femto cell $f$ have SINR $\gamma_{f,i} = p_{f,i}|\mathbf{h^H_{fi}u_{fi}}|^2/\sigma^2_noise$   $i \in \{1 ... L_f\}$
+Users of femto cell $f$ have SINR $\gamma_{f,i} = \frac{p_{f,i}|\mathbf{h^H_{fi}u_{fi}}|^2}
+{\sigma^2_{n}  + \sum_{\tilde{f}\neq f} \sum_{u=1}^{K_{\tilde{f}}} + \sum_{\tilde{k}\neq i}}+$   $i \in \{1 ... K_f\}$
 with AWGN $\sim \mathcal{N}(0,\sigma^2_n)$
 \\
 
+Assuming sufficient base station spacing this becomes 
+$\gamma_{f,i} = \frac{p_{f,i}|\mathbf{h^H_{fi}u_{fi}}|^2}
+{\sigma^2_{n}  +  \sum_{\tilde{k}\neq i}}+$   $i \in \{1 ... K_f\}$
+\\
+
+This further simplifies assuming that users use a zero-forcing beam-former
+$\gamma_{f,i} = \frac{p_{f,i}|\mathbf{h^H_{fi}u_{fi}}|^2}{\sigma^2_{n} }$
+\\
+
+
 \subsection{Optimization Problem}
 
-Each player $f$ attempts to maximize utility function $U_f()$ while playing a strategy that falls in the region constrained by the interference caused to macro cell users.
+Each player $f$ attempts to maximize utility function $U_f()$ while playing a strategy that falls in the region constrained by the interference limits imposed by the macro cell users.
+
+The player optimization problem can be written as:
+\\
+
+\begin{gather*} 
+U_f() 
+\\
+s.t. \sum^F_{f=1} \mathbf{p}_f^t \mathbf{\tilde{h_m^T}}  \mathbf{U_f}  \leq I^{Threshold}_{m} 
+\end{gather*}
 
 
 \section{Solving}
