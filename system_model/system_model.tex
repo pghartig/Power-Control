@@ -4,6 +4,8 @@
 \usepackage[T1]{fontenc}
 %\usepackage{scribe}
 \usepackage{listings}
+\usepackage{amssymb}
+
 
 
 \begin{document}
@@ -24,7 +26,7 @@ femto cell $f$ cause no interference to the users of femto cell $j \in \{1 ... F
 \\
 
 
-Femto base stations with multiple antennas can beamform their transmission with transformation $U_f \in C_{T_f \times L_f}$.
+Femto base stations with multiple antennas can beamform their transmission with transformation $\mathbf{U_f} \in \mathbb{C}_{T_f \times L_f}$.
 \\
 
 Femto base station $f$ has power constraint  $\sum^{L_f}_{i=1} p_{f,i} \leq P^{Total}_{f} $. 
@@ -34,10 +36,10 @@ Femto base stations are assumed to have a utility function $U_f()$ based upon th
 \\
 
 Macro Cell user $m \in \{1 ... M\}$ experiences receiver interference to due transmission by  femto cell base stations. These macro cell users have limits to the amount of interference they will tolerate 
-$\sum^F_{f=1} \tilde{h_m^H} U_f x_f \leq I^{Threshold}_{m} $.
+$\sum^F_{f=1} \mathbf{p}_f^t \mathbf{\tilde{h_m^T}}  \mathbf{U_f}  \leq I^{Threshold}_{m} $.
 \\
 
-Femto base station $f$ is assumed to have full channel information ($H_f$) for all user  with which it transmits. The received signal for user $j$ of femto base station $f$ experiences the inner product of $h^H_{fj}u_{fj}$
+Femto base station $f$ is assumed to have full channel information ($\mathbf{H_f}$) for all user  with which it transmits. The received signal for user $j$ of femto base station $f$ experiences the inner product of $\mathbf{h^H_{fj}u_{fj}}$
 \\
 
 
@@ -45,7 +47,7 @@ Femto cell $f$ is assumed to have full channel information ($\tilde{H_f}$) for a
 \\
 
 
-Users of femto cell $f$ have SINR $\gamma_{f,i} = p_{f,i}|h^H_{fi}u_{fi}|^2/\sigma^2_noise$   $i \in \{1 ... L_f\}$
+Users of femto cell $f$ have SINR $\gamma_{f,i} = p_{f,i}|\mathbf{h^H_{fi}u_{fi}}|^2/\sigma^2_noise$   $i \in \{1 ... L_f\}$
 with AWGN $\sim \mathcal{N}(0,\sigma^2_n)$
 \\
 
