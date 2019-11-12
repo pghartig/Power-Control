@@ -20,29 +20,30 @@ This game considers a wireless communications network which includes a both macr
 
 \subsection{Players}
 
-%Individual femto cells are the players in this game.
-Here each player  $f \in \{1 ... F\}$ is considered to have a number of antennas $T_f$ with which to transmit to $K_f$ femto cell users.
+Individual femto cell base stations (FC-BS) are the players in this game.
+\\
+Each FC-BS  $f \in \{1 ... F\}$ is considered to have a number of antennas $T_f$ with which to transmit to $K_f$ femto cell users.
 \\
 
-In this setting femto cells are assumed to be spaced far apart in distance permitting the simplification that 
-femto cell $f$ cause no interference to the users of femto cell $j \in \{1 ... F\}\backslash f$
+In this setting FC-BS are assumed to be spaced far apart in distance permitting the simplification that 
+FC-BS $f$ cause no interference to the users of FC-BS $j \in \{1 ... F\}\backslash f$
 \\
 
 
-Femto base stations with multiple antennas can beamform their transmission with transformation $\mathbf{U_f} \in \mathbb{C}_{T_f \times K_f}$.
+FC-BSs with multiple antennas can beamform their transmission with transformation $\mathbf{U_f} \in \mathbb{C}_{T_f \times K_f}$.
 \\
 
-Femto base station $f$ has power constraint  $\sum^{K_f}_{i=1} p_{f,i} \leq P^{Total}_{f} $. 
+FC-BS $f$ has power constraint  $\sum^{K_f}_{i=1} p_{f,i} \leq P^{Total}_{f} $. 
 \\
 
-Femto base stations are assumed to have a utility function $U_f()$ based upon the quality of service provided to its users.
+FC-BSs are assumed to have a utility function $U_f()$ based upon the quality of service provided to its users.
 \\
 
-Macro Cell user $m \in \{1 ... M\}$ experiences receiver interference to due transmission by  femto cell base stations. These macro cell users have limits to the amount of interference they will tolerate 
+Macro Cell user $m \in \{1 ... M\}$ experiences receiver interference to due transmission by FC-BSs. These macro cell users have limits to the amount of interference they will tolerate 
 $\sum^F_{f=1} \mathbf{p}_f^t \mathbf{\tilde{h_m^T}}  \mathbf{U_f}  \leq I^{Threshold}_{m} $.
 \\
 
-Femto base station $f$ is assumed to have full channel information ($\mathbf{H_f}$) for all user  with which it transmits. The received signal for user $j$ of femto base station $f$ experiences the inner product of $\mathbf{h^H_{fj}u_{fj}}$
+FC-BS $f$ is assumed to have full channel information ($\mathbf{H_f}$) for all user  with which it transmits. The received signal for user $j$ of FC-BS $f$ experiences the inner product of $\mathbf{h^H_{fj}u_{fj}}$
 \\
 
 
@@ -50,7 +51,7 @@ Femto cell $f$ is assumed to have full channel information ($\tilde{H_f}$) for a
 \\
 
 
-Users of femto cell $f$ have SINR 
+Users of FC-BS $f$ have SINR 
 
 
 \begin{equation}
@@ -61,7 +62,7 @@ Users of femto cell $f$ have SINR
 with AWGN $\sim \mathcal{N}(0,\sigma^2_n)$
 \\
 
-Assuming sufficient base station spacing this becomes 
+Assuming sufficient FC-BS spacing this becomes 
 \begin{equation}
 \gamma_{f,i} = \frac{p_{f,i}|\mathbf{h^H_{fi}u_{fi}}|^2}{\sigma^2_{n}  +  \sum_{\tilde{k}\neq i}} \; i \in \{1 ... K_f\}
 \end{equation}
@@ -79,13 +80,13 @@ TODO Decide if there should be minimum rate constraints for users
 
 TODO Try setting the individual user utilities as the capacities then working back to the single covariance matrix from the transmit signal SINR (might be better than optimizing a vector and a matrix)
 
-\subsection{Scenarios}
+\subsection{Variations of Game Setup}
 
 \subsubsection{Case: $T_f \geq M + K_f$}
-Base Stations could potentially zero-beam-form towards all macro users. However, as base stations have power constraints, it may be beneficial to cause certain amounts of interference. 
+FC-BSs could potentially zero-beam-form towards all macro users. However, as base stations have power constraints, it may be beneficial to cause certain amounts of interference. 
 
 \subsubsection{Case: $K_f \leq T_f < M + K_f$}
-Base Stations can send unique signals to all users but does not have sufficient DOF to zero-beam-form for all macro users.
+FC-BSs can send unique signals to all users but does not have sufficient DOF to zero-beam-form for all macro users.
 
 
 \subsection{General Optimization Problem}
@@ -118,29 +119,39 @@ trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f} \label{power_constraint}
 \\
 
 
-\section{Solving the game}
+\section{Solving the Game}
 \subsection{Player Utility Functions}
 
-For now, say $U_f() $ is the sum of all capacities for all of it's end user links. 
+Say $U_f() $ is the sum of all capacities for femto cell users of FC-BS $f$ 
 \begin{displaymath}
 U_f(\mathbf{U_f}) = \sum^{K_f}_{i=1} log(1+\gamma_{f,i})
 \end{displaymath}
 
-\subsection{Simplification of problem}
+\subsection{Show Convexity of Player Optimization Problem}
 
-Show: Function is convex in $U_f$, constraints are convex
-\\
+Conditions for Convex Problem:
+\begin{enumerate}
+\item Function is convex in argument 
 \begin{itemize}
 \item\eqref{utility} is convex as there is no interference and SINR increases with square of absolute value
 
+\end{itemize}
+
+\item Constraints  frm convex set
+
+\begin{itemize}
+
 \item\eqref{interference_contstraint} contains $M$ affine constraints on $\mathbf{U_f}$
 
-\item\eqref{power_constraint} As Trace is square of frobenious norm and squaring a convex function (e.g any true Norm) preserves convexity.
+\item\eqref{power_constraint} As Trace is square of Frobenious norm and squaring a convex function (e.g any true Norm) preserves convexity.
 Need to work on proof but this should be convex.
 
 \item\eqref{Zero_Forcing} This is a set of linear equations defining $\mathbf{U_f}$ which is an affine set.
 
 \end{itemize}
+\end{enumerate}
+
+\subsection{Finding Nash Equilibrium}
 
 Show: Users now have a convex problem to solve individually.
 
