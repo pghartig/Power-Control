@@ -379,3 +379,4 @@ TSWLatexianTemp*
 *.lpz
 #my ignores
 notebook.txt
+.pdf
