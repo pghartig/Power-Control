@@ -1,4 +1,3 @@
-
 \documentclass[12pt]{article}
 \usepackage[english]{babel}
 \usepackage[utf8x]{inputenc}
@@ -64,19 +63,11 @@ This further simplifies assuming that users use a zero-forcing beam-former
 $\gamma_{f,i} = \frac{p_{f,i}|\mathbf{h^H_{fi}u_{fi}}|^2}{\sigma^2_{n} }$
 \\
 
-TODO Decide if there should be minimum rate constraints for users
-\\
-
-TODO Try setting the individual user utilities as the capacities then working back to the single covariance matrix from the transmit signal SINR (might be better than optimizing a vector and a matrix)
-
 \subsection{Scenarios}
 
 \subsubsection{Case: $T_f \geq M + K_f$}
-Base Stations could potentially zero-beam-form towards all macro users. However, as base stations have power constraints, it may be beneficial to cause certain amounts of interference. 
 
 \subsubsection{Case: $K_f \leq T_f < M + K_f$}
-Base Stations can send unique signals to all users but does not have sufficient DOF to zero-beam-form for all macro users.
-
 
 \subsection{Optimization Problem}
 
@@ -86,7 +77,7 @@ The player optimization problem can be written as:
 \\
 
 \begin{gather*} 
-argmax_{\mathbf{U_f,\mathbf{p}_f}} U_f() 
+U_f() 
 \\
 s.t. \sum^F_{f=1} \mathbf{p}_f^t \mathbf{\tilde{h_m^T}}  \mathbf{U_f}  \leq I^{Threshold}_{m} 
 \end{gather*}
