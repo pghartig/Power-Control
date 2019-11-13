@@ -106,11 +106,12 @@ s.t. \sum^F_{f=1} \mathbf{p}_f^t \mathbf{\tilde{h_m^T}}  \mathbf{U_f}  \leq I^{T
 \\
 
 Alternatively the optimization problem can be written as:
+TODO Rewrite zero-forcing constraints
 \\
 \begin{gather} 
 argmax_{\mathbf{U_f}} U_f()\label{utility}
 \\
-s.t \; \sum^F_{f=1} \mathbf{p}_f^t \mathbf{\tilde{h_m^T}}  \mathbf{U_f}  \leq I^{Threshold}_{m} \label{interference_contstraint}
+s.t \; \sum^F_{f=1} \mathbf{\tilde{h_m^T}}  \mathbf{U_f}  \leq I^{Threshold}_{m} \label{interference_contstraint}
 \\
 trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f} \label{power_constraint}
 \\
@@ -130,14 +131,15 @@ U_f(\mathbf{U_f}) = \sum^{K_f}_{i=1} log(1+\gamma_{f,i})
 \subsection{Show Convexity of Player Optimization Problem}
 
 Conditions for Convex Problem:
+TODO show closed and boundedness of set
 \begin{enumerate}
 \item Function is convex in argument 
 \begin{itemize}
-\item\eqref{utility} is convex as there is no interference and SINR increases with square of absolute value
+\item\eqref{utility} is concave as there is no interference and log() is concave is the argument, and SINR increases with square of absolute value. (negative second derivative)
 
 \end{itemize}
 
-\item Constraints  frm convex set
+\item Constraints  form convex, closed and bounded set
 
 \begin{itemize}
 
@@ -157,5 +159,15 @@ Show: Users now have a convex problem to solve individually.
 
 Show: given the above setup, NNE can be found in distributed manner
 
+
+\begin{enumerate}
+\item \textbf{Existence of NE:} Assuming above points on concavity, this is an n-person concave game and therefor a NE exists
+\item Diagonally Strict concavity is sufficient condition for uniqueness of NNE in n-person concave game
+\begin{itemize}
+\item\eqref{utility} has negative second derivative w.r.t the argument and contains no intra-cell interference and therefore is negative definite. 
+
+\end{itemize}
+
+\end{enumerate}
 
 \end{document}
