@@ -1,14 +1,16 @@
 
 \documentclass[12pt]{article}
 \usepackage[english]{babel}
-\usepackage[utf8x]{inputenc}
+%\usepackage[utf8x]{inputenc}
 \usepackage[T1]{fontenc}
 %\usepackage{scribe}
 \usepackage{listings}
 \usepackage{amssymb}
 \usepackage{amsmath}
+\usepackage{biblatex} % 
 
-
+\addbibresource{system_model_bib.bib}
+\newtheorem{theorem}{Theorem}
 
 
 \begin{document}
@@ -18,42 +20,63 @@
 
 This game considers a wireless communications network which includes a both macro cell and femto cell users.
 
-\subsection{Players}
+\subsection{Game elements}
+\subsubsection{Players: Femto Cell Base Stations}
 
-Individual femto cell base stations (FC-BS) are the players in this game.
+
+Individual femto cell base stations (FC-BS) are the players of this game.
 \\
-Each FC-BS  $f \in \{1 ... F\}$ is considered to have a number of antennas $T_f$ with which to transmit to $K_f$ femto cell users.
+Femtro Cells are characterized by the following parameters
+\begin{itemize}
+\item Each FC-BS  $f \in \{1 ... F\}$ is considered to have a number of antennas $T_f$ with which to transmit to $K_f$ femto cell users.
 \\
-
-In this setting FC-BS are assumed to be spaced far apart in distance permitting the simplification that 
-FC-BS $f$ cause no interference to the users of FC-BS $j \in \{1 ... F\}\backslash f$
+\item FC-BS are assumed to be spaced far apart in distance. Therefore, FC-BS $f$ cause no interference to the users of FC-BS $j \in \{1 ... F\}\backslash f$
 \\
-
-
-FC-BSs with multiple antennas can beamform their transmission with transformation $\mathbf{U_f} \in \mathbb{C}_{T_f \times K_f}$.
+\item FC-BSs with multiple antennas can beamform their transmission with transformation $\mathbf{U_f} \in \mathbb{C}_{T_f \times K_f}$.
 \\
-
+\item 
 FC-BS $f$ has power constraint  $\sum^{K_f}_{i=1} p_{f,i} \leq P^{Total}_{f} $. 
-\\
+\begin{itemize}
+\item Equivalently, if the symbols transmitted to all users are normalized to have power 1. The constraint can be written in terms of the beam forming vector $\mathbf{U_f}$ as $trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f}$
+\end{itemize}
 
+\item 
 FC-BSs are assumed to have a utility function $U_f()$ based upon the quality of service provided to its users.
 \\
+\item FC-BS $f$ is assumed to have full channel information ($\mathbf{H_f}$) for all user  with which it transmits.
+\\
+\end{itemize}
 
+
+
+
+
+
+
+
+
+\subsubsection{Players: Macro Cell Users}
+
+\begin{itemize}
+\item 
 Macro Cell user $m \in \{1 ... M\}$ experiences receiver interference to due transmission by FC-BSs. These macro cell users have limits to the amount of interference they will tolerate 
 $\sum^F_{f=1} \mathbf{p}_f^t \mathbf{\tilde{h_m^T}}  \mathbf{U_f}  \leq I^{Threshold}_{m} $.
 \\
+\item Femto cell $f$ is assumed to have full channel information ($\tilde{H_f}$) for all user with which it interferes .
+\\
+\end{itemize}
 
-FC-BS $f$ is assumed to have full channel information ($\mathbf{H_f}$) for all user  with which it transmits. The received signal for user $j$ of FC-BS $f$ experiences the inner product of $\mathbf{h^H_{fj}u_{fj}}$
+
+\subsubsection{Players: Femtro Cell Users}
+\begin{itemize}
+
+
+\item The received signal for user $j$ of FC-BS $f$ experiences the inner product of $\mathbf{h^H_{fj}u_{fj}}$
+
+\item TODO Decide if there should be minimum rate constraints for femto cell users
 \\
 
-
-Femto cell $f$ is assumed to have full channel information ($\tilde{H_f}$) for all user with which it interferes .
-\\
-
-
-Users of FC-BS $f$ have SINR 
-
-
+\item Users of FC-BS $f$ have SINR:
 \begin{equation}
 \gamma_{f,i} = \frac{p_{f,i}|\mathbf{h^H_{fi}u_{fi}}|^2}
 {\sigma^2_{n}  + \sum_{\tilde{f}\neq f} \sum_{u=1}^{K_{\tilde{f}}} + \sum_{\tilde{k}\neq i}} \; i \in \{1 ... K_f\}
@@ -75,10 +98,8 @@ This further simplifies assuming that users use a zero-forcing beam-former
 \end{equation}
 \\
 
-TODO Decide if there should be minimum rate constraints for users
-\\
+\end{itemize}
 
-TODO Try setting the individual user utilities as the capacities then working back to the single covariance matrix from the transmit signal SINR (might be better than optimizing a vector and a matrix)
 
 \subsection{Variations of Game Setup}
 
@@ -106,8 +127,8 @@ s.t. \sum^F_{f=1} \mathbf{p}_f^t \mathbf{\tilde{h_m^T}}  \mathbf{U_f}  \leq I^{T
 \\
 
 Alternatively the optimization problem can be written as:
-TODO Rewrite zero-forcing constraints
 \\
+
 \begin{gather} 
 argmax_{\mathbf{U_f}} U_f()\label{utility}
 \\
@@ -115,7 +136,7 @@ s.t \; \sum^F_{f=1} \mathbf{\tilde{h_m^T}}  \mathbf{U_f}  \leq I^{Threshold}_{m}
 \\
 trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f} \label{power_constraint}
 \\
-\mathbf{H_f^H}\mathbf{U_f} = \mathbf{I_{K_f}}\label{Zero_Forcing}
+\langle \mathbf{h_{f,j}}\mathbf{u_{f,i}} \rangle =0\ \; \forall j \in \{1 ... K_f\}\backslash i \;\; \forall i \in \{1 ... K_f\} \label{Zero_Forcing}
 \end{gather}
 \\
 
@@ -135,7 +156,7 @@ TODO show closed and boundedness of set
 \begin{enumerate}
 \item Function is convex in argument 
 \begin{itemize}
-\item\eqref{utility} is concave as there is no interference and log() is concave is the argument, and SINR increases with square of absolute value. (negative second derivative)
+\item\eqref{utility} is concave as there is no interference and log() is concave is the argument (SINR). SINR increases with square of absolute value. (this term has a negative second derivative)
 
 \end{itemize}
 
@@ -162,12 +183,37 @@ Show: given the above setup, NNE can be found in distributed manner
 
 \begin{enumerate}
 \item \textbf{Existence of NE:} Assuming above points on concavity, this is an n-person concave game and therefor a NE exists
-\item Diagonally Strict concavity is sufficient condition for uniqueness of NNE in n-person concave game
+\item \textbf{Uniqueness of NE:} Diagonally Strict concavity is a sufficient condition for uniqueness of NNE in n-person concave game
 \begin{itemize}
-\item\eqref{utility} has negative second derivative w.r.t the argument and contains no intra-cell interference and therefore is negative definite. 
+\item\eqref{utility} has negative second derivative w.r.t the argument and contains no intra-cell interference and therefore is negative definite. Which is sufficient for being diagonally strictly concave
+\cite[Thm6]{rosen1964existence} ( Thm 6)
 
 \end{itemize}
 
 \end{enumerate}
+
+\subsection{Setup as a Potential Game}
+Assuming the NE is unique and the game admits a potential function $\Phi()$ then the solution to the potential function will be the unique NE of the original game if the potential function is also concave. 
+The sum of the utility functions admits one such potential function and since the individual utility functions are independent of one another and they are individually concave, the resulting potential function will also be concave. 
+\\
+\begin{theorem}\label{distributed}
+If a game's potential function is strictly concave and the derivative of the function wrt to the individual players variables are independent of the other player variables, then there exists a distributed solution.
+%\\\cite[~algodist]{ghosh2015normalized}
+\end{theorem}
+
+
+Proposed potential function
+
+\begin{gather*} 
+\Phi() = \sum_{f = 1}^{F} U_f() 
+\end{gather*}
+
+
+It can be verified that this satisfies the gradient condition of potential functions and is also strictly concave. Therefore, this satisfies the conditions for \ref{distributed}.
+
+
+
+\subsection{Distributed Solution to the Game}
+
 
 \end{document}
