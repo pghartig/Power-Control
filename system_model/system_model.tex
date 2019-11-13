@@ -37,13 +37,13 @@ Femtro Cells are characterized by the following parameters
 \item 
 FC-BS $f$ has power constraint  $\sum^{K_f}_{i=1} p_{f,i} \leq P^{Total}_{f} $. 
 \begin{itemize}
-\item Equivalently, if the symbols transmitted to all users are normalized to have power 1. The constraint can be written in terms of the beam forming vector $\mathbf{U_f}$ as $trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f}$
+\item TODO (Verify Equivalence)Equivalently, if the symbols transmitted to all users are normalized to have power 1. The constraint can be written in terms of the beam forming vector $\mathbf{U_f}$ as $trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f}$
 \end{itemize}
 
 \item 
-FC-BSs are assumed to have a utility function $U_f()$ based upon the quality of service provided to its users.
+TODO (Discuss Reasonable functions) FC-BSs are assumed to have a utility function $U_f()$ based upon the quality of service provided to its users.
 \\
-\item FC-BS $f$ is assumed to have full channel information ($\mathbf{H_f}$) for all user  with which it transmits.
+\item TODO(Incomplete CSI?) FC-BS $f$ is assumed to have full channel information ($\mathbf{H_f}$) for all user  with which it transmits.
 \\
 \end{itemize}
 
@@ -59,9 +59,13 @@ FC-BSs are assumed to have a utility function $U_f()$ based upon the quality of 
 
 \begin{itemize}
 \item 
+TODO (Should this be in terms of a power? if so, correct constraint) 
 Macro Cell user $m \in \{1 ... M\}$ experiences receiver interference to due transmission by FC-BSs. These macro cell users have limits to the amount of interference they will tolerate 
 $\sum^F_{f=1} \mathbf{p}_f^t \mathbf{\tilde{h_m^T}}  \mathbf{U_f}  \leq I^{Threshold}_{m} $.
-\\
+\begin{itemize}
+\item In case of normalized symbols $\sum^F_{f=1}  \mathbf{\tilde{h_m^T}}  \mathbf{U_f}  \leq I^{Threshold}_{m} $
+\end{itemize}
+
 \item Femto cell $f$ is assumed to have full channel information ($\tilde{H_f}$) for all user with which it interferes .
 \\
 \end{itemize}
@@ -71,15 +75,17 @@ $\sum^F_{f=1} \mathbf{p}_f^t \mathbf{\tilde{h_m^T}}  \mathbf{U_f}  \leq I^{Thres
 \begin{itemize}
 
 
-\item The received signal for user $j$ of FC-BS $f$ experiences the inner product of $\mathbf{h^H_{fj}u_{fj}}$
-
 \item TODO Decide if there should be minimum rate constraints for femto cell users
 \\
 
 \item Users of FC-BS $f$ have SINR:
 \begin{equation}
 \gamma_{f,i} = \frac{p_{f,i}|\mathbf{h^H_{fi}u_{fi}}|^2}
-{\sigma^2_{n}  + \sum_{\tilde{f}\neq f} \sum_{u=1}^{K_{\tilde{f}}} + \sum_{\tilde{k}\neq i}} \; i \in \{1 ... K_f\}
+{\sigma^2_{n}  + \sum_{\tilde{f}\neq f} \sum_{u=1}^{K_{\tilde{f}}}
+|\mathbf{h^H_{\tilde{f}u}u_{fi}}|^2
+ + \sum_{\tilde{k}\neq i}
+  |\mathbf{h^H_{f\tilde{k}}u_{f\tilde{k}}}|^2}
+  \; i \in \{1 ... K_f\}
 \end{equation}
 \\
 with AWGN $\sim \mathcal{N}(0,\sigma^2_n)$
@@ -87,7 +93,8 @@ with AWGN $\sim \mathcal{N}(0,\sigma^2_n)$
 
 Assuming sufficient FC-BS spacing this becomes 
 \begin{equation}
-\gamma_{f,i} = \frac{p_{f,i}|\mathbf{h^H_{fi}u_{fi}}|^2}{\sigma^2_{n}  +  \sum_{\tilde{k}\neq i}} \; i \in \{1 ... K_f\}
+\gamma_{f,i} = \frac{p_{f,i}|\mathbf{h^H_{fi}u_{fi}}|^2}{\sigma^2_{n}   + \sum_{\tilde{k}\neq i}
+  |\mathbf{h^H_{f\tilde{k}}u_{f\tilde{k}}}|^2} \; i \in \{1 ... K_f\}
 \end{equation}
 \\
 
@@ -96,6 +103,9 @@ This further simplifies assuming that users use a zero-forcing beam-former
 \begin{equation}
 \gamma_{f,i} = \frac{p_{f,i}|\mathbf{h^H_{fi}u_{fi}}|^2}{\sigma^2_{n} }
 \end{equation}
+\\
+
+\item TODO Remove power term from above terms
 \\
 
 \end{itemize}
@@ -113,9 +123,9 @@ FC-BSs can send unique signals to all users but does not have sufficient DOF to 
 \subsection{General Optimization Problem}
 
 Each player $f$ attempts to maximize utility function $U_f()$ while playing a strategy that falls in the region constrained by the interference limits imposed by the macro cell users.
+\\
 
 The player optimization problem can be written as:
-\\
 
 \begin{gather*} 
 argmax_{\mathbf{U_f,\mathbf{p}_f}} U_f() 
@@ -152,15 +162,15 @@ U_f(\mathbf{U_f}) = \sum^{K_f}_{i=1} log(1+\gamma_{f,i})
 \subsection{Show Convexity of Player Optimization Problem}
 
 Conditions for Convex Problem:
-TODO show closed and boundedness of set
+
 \begin{enumerate}
 \item Function is convex in argument 
 \begin{itemize}
-\item\eqref{utility} is concave as there is no interference and log() is concave is the argument (SINR). SINR increases with square of absolute value. (this term has a negative second derivative)
+\item\eqref{utility} is concave as there is no interference and log() is concave is the argument (SINR). SINR increases with square of absolute value. (The resulting function has a negative second derivative)
 
 \end{itemize}
 
-\item Constraints  form convex, closed and bounded set
+\item Constraints  form convex, closed and bounded set. TODO show closed and boundedness of set
 
 \begin{itemize}
 
@@ -169,7 +179,7 @@ TODO show closed and boundedness of set
 \item\eqref{power_constraint} As Trace is square of Frobenious norm and squaring a convex function (e.g any true Norm) preserves convexity.
 Need to work on proof but this should be convex.
 
-\item\eqref{Zero_Forcing} This is a set of linear equations defining $\mathbf{U_f}$ which is an affine set.
+\item\eqref{Zero_Forcing} This is a set of linear equations defining $\mathbf{U_f}$ which is an affine set. The intersection of this set is convex.
 
 \end{itemize}
 \end{enumerate}
