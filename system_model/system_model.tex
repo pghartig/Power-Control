@@ -35,10 +35,7 @@ Femtro Cells are characterized by the following parameters
 \item FC-BSs with multiple antennas can beamform their transmission with transformation $\mathbf{U_f} \in \mathbb{C}_{T_f \times K_f}$.
 \\
 \item 
-FC-BS $f$ has power constraint  $\sum^{K_f}_{i=1} p_{f,i} \leq P^{Total}_{f} $. 
-\begin{itemize}
-\item TODO (Verify Equivalence)Equivalently, if the symbols transmitted to all users are normalized to have power 1. The constraint can be written in terms of the beam forming vector $\mathbf{U_f}$ as $trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f}$
-\end{itemize}
+FC-BS $f$ has power constraint  $trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f} $. +
 
 \item 
 TODO (Discuss Reasonable functions) FC-BSs are assumed to have a utility function $U_f()$ based upon the quality of service provided to its users.
@@ -61,10 +58,7 @@ TODO (Discuss Reasonable functions) FC-BSs are assumed to have a utility functio
 \item 
 TODO (Should this be in terms of a power? if so, correct constraint) 
 Macro Cell user $m \in \{1 ... M\}$ experiences receiver interference to due transmission by FC-BSs. These macro cell users have limits to the amount of interference they will tolerate 
-$\sum^F_{f=1} \mathbf{p}_f^t \mathbf{\tilde{h_m^T}}  \mathbf{U_f}  \leq I^{Threshold}_{m} $.
-\begin{itemize}
-\item In case of normalized symbols $\sum^F_{f=1}  \mathbf{\tilde{h_m^T}}  \mathbf{U_f}  \leq I^{Threshold}_{m} $
-\end{itemize}
+$\sum^F_{f=1} \mathbf{\tilde{h_{m,f}^T}}  \mathbf{U_f}  \mathbf{U_f^H} \mathbf{\tilde{h_{m,f}^*}} \leq I^{Threshold}_{m} $.
 
 \item Femto cell $f$ is assumed to have full channel information ($\tilde{H_f}$) for all user with which it interferes .
 \\
