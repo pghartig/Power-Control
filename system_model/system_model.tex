@@ -124,7 +124,7 @@ The player optimization problem can be written as:
 \begin{gather*} 
 argmax_{\mathbf{U_f,\mathbf{p}_f}} U_f() 
 \\
-s.t. \sum^F_{f=1} \mathbf{p}_f^t \mathbf{\tilde{h_m^T}}  \mathbf{U_f}  \leq I^{Threshold}_{m} 
+s.t. \sum^F_{f=1} \mathbf{\tilde{h_{m,f}^T}}  \mathbf{U_f}  \mathbf{U_f^H} \mathbf{\tilde{h_{m,f}^*}} \leq I^{Threshold}_{m}
 \\
 \mathbf{H_f^H}\mathbf{U_f} = \mathbf{I_{K_f}}
 \end{gather*}
@@ -136,7 +136,7 @@ Alternatively the optimization problem can be written as:
 \begin{gather} 
 argmax_{\mathbf{U_f}} U_f()\label{utility}
 \\
-s.t \; \sum^F_{f=1} \mathbf{\tilde{h_m^T}}  \mathbf{U_f}  \leq I^{Threshold}_{m} \label{interference_contstraint}
+s.t \; \sum^F_{f=1} \mathbf{\tilde{h_{m,f}^T}}  \mathbf{U_f}  \mathbf{U_f^H} \mathbf{\tilde{h_{m,f}^*}} \leq I^{Threshold}_{m} \label{interference_contstraint}
 \\
 trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f} \label{power_constraint}
 \\
@@ -160,20 +160,42 @@ Conditions for Convex Problem:
 \begin{enumerate}
 \item Function is convex in argument 
 \begin{itemize}
-\item\eqref{utility} is concave as there is no interference and log() is concave is the argument (SINR). SINR increases with square of absolute value. (The resulting function has a negative second derivative)
+\item\eqref{utility} is concave as there is no interference and log() is concave is the argument (SINR). SINR increases with square of absolute value. (The resulting function has a negative 2nd derivative)
 
 \end{itemize}
 
-\item Constraints  form convex, closed and bounded set. TODO show closed and boundedness of set
+\item Constraints form convex, closed and bounded set. TODO show closed and boundedness of set
 
 \begin{itemize}
 
-\item\eqref{interference_contstraint} contains $M$ affine constraints on $\mathbf{U_f}$
+\item\eqref{interference_contstraint} contains $M$ quadratic constraints on $\mathbf{U_f}$
+\begin{itemize}
+\item \eqref{interference_contstraint} sum can be rewritten as 
+\begin{gather}
+trace(\mathbf{U_f^H} \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}} \mathbf{U_f} )\leq I^{Threshold}_{m}
+\end{gather}
+\item This can be decomposed into \textit{independent} components 
+\begin{gather}
+\mathbf{U_{f,i}^H} \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}} \mathbf{U_{f,i}} \leq I^{Threshold}_{m}
+\end{gather}
+In which the term $ \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}}$ is always a positive semi-definite matrix
+\end{itemize}
 
 \item\eqref{power_constraint} As Trace is square of Frobenious norm and squaring a convex function (e.g any true Norm) preserves convexity.
 Need to work on proof but this should be convex.
+\begin{itemize}
+\item Further, \eqref{power_constraint} can be decomposed as above into
+\begin{gather}
+\sum_{i=1}^{K_f}\mathbf{U_{f,i}^H} \mathbf{I} \mathbf{U_{f,i}} \leq  P^{Total}_{f}
+\end{gather}
+in which $\mathbf{I}$ is always positive semi-definite and therefore the constraint is convex.
+\end{itemize}
 
-\item\eqref{Zero_Forcing} This is a set of linear equations defining $\mathbf{U_f}$ which is an affine set. The intersection of this set is convex.
+\item\eqref{Zero_Forcing} 
+This can be thought of as defining a line to which the solution must be orthogonal to and therefore is an affine constraint. 
+\begin{gather}
+\langle \mathbf{h_{f,j}}\mathbf{u_{f,i}} \rangle =0
+\end{gather}
 
 \end{itemize}
 \end{enumerate}
@@ -192,6 +214,16 @@ Show: given the above setup, NNE can be found in distributed manner
 \item\eqref{utility} has negative second derivative w.r.t the argument and contains no intra-cell interference and therefore is negative definite. Which is sufficient for being diagonally strictly concave
 \cite[Thm6]{rosen1964existence} ( Thm 6)
 
+\item \textbf{Potential Function:} The proposed potential function is 
+
+\begin{gather*} \label{Potential_Function}
+\Phi() = \sum_{f = 1}^{F} U_f() 
+\end{gather*}
+
+
+As the Utility functions of individual players $f$ do not share any common variables,  \label{Potential_Function} will have the same derivative as individual $U_f()$ with respect to $\mathbf{U_{f,i}} $. 
+
+
 \end{itemize}
 
 \end{enumerate}
@@ -204,17 +236,6 @@ The sum of the utility functions admits one such potential function and since th
 If a game's potential function is strictly concave and the derivative of the function wrt to the individual players variables are independent of the other player variables, then there exists a distributed solution.
 %\\\cite[~algodist]{ghosh2015normalized}
 \end{theorem}
-
-
-Proposed potential function
-
-\begin{gather*} 
-\Phi() = \sum_{f = 1}^{F} U_f() 
-\end{gather*}
-
-
-It can be verified that this satisfies the gradient condition of potential functions and is also strictly concave. Therefore, this satisfies the conditions for \ref{distributed}.
-
 
 
 \subsection{Distributed Solution to the Game}
