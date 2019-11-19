@@ -18,7 +18,7 @@
 
 \section{Game and System Setup}
 
-This game considers a wireless communications network which includes a both macro cell and femto cell users.
+This game considers a wireless communications network which includes a both macro cell and femto cell users. In order to allow for unplanned usage of femto cells within the network, the base stations of femto cells must ensure that the users of planned, macro cells intercept an acceptable amount of interference during transmission. The strategy for transmission across all such femto cells in a network is investigated here in a game theoretic context. 
 
 \subsection{Game Elements}
 \subsubsection{Players: Femto Cell Base Stations}
@@ -30,17 +30,17 @@ Femtro Cells are characterized by the following parameters
 \begin{itemize}
 \item Each FC-BS  $f \in \{1 ... F\}$ is considered to have a number of antennas $T_f$ with which to transmit to $K_f$ femto cell users.
 \\
-\item FC-BS are assumed to be spaced far apart in distance. Therefore, FC-BS $f$ cause no interference to the users of FC-BS $j \in \{1 ... F\}\backslash f$
-\\
-\item FC-BSs with multiple antennas can beamform their transmission with transformation $\mathbf{U_f} \in \mathbb{C}_{T_f \times K_f}$.
+\item FC-BSs with multiple antennas ($T_f >1$) can beamform their transmission using the transformation $\mathbf{U_{\mathrm{f}}} \in \mathbb{C}_{T_f \times K_f}$ such that the transmitted signal is $\mathbf{s_{\mathrm{f}
+}}= \mathbf{U_{\mathrm{f}}}\mathbf{x_{\mathrm{f}}}$. Here $\mathbf{x_{\mathrm{f}}}$ is the normalized vector of symbols for users of FC-BS $f$ (i.e. $\mathbf{E[||\mathbf{x_{\mathrm{f}}}||_2^2]} \; f \in \{1 ... F\}$).
 \\
 \item 
-FC-BS $f$ has power constraint  $trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f} $. +
-
-\item 
-TODO (Discuss Reasonable functions) FC-BSs are assumed to have a utility function $U_f()$ based upon the quality of service provided to its users.
+FC-BS $f$ has power constraint $trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f} $.
 \\
-\item TODO(Incomplete CSI?) FC-BS $f$ is assumed to have full channel information ($\mathbf{H_f}$) for all user  with which it transmits.
+\item FC-BSs are assumed to be spaced far apart in distance. Therefore, FC-BS $f$ can be modeled as causing no interference to the users of FC-BS $j \in \{1 ... F\}\backslash f$
+\item 
+ FC-BSs are assumed to have a utility function $U_f()$ based upon the quality of service provided to its users. TODO (Discuss Reasonable functions)
+\\
+\item FC-BS $f$ is assumed to have full channel information ($\mathbf{H_f}$) for all user  with which it transmits. TODO (Simulate degradation with incomplete CSI solution?)
 \\
 \end{itemize}
 
@@ -48,38 +48,32 @@ TODO (Discuss Reasonable functions) FC-BSs are assumed to have a utility functio
 
 
 
-
-
-
-
-\subsubsection{Players: Macro Cell Users}
+\subsubsection{Macro Cell Users}
 
 \begin{itemize}
 \item 
-TODO (Should this be in terms of a power? if so, correct constraint) 
-Macro Cell user $m \in \{1 ... M\}$ experiences receiver interference to due transmission by FC-BSs. These macro cell users have limits to the amount of interference they will tolerate 
+Macro Cell user $m \in \{1 ... M\}$ experiences receiver interference to due transmission by FC-BSs. These macro cell users have limits to the amount of interference they may tolerate 
 $\sum^F_{f=1} \mathbf{\tilde{h_{m,f}^T}}  \mathbf{U_f}  \mathbf{U_f^H} \mathbf{\tilde{h_{m,f}^*}} \leq I^{Threshold}_{m} $.
 
-\item Femto cell $f$ is assumed to have full channel information ($\tilde{H_f}$) for all user with which it interferes .
+\item FC-BS $f$ is assumed to have full channel information ($\tilde{H_f}$) for all macro cell users with which it interferes .
 \\
 \end{itemize}
 
-
-\subsubsection{Players: Femtro Cell Users}
+\subsubsection{Femtro Cell Users}
 \begin{itemize}
 
 
-\item TODO Decide if there should be minimum rate constraints for femto cell users in case
+\item TODO Decide if there should be minimum rate constraints for femto cell users in case (Look back at later in case some users are beam-formed out of the transmission). Check if this constraint will disrupt solution.
 \\
 
 \item Users of FC-BS $f$ have SINR:
 \begin{equation}
-\gamma_{f,i} = \frac{p_{f,i}|\mathbf{h^H_{fi}u_{fi}}|^2}
-{\sigma^2_{n}  + \sum_{\tilde{f}\neq f} \sum_{u=1}^{K_{\tilde{f}}}
-|\mathbf{h^H_{\tilde{f}u}u_{fi}}|^2
- + \sum_{\tilde{k}\neq i}
-  |\mathbf{h^H_{f\tilde{k}}u_{f\tilde{k}}}|^2}
-  \; i \in \{1 ... K_f\}
+\gamma_{\mathrm{f,i}} = \frac{|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}|^2}
+{\sigma^2_{noise}   + \sum_{\mathrm{\tilde{f}}\neq f} \sum_{\mathrm{u=1}}^{K_{\mathrm{\tilde{f}}}}
+|\mathbf{h^H_{\mathrm{\tilde{f},u}}u_{\mathrm{f,i}}}|^2
+ + \sum_{\mathrm{\tilde{k}\neq i}}
+  |\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}|^2}
+  \; \mathrm{i \in \{1 ... K_f\}}
 \end{equation}
 \\
 with AWGN $\sim \mathcal{N}(0,\sigma^2_n)$
@@ -87,19 +81,21 @@ with AWGN $\sim \mathcal{N}(0,\sigma^2_n)$
 
 Assuming sufficient FC-BS spacing this becomes 
 \begin{equation}
-\gamma_{f,i} = \frac{p_{f,i}|\mathbf{h^H_{fi}u_{fi}}|^2}{\sigma^2_{n}   + \sum_{\tilde{k}\neq i}
-  |\mathbf{h^H_{f\tilde{k}}u_{f\tilde{k}}}|^2} \; i \in \{1 ... K_f\}
+\gamma_{\mathrm{f,i}} = \frac{|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}|^2}
+{\sigma^2_{noise} 
+ + \sum_{\mathrm{\tilde{k}\neq i}}
+  |\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}|^2}
+  \; \mathrm{i \in \{1 ... K_f\}}
 \end{equation}
 \\
 
 This further simplifies assuming that users use a zero-forcing beam-former
 
-\begin{equation}
-\gamma_{f,i} = \frac{p_{f,i}|\mathbf{h^H_{fi}u_{fi}}|^2}{\sigma^2_{n} }
+\begin{equation}\label{zf_snr}
+\gamma_{\mathrm{f,i}} = \frac{|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}|^2}
+{\sigma^2_{noise}  
+}
 \end{equation}
-\\
-
-\item TODO Remove power term from above terms
 \\
 
 \end{itemize}
@@ -116,22 +112,11 @@ FC-BSs can send unique signals to all users but does not have sufficient DOF to 
 
 \subsection{General Optimization Problem}
 
-Each player $f$ attempts to maximize utility function $U_f()$ while playing a strategy that falls in the region constrained by the interference limits imposed by the macro cell users.
+Each player $f$ attempts to maximize utility function $U_f()$ while playing a strategy that falls in the region constrained by the interference constraints imposed by the macro cell users.
 \\
 
-The player optimization problem can be written as:
+The player optimization problem of player $f$ can be written as:
 
-\begin{gather*} 
-\mathrm{argmax}_{\mathbf{U_f}} \; U_f(
-\\
-s.t. \sum^F_{f=1} \mathbf{\tilde{h_{m,f}^T}}  \mathbf{U_\mathrm{f}}  \mathbf{U_f^H} \mathbf{\tilde{h_{\mathrm{m,f}}^\mathrm{*}}} \leq I^{\mathrm{Threshold}}_{m}  \; m \in \{1 ... M\}
-\\
-\mathbf{H_f^H}\mathbf{U_f} = \mathbf{I_{K_f}}
-\end{gather*}
-\\
-
-Alternatively the optimization problem can be written as:
-\\
 
 \begin{gather} 
 \mathrm{argmax}_{\mathbf{U_f}} \; U_f()\label{utility}
@@ -152,7 +137,7 @@ trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f} \label{power_constraint}
 
 Say $U_f() $ is the sum of all capacities for femto cell users of FC-BS $f$ 
 \begin{displaymath}
-U_f(\mathbf{U_f}) = \sum^{K_f}_{i=1} log(1+\gamma_{f,i})
+U_f(\mathbf{U_f}) = \sum^{K_f}_{i=1} log(1+\gamma_{\mathrm{f,i}})
 \end{displaymath}
 
 \subsection{Show Convexity of Player Optimization Problem}
@@ -160,9 +145,9 @@ U_f(\mathbf{U_f}) = \sum^{K_f}_{i=1} log(1+\gamma_{f,i})
 Conditions for Convex Problem:
 
 \begin{enumerate}
-\item Function is convex in argument 
+\item Utility function is concave in argument 
 \begin{itemize}
-\item\eqref{utility} is concave as there is no interference and log() is concave is the argument (SINR). SINR increases with square of absolute value. (The resulting function has a negative 2nd derivative)
+\item Constraint \eqref{Zero_Forcing} ensures that $\gamma_{\mathrm{f,i}}$ takes the form of \eqref{zf_snr} and  as log() is concave is the argument (SINR). SINR increases with square of absolute value. (The resulting function has a negative 2nd derivative)
 
 \end{itemize}
 
@@ -172,7 +157,7 @@ Conditions for Convex Problem:
 
 \item\eqref{interference_contstraint} contains $M$ quadratic constraints on $\mathbf{U_f}$
 \begin{itemize}
-\item \eqref{interference_contstraint} sum can be rewritten as 
+\item Constraint \eqref{interference_contstraint} can be rewritten as 
 \begin{gather}
 \sum_{f=1}^F
 trace(\mathbf{U_f^H} \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}} \mathbf{U_f} )\leq I^{Threshold}_{m}
@@ -181,9 +166,12 @@ trace(\mathbf{U_f^H} \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}} \mathbf
 \begin{gather}
 \sum_{f=1}^F
 \sum_{i=1}^{f_i}
-\mathbf{U_{f,i}^H} \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}} \mathbf{U_{f,i}} \leq I^{Threshold}_{m}
+\mathbf{u_{\mathrm{f,i}}^H} \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}} \mathbf{u_{\mathrm{f,i}}} \leq I^{Threshold}_{m}
 \end{gather}
-In which the term $ \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}}$ is always a positive semi-definite matrix
+In which the term $ \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}}$ is always a positive semi-definite matrix, this is a convex set according to 
+\cite[p.30]{boyd2004convex}. This is essentially high dimensional ellipsoid.
+
+
 \end{itemize}
 
 \item\eqref{power_constraint} As Trace is square of Frobenious norm and squaring a convex function (e.g any true Norm) preserves convexity.
@@ -191,15 +179,15 @@ Need to work on proof but this should be convex.
 \begin{itemize}
 \item Further, \eqref{power_constraint} can be decomposed as above into
 \begin{gather}
-\sum_{i=1}^{K_f}\mathbf{U_{f,i}^H} \mathbf{I} \mathbf{U_{f,i}} \leq  P^{Total}_{f}
+\sum_{i=1}^{K_f}\mathbf{u_{\mathrm{f,i}}^H} \mathbf{I} \mathbf{u_{\mathrm{f,i}}} \leq  P^{Total}_{f}
 \end{gather}
-in which $\mathbf{I}$ is always positive semi-definite and therefore the constraint is convex.
+in which $\mathbf{I}$ is always positive semi-definite and therefore the constraint is convex by the same reasons as \eqref{interference_contstraint}.
 \end{itemize}
 
 \item\eqref{Zero_Forcing} 
-This can be thought of as defining a line to which the solution must be orthogonal to and therefore is an affine constraint. 
+This can be thought of as defining a line to which the solution must be orthogonal to and therefore is an affine (convex) constraint. 
 \begin{gather}
-\langle \mathbf{h_{f,j}}\mathbf{u_{f,i}} \rangle =0
+\langle \mathbf{h_{\mathrm{f,j}}}\mathbf{u_{\mathrm{f,i}}} \rangle =0
 \end{gather}
 
 \end{itemize}
@@ -208,8 +196,8 @@ This can be thought of as defining a line to which the solution must be orthogon
 \subsection{Finding Nash Equilibrium}
 
 \begin{enumerate}
-\item \textbf{Existence of NE:} Assuming above points on concavity, this is an n-person concave game and therefore a NE exists
-\item \textbf{Uniqueness of NE:} Diagonally Strict concavity is a sufficient condition for uniqueness of NNE in n-person concave game
+\item \textbf{Existence of NE:} Given that the player optimization problem is convex, this is an n-person concave game and therefore a NE exists \cite{rosen1964existence}. 
+\item \textbf{Uniqueness of NE:} Diagonally Strict concavity is a sufficient condition for uniqueness of NNE in n-person concave game \cite{rosen1964existence}.
 \begin{itemize}
 \item\eqref{utility} has negative second derivative w.r.t the argument and contains no intra-cell interference and therefore is negative definite. Which is sufficient for being diagonally strictly concave
 \cite[Thm6]{rosen1964existence} ( Thm 6)
@@ -221,7 +209,7 @@ This can be thought of as defining a line to which the solution must be orthogon
 \end{gather*}
 
 
-As the Utility functions of individual players $f$ do not share any common variables,  \label{Potential_Function} will have the same derivative as individual $U_f()$ with respect to $\mathbf{U_{f,i}} $. 
+As the utility functions of individual players $f$ do not share any common variables,  \label{Potential_Function} will have the same derivative as individual $U_f()$ with respect to $\mathbf{U_{f,i}} $. 
 
 
 \end{itemize}
@@ -230,13 +218,13 @@ As the Utility functions of individual players $f$ do not share any common varia
 
 \subsection{Setup as a Potential Game}
 Assuming the NE is unique and the game admits a potential function $\Phi()$ then the solution to the potential function will be the unique NE of the original game if the potential function is also concave. 
-The sum of the utility functions admits one such potential function and since the individual utility functions are independent of one another and individually concave, the resulting potential function will also be concave. 
+The sum of the utility functions admits one such potential function and since the individual utility functions are independent of one another and individually concave (shown above) , the resulting potential function will also be concave. 
 \\
 \begin{theorem}\label{distributed}
-If a game's potential function is strictly concave and the derivative of the function wrt to the individual players variables are independent of the other player variables, then there exists a distributed solution.
+If a game's potential function is strictly concave and the derivative of the function with respect to the individual players variables are independent of the other player variables, then there exists a distributed solution.
 %\\\cite[~algodist]{ghosh2015normalized}
 \end{theorem}
-\subsubsection{Central Problem Resulting from Potential Game}
+\subsubsection{Central Optimization Problem Resulting from Proposed Potential Game}
 
 \begin{gather}\label{potential_game}
 \mathrm{argmax}_{U_{\mathrm{1}}.. U_{\mathrm{F}}}
@@ -284,10 +272,10 @@ log(1+\frac{p_{ \mathrm{f,i}}|\mathbf{h^H_{\mathrm{fi}}u_{ \mathrm{fi}}}|^2}{\si
 +
 \sum_{f=1}^F
 \sum_{i=1}^{f_i}
-\nu(\mathbf{h^T_{\mathrm{f,j}}}\mathbf{u_{\mathrm{f,i}}})
+\nu_{\mathrm{f,k}}(\mathbf{h^T_{\mathrm{f,j}}}\mathbf{u_{\mathrm{f,i}}})
 \end{multline}
 
-in which individual FCBSs first take the
+in which individual FC-BSs first optimize individually
 \begin{enumerate}
 \item 
 \begin{gather}
@@ -301,11 +289,11 @@ predetermined $\alpha^{\mathrm{k}}$
 \lambda_{\mathrm{m}}^{\mathrm{k}}
 +
 \alpha^{\mathrm{k}}*
-(\frac{\partial g()}{\partial})
+(\frac{\partial L(\mathbf{\mathbf{U_{\mathrm{f}}},\lambda}) )}{\partial\lambda_{\mathrm{m}}})
 \end{gather}
-
+in which $\mathbf{U^{\mathrm{k}}_{\mathrm{f}}} = [\mathbf{U^{\mathrm{k}}_{\mathrm{1}}}...\mathbf{U^{\mathrm{k}}_{\mathrm{F}}}]$
 
 \end{enumerate} 
 
-TODO show convergence conditions of this algorithm
+TODO show proof convergence conditions of this algorithm
 \end{document}
