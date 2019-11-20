@@ -38,35 +38,47 @@ Individual femto cell base stations (FC-BS) are the players of this game.
 \\
 Femtro Cells are characterized by the following parameters
 \begin{itemize}
-\item Each FC-BS  $f \in \{1 ... F\}$ is considered to have a number of antennas $T_f$ with which to transmit to $K_f$ femto cell users.
-\\
-\item FC-BSs with multiple antennas ($T_f >1$) can beamform their transmission using the precoding matrix $\mathbf{U_{\mathrm{f}}} \in \mathbb{C}_{T_f \times K_f}$ such that the transmitted signal is $\mathbf{s_{\mathrm{f}
-}}= \mathbf{U_{\mathrm{f}}}\mathbf{x_{\mathrm{f}}}$. Here $\mathbf{x_{\mathrm{f}}}$ is the normalized vector of symbols for users of FC-BS $f$ (i.e. $\mathbf{E[\|\mathbf{x_{\mathrm{f}}}\|_2^2]} \; f \in \{1 ... F\}$).
+\item 
+	Each FC-BS  $f \in \{1 ... F\}$ is considered to have a number of antennas $T_f$ with which to transmit to $K_f$ femto cell users.
 \\
 \item 
-FC-BS $f$ has power constraint $trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f} $.
+	FC-BSs with multiple antennas ($T_f >1$) can beamform their transmission using the precoding 	
+	matrix $\mathbf{U_{\mathrm{f}}} \in \mathbb{C}_{T_f \times K_f}$ such that the transmitted 		
+	signal is $\mathbf{s_{\mathrm{f}
+	}}= \mathbf{U_{\mathrm{f}}}\mathbf{x_{\mathrm{f}}}$. Here $\mathbf{x_{\mathrm{f}}}$ is the 		
+	normalized vector of symbols for users of FC-BS $f$ (i.e. $\mathbf{E[\|\mathbf{x_{\mathrm{f}}}	
+	\|_2^2]} \; f \in \{1 ... F\}$).
 \\
-\item FC-BSs are assumed to be spaced far apart in distance. Therefore, FC-BS $f$ can be modeled as causing no interference to the users of FC-BS $j \in \{1 ... F\}\backslash f$
 \item 
- FC-BSs are assumed to have a utility function $U_f()$ based upon the quality of service provided to its users. TODO (Discuss Reasonable functions)
+	FC-BS $f$ has power constraint $trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f} $.
 \\
-\item FC-BS $f$ is assumed to know the downlink channel ($\mathbf{H_f}$) from its transmission antennas to all served users.
+\item
+	 FC-BSs are assumed to be spaced far apart in distance. Therefore, FC-BS $f$ can be modeled as 
+	 causing no interference to the users of FC-BS $j \in \{1 ... F\}\backslash f$
+\item 
+	FC-BSs are assumed to have a utility function $U_f()$ based upon the quality of service 		
+	provided to its users. TODO (Discuss Reasonable functions)
+\\
+\item 
+	FC-BS $f$ is assumed to know the downlink channel ($\mathbf{H_f}$) from its transmission 		
+	antennas to all served users.
 % TODO(Simulate degradation with incomplete CSI solution?)
 \\
 \end{itemize}
-
-
-
-
 
 \subsubsection{Macro Cell Users}
 
 \begin{itemize}
 \item 
-Macro Cell user $m \in \{1 ... M\}$ experiences receiver interference due to transmission by FC-BSs. These macro-cell users have limits to the amount of interference they may tolerate 
-$\sum^F_{f=1} \mathbf{\tilde{h_{\mathrm{m,f}}^T}}  \mathbf{U_{\mathrm{f}}}  \mathbf{U_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h_{\mathrm{m,f}}^*}} \leq I^{Threshold}_{\mathrm{m}} $.
+	Macro Cell user $m \in \{1 ... M\}$ experiences receiver interference due to transmission by
+	FC-	BSs. These macro-cell users have limits to the amount of interference they may tolerate 
+	$\sum^F_{f=1} \mathbf{\tilde{h_{\mathrm{m,f}}^T}}  \mathbf{U_{\mathrm{f}}} 						
+	\mathbf{U_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h_{\mathrm{m,f}}^*}} \leq I^{Threshold}		
+	_{\mathrm{m}} $.
 
-\item FC-BS $f$ is assumed to know the downlink channel ($\tilde{\mathbf{H}_{\mathrm{f}}}$) from its transmission antennas to all macro-cells with which it interferes.
+\item 
+	FC-BS $f$ is assumed to know the downlink channel ($\tilde{\mathbf{H}_{\mathrm{f}}}$) from its
+	transmission antennas to all macro-cells with which it interferes.
 \\
 \end{itemize}
 
@@ -78,26 +90,26 @@ $\sum^F_{f=1} \mathbf{\tilde{h_{\mathrm{m,f}}^T}}  \mathbf{U_{\mathrm{f}}}  \mat
 %\\
 
 \item Users of FC-BS $f$ have SINR:
-\begin{equation}
-\gamma_{\mathrm{f,i}} = \frac{|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}|^2}
-{\sigma^2_{noise}   + \sum_{\mathrm{\tilde{f}}\neq f} \sum_{\mathrm{u=1}}^{K_{\mathrm{\tilde{f}}}}
-|\mathbf{h^H_{\mathrm{\tilde{f},u}}u_{\mathrm{f,i}}}|^2
- + \sum_{\mathrm{\tilde{k}\neq i}}
-  |\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}|^2}
-  \; \mathrm{i \in \{1 ... K_f\}}
-\end{equation}
+	\begin{equation*}
+	\gamma_{\mathrm{f,i}} = \frac{|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}|^2}
+	{\sigma^2_{noise}   + \sum_{\mathrm{\tilde{f}}\neq f} \sum_{\mathrm{u=1}
+	}^{K_{\mathrm{\tilde{f}}}}
+	|\mathbf{h^H_{\mathrm{\tilde{f},u}}u_{\mathrm{f,i}}}|^2
+	 + \sum_{\mathrm{\tilde{k}\neq i}}
+	  |\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}|^2}
+	  \; \mathrm{i \in \{1 ... K_f\}}\end{equation*}
 \\
 with AWGN $\sim \mathcal{N}(0,\sigma^2_n)$
 \\
 
 Assuming negligible inter-cell interference, this reduces to
-\begin{equation}
-\gamma_{\mathrm{f,i}} = \frac{|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}|^2}
-{\sigma^2_{noise} 
- + \sum_{\mathrm{\tilde{k}\neq i}}
-  |\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}|^2}
-  \; \mathrm{i \in \{1 ... K_f\}}
-\end{equation}
+	\begin{equation*}
+	\gamma_{\mathrm{f,i}} = \frac{|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}|^2}
+	{\sigma^2_{noise} 
+	 + \sum_{\mathrm{\tilde{k}\neq i}}
+	  |\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}|^2}
+	  \; \mathrm{i \in \{1 ... K_f\}}
+	\end{equation*}
 \\
 
 %This further simplifies assuming that users use a zero-forcing beam-former
@@ -127,31 +139,31 @@ Each player $f$ attempts to maximize utility function $U_f()$ while playing a st
 \\
 
 The player optimization problem of player $f$ can be written as:
-    \begin{equation}
-    \begin{array}{lll}
-    \mbox{minimize}   & - \sum_{\mathrm{i=1}}^{\mathrm{K_f}}
-    U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}})  
-  	\\
-    \mbox{subject to} 
-    &  \sum^F_{f=1} \mathbf{\tilde{h_{m,f}^T}}  \mathbf{U_f}  \mathbf{U_f^H}
-    \mathbf{\tilde{h_{m,f}^*}} \leq I^{\mathrm{Threshold}}_{m} & m \in \{1 ... 
-    \} 
-    \\
-    & trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f},
-    \\
-    & \langle \mathbf{h_{f,j}}\mathbf{u_{f,i}} \rangle =0\ \; \forall j \in \{1
-    ... K_f\}\backslash i &\forall i \in \{1 ... K_f\} 
-    \end{array}
-    \label{player_opt}
-    \end{equation}
 
-Note that over the feasible region of this problem, the SINR of femto cell users reduces to due to  \eqref{Zero_Forcing}
+	
+	\begin{subequations}
+	\label{eq:optim}
+	\begin{align}
+	    \underset{\mathbf{U_{\mathrm{f}}} }{\text{minimize}}
+	    & - \sum_{\mathrm{i=1}}^{\mathrm{K_f}}
+    	U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}})\label{player_opt} \\
+	    \text{subject to}  &
+	    \sum^F_{f=1}\mathbf{\tilde{h_{m,f}^T}}  \mathbf{U_f}  \mathbf{U_f^H}
+		\mathbf{\tilde{h_{m,f}^*}} \leq I^{\mathrm{Threshold}}_{m} & m \in \{1 ...M\} 
+		\label{interference_const}\\
+        & trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f} \label{power_const}\\
+        & \langle \mathbf{h_{f,j}}\mathbf{u_{f,i}} \rangle =0\ \; \forall j \in \{1... K_f\}				\backslash i &\forall i \in \{1 ... K_f\} \label{zf_const}
+	\end{align}
+	\end{subequations}
 
-\begin{equation}\label{zf_snr}
-\gamma_{\mathrm{f,i}} = \frac{|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}|^2}
-{\sigma^2_{noise}  
-}
-\end{equation}
+	
+Note that over the feasible region of this problem, the SINR of femto cell users reduces to due to  \eqref{zf_const}
+
+	\begin{equation}\label{zf_snr}
+	\gamma_{\mathrm{f,i}} = \frac{|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}|^2}
+	{\sigma^2_{noise}  
+	}
+	\end{equation}
 
 \section{Solving the Game}
 \subsection{Player Utility Functions}
@@ -161,34 +173,40 @@ Say $U_f() $ is the sum of all capacities for femto cell users of FC-BS $f$
 U_f(\mathbf{U_f}) = \sum^{K_f}_{i=1} log(1+\gamma_{\mathrm{f,i}})
 \end{displaymath}
 
-\subsection{Show Convexity of Player Optimization Problem}
+\subsection{Verify of Player Optimization Problem}
 
 Conditions for Convex Problem:
 
 \begin{enumerate}
-\item Utility function is concave in argument 
+\item Utility function is concave in its argument 
 \begin{itemize}
-\item Constraint \eqref{Zero_Forcing} ensures that $\gamma_{\mathrm{f,i}}$ takes the form of \eqref{zf_snr} and  as log() is concave is the argument (SINR). SINR increases with square of absolute value. (The resulting function has a negative 2nd derivative)
+\item Constraint  ensures that $\gamma_{\mathrm{f,i}}$ takes the form of \eqref{zf_snr} and  as log() is concave is the argument (SINR). SINR increases with square of absolute value. (The resulting function has a negative 2nd derivative)
 
 \end{itemize}
 
-\item Constraints form convex, closed and bounded set. TODO show closed and boundedness of set
+\item
+	Constraints form convex, closed and bounded set. TODO show closed and boundedness of set
 
 \begin{itemize}
 
-\item\eqref{interference_contstraint} contains $M$ quadratic constraints on $\mathbf{U_f}$
+\item
+	Constaint \eqref{interference_const} contains $M$ quadratic constraints on $\mathbf{U_f}$ and 
+	can be rewritten as 
 \begin{itemize}
-\item Constraint \eqref{interference_contstraint} can be rewritten as 
+\item 
+	Constraint \eqref{interference_contstraint} can be rewritten as 
 \begin{gather}
-\sum_{f=1}^F
-trace(\mathbf{U_f^H} \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}} \mathbf{U_f} )\leq I^{Threshold}_{m}
+	\sum_{f=1}^F
+	trace(\mathbf{U_f^H} \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}} \mathbf{U_f} )\leq 
+	I^{Threshold}_{m}.
 \end{gather}
 \item This can be decomposed into \textit{independent} components 
-\begin{gather}
-\sum_{f=1}^F
-\sum_{i=1}^{f_i}
-\mathbf{u_{\mathrm{f,i}}^H} \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}} \mathbf{u_{\mathrm{f,i}}} \leq I^{Threshold}_{m}
-\end{gather}
+	\begin{gather}
+	\sum_{f=1}^F
+	\sum_{i=1}^{f_i}
+	\mathbf{u_{\mathrm{f,i}}^H} \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}} 
+	\mathbf{u_{\mathrm{f,i}}} \leq I^{Threshold}_{m}
+	\end{gather}
 In which the term $ \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}}$ is always a positive semi-definite matrix, this is a convex set according to 
 \cite[p.8,9]{BoV:04}. This is essentially high dimensional ellipsoid.
 
