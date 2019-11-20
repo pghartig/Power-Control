@@ -1,26 +1,36 @@
 
 \documentclass[12pt]{article}
-\usepackage[english]{babel}
-%\usepackage[utf8x]{inputenc}
-\usepackage[T1]{fontenc}
-%\usepackage{scribe}
-\usepackage{listings}
-\usepackage{amssymb}
-\usepackage{amsmath}
-\usepackage{biblatex} % 
+\usepackage{fullpage,graphicx,psfrag,amsmath,amsfonts,verbatim}
+\usepackage[small,bf]{caption}
 
-\addbibresource{system_model_bib.bib}
+\input defs.tex
+
+\bibliographystyle{alpha}
+
+\title{Power Allocation in Heterogeneous Networks with Multiple Antenna }
+\author{Peter Hartig}
+
+
 \newtheorem{theorem}{Theorem}
 
 
 \begin{document}
+\maketitle
 
+
+\begin{abstract}
+This game considers a wireless communications network which includes both macro cell and femto cell users. In order to allow for uncoordinated usage of femto cells within the network, the base stations of femto cells must ensure that the users served by macro cells intercept an acceptable amount of interference during transmission. The strategy for transmission across all such femto cells in a network is investigated here in a game theoretic context. 
+
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
 
 \section{Game and System Setup}
 
-This game considers a wireless communications network which includes a both macro cell and femto cell users. In order to allow for unplanned usage of femto cells within the network, the base stations of femto cells must ensure that the users of planned, macro cells intercept an acceptable amount of interference during transmission. The strategy for transmission across all such femto cells in a network is investigated here in a game theoretic context. 
-
 \subsection{Game Elements}
+
 \subsubsection{Players: Femto Cell Base Stations}
 
 
@@ -30,8 +40,8 @@ Femtro Cells are characterized by the following parameters
 \begin{itemize}
 \item Each FC-BS  $f \in \{1 ... F\}$ is considered to have a number of antennas $T_f$ with which to transmit to $K_f$ femto cell users.
 \\
-\item FC-BSs with multiple antennas ($T_f >1$) can beamform their transmission using the transformation $\mathbf{U_{\mathrm{f}}} \in \mathbb{C}_{T_f \times K_f}$ such that the transmitted signal is $\mathbf{s_{\mathrm{f}
-}}= \mathbf{U_{\mathrm{f}}}\mathbf{x_{\mathrm{f}}}$. Here $\mathbf{x_{\mathrm{f}}}$ is the normalized vector of symbols for users of FC-BS $f$ (i.e. $\mathbf{E[||\mathbf{x_{\mathrm{f}}}||_2^2]} \; f \in \{1 ... F\}$).
+\item FC-BSs with multiple antennas ($T_f >1$) can beamform their transmission using the precoding matrix $\mathbf{U_{\mathrm{f}}} \in \mathbb{C}_{T_f \times K_f}$ such that the transmitted signal is $\mathbf{s_{\mathrm{f}
+}}= \mathbf{U_{\mathrm{f}}}\mathbf{x_{\mathrm{f}}}$. Here $\mathbf{x_{\mathrm{f}}}$ is the normalized vector of symbols for users of FC-BS $f$ (i.e. $\mathbf{E[\|\mathbf{x_{\mathrm{f}}}\|_2^2]} \; f \in \{1 ... F\}$).
 \\
 \item 
 FC-BS $f$ has power constraint $trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f} $.
@@ -40,7 +50,8 @@ FC-BS $f$ has power constraint $trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}
 \item 
  FC-BSs are assumed to have a utility function $U_f()$ based upon the quality of service provided to its users. TODO (Discuss Reasonable functions)
 \\
-\item FC-BS $f$ is assumed to have full channel information ($\mathbf{H_f}$) for all user  with which it transmits. TODO (Simulate degradation with incomplete CSI solution?)
+\item FC-BS $f$ is assumed to know the downlink channel ($\mathbf{H_f}$) from its transmission antennas to all served users.
+% TODO(Simulate degradation with incomplete CSI solution?)
 \\
 \end{itemize}
 
@@ -52,10 +63,10 @@ FC-BS $f$ has power constraint $trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}
 
 \begin{itemize}
 \item 
-Macro Cell user $m \in \{1 ... M\}$ experiences receiver interference to due transmission by FC-BSs. These macro cell users have limits to the amount of interference they may tolerate 
-$\sum^F_{f=1} \mathbf{\tilde{h_{m,f}^T}}  \mathbf{U_f}  \mathbf{U_f^H} \mathbf{\tilde{h_{m,f}^*}} \leq I^{Threshold}_{m} $.
+Macro Cell user $m \in \{1 ... M\}$ experiences receiver interference due to transmission by FC-BSs. These macro-cell users have limits to the amount of interference they may tolerate 
+$\sum^F_{f=1} \mathbf{\tilde{h_{\mathrm{m,f}}^T}}  \mathbf{U_{\mathrm{f}}}  \mathbf{U_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h_{\mathrm{m,f}}^*}} \leq I^{Threshold}_{\mathrm{m}} $.
 
-\item FC-BS $f$ is assumed to have full channel information ($\tilde{H_f}$) for all macro cell users with which it interferes .
+\item FC-BS $f$ is assumed to know the downlink channel ($\tilde{\mathbf{H}_{\mathrm{f}}}$) from its transmission antennas to all macro-cells with which it interferes.
 \\
 \end{itemize}
 
@@ -63,8 +74,8 @@ $\sum^F_{f=1} \mathbf{\tilde{h_{m,f}^T}}  \mathbf{U_f}  \mathbf{U_f^H} \mathbf{\
 \begin{itemize}
 
 
-\item TODO Decide if there should be minimum rate constraints for femto cell users in case (Look back at later in case some users are beam-formed out of the transmission). Check if this constraint will disrupt solution.
-\\
+%\item TODO Decide if there should be minimum rate constraints for femto cell users in case (Look back at later in case some users are beam-formed out of the transmission). Check if this constraint will disrupt solution.
+%\\
 
 \item Users of FC-BS $f$ have SINR:
 \begin{equation}
@@ -79,7 +90,7 @@ $\sum^F_{f=1} \mathbf{\tilde{h_{m,f}^T}}  \mathbf{U_f}  \mathbf{U_f^H} \mathbf{\
 with AWGN $\sim \mathcal{N}(0,\sigma^2_n)$
 \\
 
-Assuming sufficient FC-BS spacing this becomes 
+Assuming negligible inter-cell interference, this reduces to
 \begin{equation}
 \gamma_{\mathrm{f,i}} = \frac{|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}|^2}
 {\sigma^2_{noise} 
@@ -89,25 +100,25 @@ Assuming sufficient FC-BS spacing this becomes
 \end{equation}
 \\
 
-This further simplifies assuming that users use a zero-forcing beam-former
-
-\begin{equation}\label{zf_snr}
-\gamma_{\mathrm{f,i}} = \frac{|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}|^2}
-{\sigma^2_{noise}  
-}
-\end{equation}
-\\
+%This further simplifies assuming that users use a zero-forcing beam-former
+%
+%\begin{equation}\label{zf_snr}
+%\gamma_{\mathrm{f,i}} = \frac{|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}|^2}
+%{\sigma^2_{noise}  
+%}
+%\end{equation}
+%\\
 
 \end{itemize}
 
 
-\subsection{Variations of Game Setup}
-
-\subsubsection{Case: $T_f \geq M + K_f$}
-FC-BSs could potentially zero-beam-form towards all macro users. However, as base stations have power constraints, it may be beneficial to cause certain amounts of interference. 
-
-\subsubsection{Case: $K_f \leq T_f < M + K_f$}
-FC-BSs can send unique signals to all users but does not have sufficient DOF to zero-beam-form for all macro users.
+%\subsection{Variations of Game Setup}
+%
+%\subsubsection{Case: $T_f \geq M + K_f$}
+%FC-BSs could potentially zero-beam-form towards all macro users. However, as base stations have power constraints, it may be beneficial to cause certain amounts of interference. 
+%
+%\subsubsection{Case: $K_f \leq T_f < M + K_f$}
+%FC-BSs can send unique signals to all users but does not have sufficient DOF to zero-beam-form for all macro users.
 
 
 \subsection{General Optimization Problem}
@@ -116,21 +127,31 @@ Each player $f$ attempts to maximize utility function $U_f()$ while playing a st
 \\
 
 The player optimization problem of player $f$ can be written as:
+    \begin{equation}
+    \begin{array}{lll}
+    \mbox{minimize}   & - \sum_{\mathrm{i=1}}^{\mathrm{K_f}}
+    U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}})  
+  	\\
+    \mbox{subject to} 
+    &  \sum^F_{f=1} \mathbf{\tilde{h_{m,f}^T}}  \mathbf{U_f}  \mathbf{U_f^H}
+    \mathbf{\tilde{h_{m,f}^*}} \leq I^{\mathrm{Threshold}}_{m} & m \in \{1 ... 
+    \} 
+    \\
+    & trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f},
+    \\
+    & \langle \mathbf{h_{f,j}}\mathbf{u_{f,i}} \rangle =0\ \; \forall j \in \{1
+    ... K_f\}\backslash i &\forall i \in \{1 ... K_f\} 
+    \end{array}
+    \label{player_opt}
+    \end{equation}
 
+Note that over the feasible region of this problem, the SINR of femto cell users reduces to due to  \eqref{Zero_Forcing}
 
-\begin{gather} 
-\mathrm{argmax}_{\mathbf{U_f}} \; U_f()\label{utility}
-\\
-\mathrm{s.t.}
-\\
-\; \sum^F_{f=1} \mathbf{\tilde{h_{m,f}^T}}  \mathbf{U_f}  \mathbf{U_f^H} \mathbf{\tilde{h_{m,f}^*}} \leq I^{\mathrm{Threshold}}_{m} \; m \in \{1 ... M\} \label{interference_contstraint}
-\\
-trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f} \label{power_constraint}
-\\
-\langle \mathbf{h_{f,j}}\mathbf{u_{f,i}} \rangle =0\ \; \forall j \in \{1 ... K_f\}\backslash i \;\; \forall i \in \{1 ... K_f\} \label{Zero_Forcing}
-\end{gather}
-\\
-
+\begin{equation}\label{zf_snr}
+\gamma_{\mathrm{f,i}} = \frac{|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}|^2}
+{\sigma^2_{noise}  
+}
+\end{equation}
 
 \section{Solving the Game}
 \subsection{Player Utility Functions}
@@ -169,7 +190,7 @@ trace(\mathbf{U_f^H} \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}} \mathbf
 \mathbf{u_{\mathrm{f,i}}^H} \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}} \mathbf{u_{\mathrm{f,i}}} \leq I^{Threshold}_{m}
 \end{gather}
 In which the term $ \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}}$ is always a positive semi-definite matrix, this is a convex set according to 
-\cite[p.30]{boyd2004convex}. This is essentially high dimensional ellipsoid.
+\cite[p.8,9]{BoV:04}. This is essentially high dimensional ellipsoid.
 
 
 \end{itemize}
@@ -252,7 +273,7 @@ log(1+\frac{p_{ \mathrm{f,i}}|\mathbf{h^H_{\mathrm{fi}}u_{ \mathrm{fi}}}|^2}{\si
 
 \subsection{Distributed Solution to the Game}
 \subsubsection{Central Problem Resulting from Potential Game}
-As described in \cite[p.8,9]{boyd2011distributed}, the dual ascent method can be used to find a distributed solution to this problem using the Lagrangian of \eqref{potential_game}
+As described in \cite[p.~8,9]{boyd2011distributed}, the dual ascent method can be used to find a distributed solution to this problem using the Lagrangian of \eqref{potential_game}
 \\
 \begin{multline}
 L(\mathbf{U,\lambda}) = 
@@ -296,4 +317,7 @@ in which $\mathbf{U^{\mathrm{k}}_{\mathrm{f}}} = [\mathbf{U^{\mathrm{k}}_{\mathr
 \end{enumerate} 
 
 TODO show proof convergence conditions of this algorithm
+\newpage
+\bibliography{system_model_bib}
+
 \end{document}
