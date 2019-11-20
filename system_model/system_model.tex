@@ -180,57 +180,59 @@ Conditions for Convex Problem:
 \begin{enumerate}
 \item Utility function is concave in its argument 
 \begin{itemize}
-\item Constraint  ensures that $\gamma_{\mathrm{f,i}}$ takes the form of \eqref{zf_snr} and  as log() is concave is the argument (SINR). SINR increases with square of absolute value. (The resulting function has a negative 2nd derivative)
-
+\item 
+Constraint \eqref{zf_const}  ensures that $\gamma_{\mathrm{f,i}}$ takes the form of \eqref{zf_snr} and  as log() is concave is the argument (SINR). SINR increases with square of absolute value. (The resulting function has a negative 2nd derivative)
 \end{itemize}
 
 \item
-	Constraints form convex, closed and bounded set. TODO show closed and boundedness of set
+Constraints form convex, closed and bounded set. TODO show closed and boundedness of set
 
 \begin{itemize}
 
 \item
 	Constaint \eqref{interference_const} contains $M$ quadratic constraints on $\mathbf{U_f}$ and 
 	can be rewritten as 
-\begin{itemize}
-\item 
-	Constraint \eqref{interference_contstraint} can be rewritten as 
-\begin{gather}
+
+\begin{gather*}
 	\sum_{f=1}^F
-	trace(\mathbf{U_f^H} \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}} \mathbf{U_f} )\leq 
+	trace(\mathbf{U_f^H} \mathbf{\tilde{h}_{m,f}} \mathbf{\tilde{h}_{m,f}^H} \mathbf{U_f} )\leq 
 	I^{Threshold}_{m}.
-\end{gather}
-\item This can be decomposed into \textit{independent} components 
-	\begin{gather}
+\end{gather*}
+This can be decomposed into \textit{independent} components 
+	\begin{gather*}
 	\sum_{f=1}^F
 	\sum_{i=1}^{f_i}
-	\mathbf{u_{\mathrm{f,i}}^H} \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}} 
+	\mathbf{u_{\mathrm{f,i}}^H} \mathbf{\tilde{h}_{m,f}} \mathbf{\tilde{h}_{m,f}^H} 
 	\mathbf{u_{\mathrm{f,i}}} \leq I^{Threshold}_{m}
-	\end{gather}
-In which the term $ \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}}$ is always a positive semi-definite matrix, this is a convex set according to 
+	\end{gather*}
+In which the term $ \mathbf{\tilde{h}_{m,f}} \mathbf{\tilde{h}_{m,f}^H}$ is always a positive semi-definite matrix, this is a convex set according to 
 \cite[p.8,9]{BoV:04}. This is essentially high dimensional ellipsoid.
 
 
+
+\item \
+	\eqref{power_const} can be decomposed as above into
+	\begin{gather*}
+		\sum_{i=1}^{K_f}\mathbf{u_{\mathrm{f,i}}^H} \mathbf{I} 		
+		\mathbf{u_{\mathrm{f,i}}} \leq  P^{Total}_{f}
+	\end{gather*}
+	in which $\mathbf{I}$ is always positive definite and 			
+	therefore the constraint is strictly convex by the same 		
+	reasons as \eqref{interference_const}.
 \end{itemize}
 
-\item\eqref{power_constraint} As Trace is square of Frobenious norm and squaring a convex function (e.g any true Norm) preserves convexity.
-Need to work on proof but this should be convex.
-\begin{itemize}
-\item Further, \eqref{power_constraint} can be decomposed as above into
-\begin{gather}
-\sum_{i=1}^{K_f}\mathbf{u_{\mathrm{f,i}}^H} \mathbf{I} \mathbf{u_{\mathrm{f,i}}} \leq  P^{Total}_{f}
-\end{gather}
-in which $\mathbf{I}$ is always positive semi-definite and therefore the constraint is convex by the same reasons as \eqref{interference_contstraint}.
-\end{itemize}
-
-\item\eqref{Zero_Forcing} 
-This can be thought of as defining a line to which the solution must be orthogonal to and therefore is an affine (convex) constraint. 
-\begin{gather}
-\langle \mathbf{h_{\mathrm{f,j}}}\mathbf{u_{\mathrm{f,i}}} \rangle =0
-\end{gather}
-
-\end{itemize}
+\item
+	Constaint \eqref{zf_const} is an affine constraint. 
+%Note that affine constaints to not have to satisfy Slater's condition
+	\begin{itemize}
+	\item
+		\begin{gather*}
+		\langle \mathbf{h_{\mathrm{f,j}}}\mathbf{u_{\mathrm{f,i}}} \rangle =0
+		\end{gather*}
+	\end{itemize}
 \end{enumerate}
+
+
 
 \subsection{Finding Nash Equilibrium}
 
