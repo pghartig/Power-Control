@@ -36,7 +36,7 @@ This game considers a wireless communications network which includes both macro 
 
 Individual femto cell base stations (FC-BS) are the players of this game.
 \\
-Femtro Cells are characterized by the following parameters
+Femto Cells are characterized by the following parameters
 \begin{itemize}
 \item 
 	Each FC-BS  $f \in \{1 ... F\}$ is considered to have a number of antennas $T_f$ with which to transmit to $K_f$ femto cell users.
@@ -82,7 +82,7 @@ Femtro Cells are characterized by the following parameters
 \\
 \end{itemize}
 
-\subsubsection{Femtro Cell Users}
+\subsubsection{Femto Cell Users}
 \begin{itemize}
 
 
@@ -213,7 +213,7 @@ In which the term $ \mathbf{\tilde{h}_{m,f}} \mathbf{\tilde{h}_{m,f}^H}$ is alwa
 \item \
 	\eqref{power_const} can be decomposed as above into
 	\begin{gather*}
-		\sum_{i=1}^{K_f}\mathbf{u_{\mathrm{f,i}}^H} \mathbf{I} 		
+		\sum_{i=1}^{K_f}\mathbf{u_{\mathrm{f,i}}^{\mathrm{H}}} \mathbf{I} 		
 		\mathbf{u_{\mathrm{f,i}}} \leq  P^{Total}_{f}
 	\end{gather*}
 	in which $\mathbf{I}$ is always positive definite and 			
@@ -240,7 +240,7 @@ In which the term $ \mathbf{\tilde{h}_{m,f}} \mathbf{\tilde{h}_{m,f}^H}$ is alwa
 \item \textbf{Existence of NE:} Given that the player optimization problem is convex, this is an n-person concave game and therefore a NE exists \cite{rosen1964existence}. 
 \item \textbf{Uniqueness of NE:} Diagonally Strict concavity is a sufficient condition for uniqueness of NNE in n-person concave game \cite{rosen1964existence}.
 \begin{itemize}
-\item\eqref{utility} has negative second derivative w.r.t the argument and contains no intra-cell interference and therefore is negative definite. Which is sufficient for being diagonally strictly concave
+\item\eqref{player_opt} has negative second derivative w.r.t the argument and contains no intra-cell interference and therefore is negative definite. Which is sufficient for being diagonally strictly concave
 \cite[Thm6]{rosen1964existence} ( Thm 6)
 
 \item \textbf{Potential Function:} The proposed potential function is 
