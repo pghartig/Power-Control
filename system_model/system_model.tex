@@ -238,10 +238,35 @@ In which the term $ \mathbf{\tilde{h}_{m,f}} \mathbf{\tilde{h}_{m,f}^H}$ is alwa
 
 \begin{enumerate}
 \item \textbf{Existence of NE:} Given that the player optimization problem is convex, this is an n-person concave game and therefore a NE exists \cite{rosen1964existence}. 
-\item \textbf{Uniqueness of NE:} Diagonally Strict concavity is a sufficient condition for uniqueness of NNE in n-person concave game \cite{rosen1964existence}.
+\item \textbf{Uniqueness of NE:} In order to use the tools defined in \cite[Thm6]{rosen1964existence} for proving uniqueness. The function $G(b,r) $ is defined as the Jacobian of $g(b,r) $ which is defined as 
+
+\begin{equation}
+g(b,r)= 
+\begin{bmatrix}
+r_1 \nabla V_{1}(b)
+\\
+r_2 \nabla V_{1}(b)
+\\
+\vdots\\
+r_F \nabla V_{1}(b)
+\end{bmatrix}
+\end{equation}
+
+with $r_i>0$.
+In the setup of this game, $\nabla V_{1}(b)$
+is the gradient of the utility function of FCBS $U_f(\mathbf{U}_{\mathrm{f}}) $ with respect to it's beam-forming matrix 
+$\mathbf{U}_{\mathrm{f}}$
+
+
 \begin{itemize}
-\item\eqref{player_opt} has negative second derivative w.r.t the argument and contains no intra-cell interference and therefore is negative definite. Which is sufficient for being diagonally strictly concave
-\cite[Thm6]{rosen1964existence} ( Thm 6)
+\item
+Diagonally Strict concavity of the matrix $[G(b,r)+G^{T}(b,r)] $ is a sufficient condition for uniqueness of NNE in n-person concave game
+	
+\item 
+Note that \eqref{player_opt} has strictly negative second derivative w.r.t the argument. Further, \eqref{player_opt} contains no inter-cell interference and therefore the derivative w.r.t any of the variables from other players is zero. The result is a diagonal matrix $[G(b,r)+G^{T}(b,r)] $ with strictly negative values along the diagonal (i.e. a negative definite matrix). 
+
+\item 
+This provides sufficient conditions for the uniqueness of the NE resulting from the solution to the potential game. 
 
 \item \textbf{Potential Function:} The proposed potential function is 
 
