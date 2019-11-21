@@ -142,7 +142,7 @@ The player optimization problem of player $f$ can be written as:
 
 	
 	\begin{subequations}
-	\label{eq:optim}
+	\label{optim}
 	\begin{align}
 	    \underset{\mathbf{U_{\mathrm{f}}} }{\text{minimize}}
 	    & - \sum_{\mathrm{i=1}}^{\mathrm{K_f}}
@@ -266,7 +266,11 @@ Diagonally Strict concavity of the matrix $[G(b,r)+G^{T}(b,r)] $ is a sufficient
 Note that \eqref{player_opt} has strictly negative second derivative w.r.t the argument. Further, \eqref{player_opt} contains no inter-cell interference and therefore the derivative w.r.t any of the variables from other players is zero. The result is a diagonal matrix $[G(b,r)+G^{T}(b,r)] $ with strictly negative values along the diagonal (i.e. a negative definite matrix). 
 
 \item 
-This provides sufficient conditions for the uniqueness of the NE resulting from the solution to the potential game. 
+Given the above, for any $r>0$ the NE resulting from optimizing 
+\begin{gather*} \label{Potential_Function}
+\Phi() = \sum_{f = 1}^{F} r_{\mathrm{i}}U_f() 
+\end{gather*}
+ is unique.
 
 \item \textbf{Potential Function:} The proposed potential function is 
 
