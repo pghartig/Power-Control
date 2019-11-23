@@ -265,21 +265,6 @@ Diagonally Strict concavity of the matrix $[G(b,r)+G^{T}(b,r)] $ is a sufficient
 \item 
 Note that \eqref{player_opt} has strictly negative second derivative w.r.t the argument. Further, \eqref{player_opt} contains no inter-cell interference and therefore the derivative w.r.t any of the variables from other players is zero. The result is a diagonal matrix $[G(b,r)+G^{T}(b,r)] $ with strictly negative values along the diagonal (i.e. a negative definite matrix). 
 
-\item 
-Given the above, for any $r>0$ the NE resulting from optimizing 
-\begin{gather*} \label{Potential_Function}
-\Phi() = \sum_{f = 1}^{F} r_{\mathrm{i}}U_f() 
-\end{gather*}
- is unique.
-
-\item \textbf{Potential Function:} The proposed potential function is 
-
-\begin{gather*} \label{Potential_Function}
-\Phi() = \sum_{f = 1}^{F} U_f() 
-\end{gather*}
-
-
-As the utility functions of individual players $f$ do not share any common variables,  \label{Potential_Function} will have the same derivative as individual $U_f()$ with respect to $\mathbf{U_{f,i}} $. 
 
 
 \end{itemize}
@@ -287,12 +272,45 @@ As the utility functions of individual players $f$ do not share any common varia
 \end{enumerate}
 
 \subsection{Setup as a Potential Game}
-Assuming the NE is unique and the game admits a potential function $\Phi()$ then the solution to the potential function will be the unique NE of the original game if the potential function is also concave. 
-The sum of the utility functions admits one such potential function and since the individual utility functions are independent of one another and individually concave (shown above) , the resulting potential function will also be concave. 
+It is useful to now represent the game as a "Potential Game". This is defined by a function
+$ \Psi(\mathbf{U})$ which satisfies the condition
+\begin{equation}\label{potential_game_condition}
+\frac{d\Psi}{du_f} = \frac{d U()_f}{du_f}
+\end{equation}
+
+With this condition satisfied, the solution to the maximization problem 
+
+\begin{subequations}
+	\label{optim}
+	\begin{align}
+	    \underset{\mathbf{U}}{\text{minimize}}
+	    & \; \Psi(\mathbf{U}) \label{potential_game} 
+	    \\
+	    \text{subject to}  & \;
+	    \sum^F_{f=1}\mathbf{\tilde{h_{m,f}^T}}  \mathbf{U_f}  \mathbf{U_f^H}
+		\mathbf{\tilde{h_{m,f}^*}} \leq I^{\mathrm{Threshold}}_{m} & m \in \{1 ...M\} 
+		\label{interference_const}\\
+        & trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f} & \forall f \in \{1 ... F\}
+        \label{power_const}\\
+        & \langle \mathbf{h_{f,j}}\mathbf{u_{f,i}} \rangle =0\ \; \forall j \in \{1... K_f\}				\backslash i &\forall i \in \{1 ... K_f\}\; \forall f \in \{1 ... F\} \label{zf_const}
+	\end{align}
+	\end{subequations}
+
+is a normalized Nash Equilibrium.
+As it has been above, this Nash Equilibrium to this problem exists, and is unique. Therefore, the solution to \eqref{potential_game} exists and is unqiue.
 \\
+\textbf{Potential Function:} The proposed potential function is 
+
+\begin{gather*} \label{Potential_Function}
+\Phi() = \sum_{f = 1}^{F} U_f() 
+\end{gather*}
+
+
+As the utility functions of individual players $f$ do not share any common variables,  \label{Potential_Function} will have the same derivative as individual $U_f()$ with respect to $\mathbf{U_{f,i}} $, satisfying condition \eqref{potential_game_condition}. 
+
 \begin{theorem}\label{distributed}
+\cite{ghosh2015normalized}
 If a game's potential function is strictly concave and the derivative of the function with respect to the individual players variables are independent of the other player variables, then there exists a distributed solution.
-%\\\cite[~algodist]{ghosh2015normalized}
 \end{theorem}
 \subsubsection{Central Optimization Problem Resulting from Proposed Potential Game}
 
@@ -337,7 +355,8 @@ log(1+\frac{p_{ \mathrm{f,i}}|\mathbf{h^H_{\mathrm{fi}}u_{ \mathrm{fi}}}|^2}{\si
 \mathbf{u_{ \mathrm{f,i}}^H} \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}} \mathbf{u_{\mathrm{f,i}}} - I^{Threshold}_{m} )
 \\
 + 
-\lambda_{\mathrm{f}}(
+\sum_{f=1}^F
+\lambda_{\mathrm{f}}^{'}(
 \sum_{i=1}^{K_f}\mathbf{u_{f,i}^H} \mathbf{I} \mathbf{u_{\mathrm{f,i}}} -  P^{Total}_{f})
 +
 \sum_{f=1}^F
