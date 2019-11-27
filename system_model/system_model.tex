@@ -151,7 +151,7 @@ TODO: Clarify why the player utility function should be broken out like this. Th
 	\begin{align}
 	    \underset{\mathbf{U}_{\mathrm{f}} }{\text{minimize}} \;
 	    & - \sum_{\mathrm{i=1}}^{\mathrm{K_f}}
-    	U_{\mathrm{f,i}}(\mathbf{U}_{\mathrm{f}}) \label{player_opt} \\
+    	U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) \label{player_opt} \\
 	    \text{subject to} \; &
 	   \sum^F_{f=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{U_{\mathrm{f}}}		
 	\mathbf{U_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} \leq I^{Threshold}		
@@ -272,39 +272,43 @@ $\mathbf{U}_{\mathrm{f}}$
 
 \begin{itemize}
 \item
-Negative Definiteness of the matrix $[G(b,r)+G^{T}(b,r)] $ is a sufficient condition for Diagonally Strict Concavity of the game and therefore implies uniqueness of a NNE in n-person concave game \cite[Thm6]{rosen1964existence}
-	
-\item 
-Note that \eqref{player_opt} has strictly negative second derivative with respect to the variables in the argument. Further, \eqref{player_opt} contains no inter-cell interference but assumption and therefore the derivative with respect to any beam-forming variables from other players is zero. The result is a diagonal matrix $[G(b,r)+G^{T}(b,r)] $ with strictly negative values along the diagonal (i.e. a negative definite matrix). 
-\item First, \eqref{player_opt} contains no inter-cell interference but assumption and therefore the derivative with respect to any beam-forming variables from other players is zero. Therefore all off-diagonal elements of $[G(b,r)+G^{T}(b,r)] $ wil be zero.
+Negative Definiteness of the matrix $[G(b,r)+G^{T}(b,r)] $ is a sufficient condition for Diagonally Strict Concavity of the game and therefore implies uniqueness of a NNE in n-person concave games \cite[Thm6]{rosen1964existence}
+	 
+\item First, \eqref{player_opt} contains no inter-cell interference by assumption and therefore, the derivative with respect to any beam-forming variables from other players is zero. Therefore all off-diagonal elements of $[G(b,r)+G^{T}(b,r)] $ wil be zero.
 \item Second, in order to obtain a negative definite result, \eqref{player_opt} must have strictly negative second derivative with respect to the variables in the argument. If we allow
 \begin{equation*}
-	U_f(\mathbf{U}_\mathrm{f}) = \sum^{K_f}_{i=1} log(1+\gamma_{\mathrm{f,i}})
+		U_f(\mathbf{U}_\mathrm{f})=
+	    - \sum_{\mathrm{i=1}}^{\mathrm{K_f}}
+    	U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}})
 \end{equation*}
-Then taking $\frac{dU_f(\mathbf{U}_\mathrm{f})}{du_{f,i,j}}$  for any element $u_{f,i,j}$ from $\mathbf{U}_\mathrm{f}$ yields
-\begin{equation*}
-	\frac{dU_f(\mathbf{U}_\mathrm{f})}{du_{f,i,j}}= 
-	(1+\|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}\|^2)^{-1} 
-	(2h_{\mathrm{f,i,j}}u_{f,i,j})
-\end{equation*}
-and 
-\begin{equation*}
-	\frac{d^2U_f(\mathbf{U}_\mathrm{f})}{du^2_{f,i,j}}= 
-	-(1+\|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}\|^2)^{-2} 
-	(2h_{\mathrm{f,i,j}}u_{f,i,j}) +
-	(1+\|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}\|^2)^{-1} 
-	(2h_{\mathrm{f,i,j}})
-\end{equation*}
- 
-As the final term is not strictly negative,  $[G(b,r)+G^{T}(b,r)] $ is not generally negative definite. 
+By definition, $U_{\mathrm{f,i}}()$ is concave in its argument and therefore $- U_{\mathrm{f,i}}()$ is convex.
+The argument of the function $- U_{\mathrm{f,i}}()$  is $\gamma_{\mathrm{f,i}}$ which can we expanded under the constraints of  \eqref{optim} can be expanded as 
 
-
+	\begin{equation}\label{zf_snr}
+	\gamma_{\mathrm{f,i}} = \frac{\|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}\|^2}
+	{\sigma^2_{noise}  
+	}
+	= 
+	\frac{\mathbf{u^H_{\mathrm{f,i}}h_{\mathrm{f,i}}h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}}
+	{\sigma^2_{noise}  
+	}
+	\end{equation}
+	
+	Noting that the matrix 
+	$h_{\mathrm{f,i}}h^H_{\mathrm{f,i}}$
+	is limited to rank = 1. This is only a positive semidefinite function in 
+	$u_{\mathrm{f,i}}$ and therefore is convex but not strictly convex.
 
 \end{itemize}
 
+
+\item
+Summary of above: 
+While NE for the game are known to exist for the problem, these are not necessarily unique. 
+
 \end{enumerate}
 
-\end{document}
+%\end{document}
 
 
 
@@ -315,6 +319,7 @@ $ \Psi(\mathbf{U})$ which satisfies the condition
 \begin{equation}\label{potential_game_condition}
 \frac{d\Psi}{du_f} = \frac{d U()_f}{du_f}
 \end{equation}
+
 
 With this condition satisfied, the solution to the maximization problem 
 
@@ -334,8 +339,8 @@ With this condition satisfied, the solution to the maximization problem
 	\end{align}
 	\end{subequations}
 
-is a normalized Nash Equilibrium.
-As it has been above, this Nash Equilibrium to this problem exists, and is unique. Therefore, the solution to \eqref{potential_game} exists and is unqiue.
+is a normalized Nash Equilibrium of the original problem.
+As it has been above, this Nash Equilibrium to this problem exists (though not necessarily ) unique. 
 \\
 \textbf{Potential Function:} The proposed potential function is 
 
