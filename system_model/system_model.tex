@@ -357,17 +357,17 @@ If a game's potential function is strictly concave and the derivative of the fun
 \end{theorem}
 \subsubsection{Central Optimization Problem Resulting from Proposed Potential Game}
 
-\begin{gather}\label{potential_game}
+\begin{gather*}\label{potential_game}
 \mathrm{argmax}_{U_{\mathrm{1}}.. U_{\mathrm{F}}}
 \;
 \sum_{f=1}^F
-\sum_{i=1}^{f_i}
+\sum_{i=1}^{K_f}
 log(1+\frac{|\mathbf{h^H_{\mathrm{fi}}u_{ \mathrm{fi}}}|^2}{\sigma^2_{ \mathrm{noise}} })
 \\
 \mathrm{s.t}
 \\
 \sum_{f=1}^F
-\sum_{i=1}^{f_i}
+\sum_{i=1}^{K_f}
 \mathbf{u_{ \mathrm{f,i}}^H} \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}} \mathbf{u_{\mathrm{f,i}}} \leq I^{Threshold}_{m} \;  \mathrm{m} \in  \mathrm{\{1 ... M\}}
 \\
 \sum_{i=1}^{K_f}\mathbf{u_{f,i}^H} \mathbf{I} \mathbf{u_{\mathrm{f,i}}} \leq  P^{Total}_{f}
@@ -377,7 +377,7 @@ log(1+\frac{|\mathbf{h^H_{\mathrm{fi}}u_{ \mathrm{fi}}}|^2}{\sigma^2_{ \mathrm{n
 \langle \mathbf{h_{\mathrm{f,j}}}\mathbf{u_{\mathrm{f,i}}} \rangle =0\ \; \forall \; \mathrm{j \in \{1 ... K_f\}\backslash i \;\; 
 }
 \forall \;\;\mathrm{ i \in \{1 ... K_f\}}
-\end{gather}
+\end{gather*}
 
 
 
@@ -389,12 +389,12 @@ As described in \cite[p.~8,9]{boyd2011distributed}, the dual ascent method can b
 L(\mathbf{U,\lambda}) = 
 \;
 \sum_{f=1}^F
-\sum_{i=1}^{f_i}
+\sum_{i=1}^{K_f}
 log(1+\frac{p_{ \mathrm{f,i}}|\mathbf{h^H_{\mathrm{fi}}u_{ \mathrm{fi}}}|^2}{\sigma^2_{ \mathrm{noise}} })
 +
-\sum_{\mathrm{f=1}}^M \lambda_{\mathrm{m}}
+\sum_{\mathrm{m=1}}^M \lambda_{\mathrm{m}}
 (\sum_{\mathrm{f=1}}^F
-\sum_{\mathrm{i=1}}^{f_i}
+\sum_{\mathrm{i=1}}^{K_f}
 \mathbf{u_{ \mathrm{f,i}}^H} \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}} \mathbf{u_{\mathrm{f,i}}} - I^{Threshold}_{m} )
 \\
 + 
@@ -403,11 +403,13 @@ log(1+\frac{p_{ \mathrm{f,i}}|\mathbf{h^H_{\mathrm{fi}}u_{ \mathrm{fi}}}|^2}{\si
 \sum_{i=1}^{K_f}\mathbf{u_{f,i}^H} \mathbf{I} \mathbf{u_{\mathrm{f,i}}} -  P^{Total}_{f})
 +
 \sum_{f=1}^F
-\sum_{i=1}^{f_i}
-\nu_{\mathrm{f,k}}(\mathbf{h^T_{\mathrm{f,j}}}\mathbf{u_{\mathrm{f,i}}})
+\sum_{i=1}^{K_f}
+\sum_{j=1, j\neq i}^{K_f}
+\
+\nu_{\mathrm{f,i,j}}(\mathbf{h^T_{\mathrm{f,j}}}\mathbf{u_{\mathrm{f,i}}})
 \end{multline}
 
-in which individual FC-BSs first optimize individually
+in which individual FC-BSs first individually optimize 
 \begin{enumerate}
 \item 
 \begin{gather}
@@ -421,13 +423,24 @@ predetermined $\alpha^{\mathrm{k}}$
 \lambda_{\mathrm{m}}^{\mathrm{k}}
 +
 \alpha^{\mathrm{k}}*
-(\frac{\partial L(\mathbf{\mathbf{U_{\mathrm{f}}},\lambda}) )}{\partial\lambda_{\mathrm{m}}})
+(\frac{\partial L(\mathbf{\mathbf{U},\lambda}) )}{\partial\lambda_{\mathrm{m}}})
 \end{gather}
-in which $\mathbf{U^{\mathrm{k}}_{\mathrm{f}}} = [\mathbf{U^{\mathrm{k}}_{\mathrm{1}}}...\mathbf{U^{\mathrm{k}}_{\mathrm{F}}}]$
+in which $\mathbf{U^{\mathrm{k}}} = [\mathbf{U^{\mathrm{k}}_{\mathrm{1}}}...\mathbf{U^{\mathrm{k}}_{\mathrm{F}}}]$
 
 \end{enumerate} 
 
-TODO show proof convergence conditions of this algorithm
+TODO 
+\begin{itemize}
+\item show proof convergence conditions of this algorithm
+\item check if the distributed solution depends on strict convexity (or is  the solution for these methods needs to be unique)-> Doesn't seem so
+\item see if 1st update is bounded (if not, a new method will be needed)
+\item begin looking at how to choose the update step-size in the second step
+\item after writing explicitly, verify that no information passing between femto cells will be needed 
+\end{itemize}
+
+\section{Uniqueness of Zero-Forcing}
+Also of interest is studying whether or not the zero-forcing matrix typically chosen which minimizes the error covariane matrix is unique in the presence of interference constraints. 
+
 \newpage
 \bibliography{system_model_bib}
 
