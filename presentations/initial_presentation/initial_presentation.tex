@@ -1,6 +1,6 @@
 \documentclass[10pt,tgadventor, onlymath]{beamer}
 
-\usepackage{graphicx,amsmath,amssymb,tikz,psfrag,neuralnetwork}
+\usepackage{graphicx,amsmath,amssymb,tikz,psfrag,neuralnetwork, stackengine,array, multirow}
 
 \input defs.tex
 \graphicspath{ {./figures/} }
@@ -82,11 +82,7 @@ TODO get image of network
 
 \begin{frame}
 \frametitle{Players of the Game}
-
-
-Individual femto cell base stations (FC-BS) are the players of this game.
-\\
-Femto Cells are characterized by the following parameters
+Femto Cell Base Stations (FC-BSs) are characterized by the following:
 \begin{itemize}
 \item 
 	Each FC-BS  $f \in \{1 ... F\}$ has $T_f$ antennas with which to transmit to $K_f$  users with  $T_f \geq K_f$.
@@ -108,31 +104,49 @@ Femto Cells are characterized by the following parameters
 \\
 \item 
 	FC-BS $f$ knows the downlink channel ($\mathbf{H_\mathrm{f}}$) from its transmission antennas to all served users.
-% TODO(Simulate degradation with incomplete CSI solution?)
 \\
+\item
+	The interference tolerance of macro cell users cannot be exceeded 
 \end{itemize}
 
 \end{frame}
 
+
 \begin{frame}
-\frametitle{The Heterogeneous Network}
+\frametitle{The Heterogeneous Network Game}
+\begin{columns}
+
+\begin{column}{0.5\linewidth}
+Image of HetNet
+\end{column}
+\begin{column}{0.5\linewidth}
+\begin{table}
+    \setlength{\extrarowheight}{2pt}
+    \begin{tabular}{cc|c|c|}
+      & \multicolumn{1}{c}{} & \multicolumn{2}{c}{Player $2$}\\
+      & \multicolumn{1}{c}{} & \multicolumn{1}{c}{$A$}  & \multicolumn{1}{c}{$B$} \\\cline{3-4}
+      \multirow{2}*{Player $1$}  & $A$ & $(8,8)$ & $(2,15)$ \\\cline{3-4}
+      & $B$ & $(15,2)$ & $(3,3)$ \\\cline{3-4}
+    \end{tabular}
+  \end{table}
+\end{column}
+\end{columns}
+
 \end{frame}
 
 \begin{frame}
 \frametitle{Objectives}
 \begin{enumerate}
-\item Find a NE between all players
-\item Find a solution that can be distributed
-\item Find a solution which minimizes communication overhead in system
-
+\item Find a Nash Equilibrium between all players.
+\begin{itemize}
+\item Preferably, one which is unique and close a social optimum.
+\end{itemize}
+\item Achieve a Nash Equilibrium in a distributed solution.
+\begin{itemize}
+\item Minimize communication overhead in system to reach Nash Equilibrium.
+\end{itemize}
 \end{enumerate}
 \end{frame}
-
-\section{Decoding Environment}
-
-
-
-\section{Initial Results}
 
 
 \end{document}
