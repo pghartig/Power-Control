@@ -163,14 +163,18 @@ TODO: Clarify why the player utility function should be broken out like this. Th
 	\end{subequations}
 
 	
-Note that over the feasible region of this problem, the SINR of femto cell users reduces to due to  \eqref{zf_const}
+Note that over the feasible region of this problem, the SINR of femto cell users reduces to 
 
 	\begin{equation}\label{zf_snr}
 	\gamma_{\mathrm{f,i}} = \frac{\|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}\|^2}
 	{\sigma^2_{noise}  
 	}
+	= 
+	\frac{\mathbf{u^H_{\mathrm{f,i}}h_{\mathrm{f,i}}h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}}
+	{\sigma^2_{noise}  
+	}
 	\end{equation}
-
+due to  \eqref{zf_const}
 \section{Solving the Game}
 \subsection{Player Utility Functions}
 
@@ -192,7 +196,8 @@ Sufficient conditions for a convex problem are:
 \item The utility function is concave in its argument 
 \begin{itemize}
 \item 
-Constraint \eqref{zf_const}  ensures that $\gamma_{\mathrm{f,i}}$ takes the form of \eqref{zf_snr} and  as log() is concave is the argument (SINR). SINR increases with square of absolute value. (The resulting function has a negative 2nd derivative)
+First note that constraint \eqref{zf_const}  ensures that $\gamma_{\mathrm{f,i}}$ takes the form of \eqref{zf_snr}.
+As $U_f() $ is concave in its argument by definition and the argument is a positive semi-definite quadratic term in the variables, the result is concave.
 \end{itemize}
 
 \item
@@ -284,7 +289,7 @@ Negative Definiteness of the matrix $[G(b,r)+G^{T}(b,r)] $ is a sufficient condi
 By definition, $U_{\mathrm{f,i}}()$ is concave in its argument and therefore $- U_{\mathrm{f,i}}()$ is convex.
 The argument of the function $- U_{\mathrm{f,i}}()$  is $\gamma_{\mathrm{f,i}}$ which can we expanded under the constraints of  \eqref{optim} can be expanded as 
 
-	\begin{equation}\label{zf_snr}
+	\begin{equation}\label{zf_snr_expanded}
 	\gamma_{\mathrm{f,i}} = \frac{\|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}\|^2}
 	{\sigma^2_{noise}  
 	}
@@ -295,7 +300,7 @@ The argument of the function $- U_{\mathrm{f,i}}()$  is $\gamma_{\mathrm{f,i}}$ 
 	\end{equation}
 	
 	Noting that the matrix 
-	$h_{\mathrm{f,i}}h^H_{\mathrm{f,i}}$
+	$\mathbf{h}_{\mathrm{f,i}}\mathbf{hh}^H_{\mathrm{f,i}}$
 	is limited to rank = 1. This is only a positive semidefinite function in 
 	$u_{\mathrm{f,i}}$ and therefore is convex but not strictly convex.
 
@@ -340,46 +345,21 @@ With this condition satisfied, the solution to the maximization problem
 	\end{subequations}
 
 is a normalized Nash Equilibrium of the original problem.
-As it has been above, this Nash Equilibrium to this problem exists (though not necessarily ) unique. 
+As it has been above, this Nash Equilibrium to this problem exists (though not necessarily unique). 
 \\
 \textbf{Potential Function:} The proposed potential function is 
 
 \begin{gather*} \label{Potential_Function}
-\Phi() = \sum_{f = 1}^{F} U_f() 
+\Psi() = \sum_{f = 1}^{F} U_f() 
 \end{gather*}
 
 
 As the utility functions of individual players $f$ do not share any common variables,  \label{Potential_Function} will have the same derivative as individual $U_f()$ with respect to $\mathbf{U_{f,i}} $, satisfying condition \eqref{potential_game_condition}. 
 
-\begin{theorem}\label{distributed}
-\cite{ghosh2015normalized}
-If a game's potential function is strictly concave and the derivative of the function with respect to the individual players variables are independent of the other player variables, then there exists a distributed solution.
-\end{theorem}
-\subsubsection{Central Optimization Problem Resulting from Proposed Potential Game}
-
-\begin{gather*}\label{potential_game}
-\mathrm{argmax}_{U_{\mathrm{1}}.. U_{\mathrm{F}}}
-\;
-\sum_{f=1}^F
-\sum_{i=1}^{K_f}
-log(1+\frac{|\mathbf{h^H_{\mathrm{fi}}u_{ \mathrm{fi}}}|^2}{\sigma^2_{ \mathrm{noise}} })
-\\
-\mathrm{s.t}
-\\
-\sum_{f=1}^F
-\sum_{i=1}^{K_f}
-\mathbf{u_{ \mathrm{f,i}}^H} \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}} \mathbf{u_{\mathrm{f,i}}} \leq I^{Threshold}_{m} \;  \mathrm{m} \in  \mathrm{\{1 ... M\}}
-\\
-\sum_{i=1}^{K_f}\mathbf{u_{f,i}^H} \mathbf{I} \mathbf{u_{\mathrm{f,i}}} \leq  P^{Total}_{f}
-\; \mathrm{f} \in \mathrm{\{1 ... F\}}
-\\
-\\
-\langle \mathbf{h_{\mathrm{f,j}}}\mathbf{u_{\mathrm{f,i}}} \rangle =0\ \; \forall \; \mathrm{j \in \{1 ... K_f\}\backslash i \;\; 
-}
-\forall \;\;\mathrm{ i \in \{1 ... K_f\}}
-\end{gather*}
-
-
+%\begin{theorem}\label{distributed}
+%\cite{ghosh2015normalized}
+%If a game's potential function is strictly concave and the derivative of the function with respect to the individual players variables are independent of the other player variables, then there exists a distributed solution.
+%\end{theorem}
 
 \subsection{Distributed Solution to the Game}
 \subsubsection{Central Problem Resulting from Potential Game}
