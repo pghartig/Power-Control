@@ -428,7 +428,8 @@ U_f()
 The following steps can then be iterated in order to reach an optimal solution. 
 \begin{enumerate}
 \item 
-Individual players can solve $ g_f(\lambda,\nu) $ independently. If bounded !! TODO CHECK THIS
+Individual players can solve $ g_f(\lambda,\nu) $ independently.
+TODO: The Lagrangian is only guaranteed to be convex wrt the dual variables. 
 \item 
 Using $g(\lambda,\nu) = \sum_{f=1}^{F}g_f(\lambda,\nu)$ and the calculus of subgradients $\partial g(\lambda,\nu) = \sum_{f=1}^{F} \partial g_f(\lambda,\nu)$, the dual variables can updated by 
 
