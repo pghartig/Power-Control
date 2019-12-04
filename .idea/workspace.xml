@@ -2,9 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3be4d5c8-508c-46da-8d66-8817d0e4b9b7" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/optimization_work/central_solution.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/network_simulations/het_net.py" beforeDir="false" afterPath="$PROJECT_DIR$/network_simulations/het_net.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/single_antenna_user_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/single_antenna_user_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/system_model/system_model.tex" beforeDir="false" afterPath="$PROJECT_DIR$/system_model/system_model.tex" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -21,10 +23,6 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="width" value="1280" />
-    <option name="height" value="800" />
   </component>
   <component name="ProjectId" id="1TFPNvOAoTA3ed0KWmqrrDeCxcB" />
   <component name="PropertiesComponent">
@@ -46,12 +44,27 @@
       </list>
     </option>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python tests.central_optimization">
+    <configuration name="central_optimization" type="tests" factoryName="py.test">
+      <module name="game_theory_com" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="C:\Users\hartig\AppData\Local\Continuum\anaconda3\envs\game_theory_com\python.exe" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;optimization_work.central_solution.test_central_optimization&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
     <configuration name="network_setup_test" type="tests" factoryName="py.test">
       <module name="game_theory_com" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="$PROJECT_DIR$/../../game_theory_com/bin/python" />
+      <option name="SDK_HOME" value="$USER_HOME$/game_theory_com/bin/python" />
       <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -62,6 +75,10 @@
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Python tests.network_setup_test" />
+      <item itemvalue="Python tests.central_optimization" />
+    </list>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -84,7 +101,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
@@ -97,6 +116,11 @@
           <url>file://$PROJECT_DIR$/tests/single_antenna_user_test.py</url>
           <line>6</line>
           <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/optimization_work/central_solution.py</url>
+          <line>8</line>
+          <option name="timeStamp" value="20" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
