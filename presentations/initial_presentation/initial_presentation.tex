@@ -41,20 +41,11 @@
 } 
 
 
-\tikzstyle{state}=[shape=circle,draw=blue!30,fill=blue!10]
-\tikzstyle{observation}=[shape=rectangle,draw=orange!30,fill=orange!10]
-\tikzstyle{lightedge}=[<-, dashed]
-\tikzstyle{mainstate}=[state, thick]
-\tikzstyle{mainedge}=[<-, thick]
-\tikzstyle{block} = [draw,rectangle,thick,minimum height=2em,minimum width=2em]
-\tikzstyle{sum} = [draw,circle,inner sep=0mm,minimum size=2mm]
-\tikzstyle{connector} = [->,thick]
-\tikzstyle{line} = [thick]
-\tikzstyle{branch} = [circle,inner sep=0pt,minimum size=1mm,fill=black,draw=black]
-\tikzstyle{guide} = []
-\tikzstyle{snakeline} = [connector, decorate, decoration={pre length=0.2cm,
-                         post length=0.2cm, snake, amplitude=.4mm,
-                         segment length=2mm},thick, magenta, ->]
+\usetikzlibrary{shapes,arrows}
+\usetikzlibrary{positioning}
+\tikzstyle{block} = [rectangle, draw, fill=blue!20, 
+    text width=5em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{line} = [draw, -latex']
 
 
 
@@ -146,6 +137,18 @@ Image of HetNet
 \item Minimize communication overhead in system to reach Nash Equilibrium.
 \end{itemize}
 \end{enumerate}
+
+\begin{center}
+\begin{tikzpicture}{center}
+\node [block] (game) {Game with many players};
+\node [block, right = of game] (central) {Central Opt. Problem};
+\node [block, right = of central] (distributed) {Distributed Version of Opt. Problem};
+
+\path[line] (game) -- (central);
+\path[line] (central) -- (distributed);
+
+\end{tikzpicture}
+\end{center}
 \end{frame}
 
 

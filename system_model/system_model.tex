@@ -56,7 +56,7 @@ Femto Cells are characterized by the following parameters
 	 FC-BSs are assumed to be spaced far apart in distance. Therefore, FC-BS $f$ can be modeled as 
 	 causing no interference to the users of FC-BS $j \in \{1 ... F\}\backslash f$
 \item 
-	FC-BSs are assumed to have a utility function $U_f()$ based upon the quality of service 		
+	FC-BSs are assumed to have a cost function $U_f()$ based upon the quality of service 		
 	provided to its users. TODO (Discuss Reasonable functions)
 \\
 \item 
@@ -345,7 +345,7 @@ With this condition satisfied, the solution to the maximization problem
 	\end{subequations}
 
 is a normalized Nash Equilibrium of the original problem.
-As it has been above, this Nash Equilibrium to this problem exists (though not necessarily unique). 
+As shown above, Nash Equilibria to this problem exists (though not necessarily unique). 
 \\
 \textbf{Potential Function:} The proposed potential function is 
 
@@ -354,7 +354,7 @@ As it has been above, this Nash Equilibrium to this problem exists (though not n
 \end{gather*}
 
 
-As the utility functions of individual players $f$ do not share any common variables,  \label{Potential_Function} will have the same derivative as individual $U_f()$ with respect to $\mathbf{U_{f,i}} $, satisfying condition \eqref{potential_game_condition}. 
+As the utility functions of individual players $f$ do not share any common variables,  \label{Potential_Function} will have the same derivative as individual $U_f()$ with respect to $\mathbf{U_{f,i}} $, satisfying condition \eqref{potential_game_condition}. This is primary motivation for including the  \eqref{zf_const} as this allows us describe the game using a single optimization problem (the Potential Game) from which we can solve for NE. 
 
 %\begin{theorem}\label{distributed}
 %\cite{ghosh2015normalized}
@@ -362,15 +362,14 @@ As the utility functions of individual players $f$ do not share any common varia
 %\end{theorem}
 
 \subsection{Distributed Solution to the Game}
+A desirable feature to \eqref{potential_game} is for methods for reaching the solution to be distributable. This may allow for minimal communication overhead between processes (in this case players and macro users).
 \subsubsection{Central Problem Resulting from Potential Game}
-As described in \cite[p.~8,9]{boyd2011distributed}, the dual ascent method can be used to find a distributed solution to this problem using the Lagrangian of \eqref{potential_game}
+As described in \cite[p.~8,9]{boyd2011distributed}, the dual ascent method can be used to find a distributed solution to this problem using the Lagrangian of \eqref{potential_game}. 
 \\
 \begin{multline}
 L(\mathbf{U,\lambda}) = 
 \;
-\sum_{f=1}^F
-\sum_{i=1}^{K_f}
-log(1+\frac{p_{ \mathrm{f,i}}|\mathbf{h^H_{\mathrm{fi}}u_{ \mathrm{fi}}}|^2}{\sigma^2_{ \mathrm{noise}} })
+\sum_{f=1}^F U_f() 
 +
 \sum_{\mathrm{m=1}}^M \lambda_{\mathrm{m}}
 (\sum_{\mathrm{f=1}}^F
@@ -388,24 +387,62 @@ log(1+\frac{p_{ \mathrm{f,i}}|\mathbf{h^H_{\mathrm{fi}}u_{ \mathrm{fi}}}|^2}{\si
 \
 \nu_{\mathrm{f,i,j}}(\mathbf{h^T_{\mathrm{f,j}}}\mathbf{u_{\mathrm{f,i}}})
 \end{multline}
+in which $\mathbf{U^{\mathrm{k}}} = [\mathbf{U^{\mathrm{k}}_{\mathrm{1}}}...\mathbf{U^{\mathrm{k}}_{\mathrm{F}}}]$.
 
-in which individual FC-BSs first individually optimize 
+
+The corresponding dual function and dual problem are then 
+\begin{gather*}
+g(\lambda,\nu) = \underset{\mathbf{U}}{\mathrm{argmin}}\;L(\mathbf{U,\lambda})
+\end{gather*}
+\begin{gather*}
+g(\lambda,\nu) = \underset{\lambda}{\mathrm{argmax}}\;\underset{\mathbf{U}}{\mathrm{argmin}}\;L(\mathbf{U,\lambda})
+\end{gather*}
+.
+
+
+
+This dual function can then be decomposed into F component functions
+\begin{multline}
+g_f(\lambda,\nu) = \underset{\mathbf{U_f}}{\mathrm{argmin}}
+\{
+\;
+U_f() 
++
+\sum_{\mathrm{i=1}}^{K_f}
+\sum_{\mathrm{m=1}}^M \lambda_{\mathrm{m}}
+\mathbf{u_{ \mathrm{f,i}}^H} \mathbf{\tilde{h_{m,f}}} \mathbf{\tilde{h_{m,f}^H}} \mathbf{u_{\mathrm{f,i}}} - I^{Threshold}_{m}
+\\
++ 
+\lambda_{\mathrm{f}}^{'}(
+\sum_{i=1}^{K_f}\mathbf{u_{f,i}^H} \mathbf{I} \mathbf{u_{\mathrm{f,i}}} -  P^{Total}_{f})
++
+\sum_{i=1}^{K_f}
+\sum_{j=1, j\neq i}^{K_f}
+\
+\nu_{\mathrm{f,i,j}}(\mathbf{h^T_{\mathrm{f,j}}}\mathbf{u_{\mathrm{f,i}}})\}
+\end{multline}
+\\
+
+
+
+The following steps can then be iterated in order to reach an optimal solution. 
 \begin{enumerate}
 \item 
-\begin{gather}
-\mathbf{U^{\mathrm{k+1}}_{\mathrm{f}}} =\mathrm{argmax}_{\mathbf{U_{\mathrm{f}}}} \; L(\mathbf{U,\lambda})
-\end{gather}
-and then macro stations will take a gradient ascent step using a 
-predetermined $\alpha^{\mathrm{k}}$
+Individual players can solve $ g_f(\lambda,\nu) $ independently.
 \item 
+Using $g(\lambda,\nu) = \sum_{f=1}^{F}g_f(\lambda,\nu)$ and the calculus of subgradients $\partial g(\lambda,\nu) = \sum_{f=1}^{F} \partial g_f(\lambda,\nu)$, the dual variables can updated by 
+
 \begin{gather}
 \lambda_{\mathrm{m}}^{\mathrm{k+1}} = 
 \lambda_{\mathrm{m}}^{\mathrm{k}}
 +
 \alpha^{\mathrm{k}}*
-(\frac{\partial L(\mathbf{\mathbf{U},\lambda}) )}{\partial\lambda_{\mathrm{m}}})
+\partial g(\lambda,\nu)
 \end{gather}
-in which $\mathbf{U^{\mathrm{k}}} = [\mathbf{U^{\mathrm{k}}_{\mathrm{1}}}...\mathbf{U^{\mathrm{k}}_{\mathrm{F}}}]$
+
+using to predefined $\alpha^{\mathrm{k}}$ which must satisfy certain summability conditions.
+
+
 
 \end{enumerate} 
 
