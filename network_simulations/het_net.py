@@ -155,11 +155,10 @@ class macro_user():
     def __init__(self, ID, network, interference_threshold):
         self.ID = ID
         self.network = network
-        self.interferers = []
         self.interference = 0
         self.interference_threshold = interference_threshold
-        self.uplink_channel = 0
-        self.downlink_channel = 0
+        self.uplink_channels = []
+        self.downlink_channel = []
         self.location = None
         self.move()
 
@@ -167,7 +166,7 @@ class macro_user():
         return self.uplink_channel[:, i], self.downlink_channel[:, i]
 
     def add_interferer(self, femto_interferer):
-        self.interferers.append(femto_interferer)
+        self.downlink_channel.append(np.random.randn())
 
     def move(self):
         self.location = \
