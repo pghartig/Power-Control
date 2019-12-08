@@ -47,6 +47,7 @@ def test_central_optimization():
 
     # Setup Solver
     prob = cp.Problem(objective, constraints)
+    #TODO ensure variables can be complex
     prob.solve()
 
     # Ensure that some QOS of service requirement is met TBD
