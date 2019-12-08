@@ -4,7 +4,7 @@ first setup the network according using the het_net class then consolidate all o
 """
 
 def test_central_optimization():
-    network = het_net.het_network(10, 10, 5, 10, 1)
+    network = het_net.Het_Network(10, 10, 5, 10, 1)
     network_information = network.get_network_channels()
     network.print_layout()
 
