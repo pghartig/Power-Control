@@ -22,6 +22,7 @@ class Het_Network():
         [self.macro_users.append(Macro_User(i, self, interference_threshold)) for i in range(num_macro_users)]
         self.update_macro_cells()
         self.setup_base_stations()
+
         print("test")
 
     def get_network_channels(self):
@@ -73,9 +74,12 @@ class Het_Network():
             cell.reconize_macro_user(self.macro_users)
 
     def setup_base_stations(self):
+        self.central_utility_function = 0
         for base_station in self.base_stations:
             base_station.setup_users()
-        pass
+            base_station.setup_utility()
+            self.central_utility_function += base_station.utility_function
+        self.central_utility_function = cp.sum(self.central_utility_function)
 
     def move_femto_users(self):
         for cell in self.base_stations:
@@ -118,11 +122,15 @@ class Femto_Base_Station():
         self.location = self.setup_location()
         self.coverage_size = np.array((5, 5))
         self.connect_users(num_femto_users)
-        self.utility_function = utility_function
         self.beam_forming_matrix = cp.Variable((self.number_antennas, num_femto_users))
         self.power_constaint = 1
+        self.utility_function = utility_function
 
     #TODO type this parameter as macro user
+    def setup_utility(self):
+        self.utility_function = self.utility_function(self.get_user_sinr())
+        pass
+
     def reconize_macro_user(self, users):
         for macro_user in users:
             self.macro_users.append(macro_user)
@@ -167,18 +175,12 @@ class Femto_Base_Station():
             user.update_power(power)
         self.update_utility()
 
-    def update_utility(self):
-        """
-
-        :param utility_function: This should be a non-decreasing concave function
-        :return:
-        """
-        self.utility_evaluated = self.utility_function(self.get_user_sinr())
-
     def get_user_sinr(self):
         all_sinr = []
-        for user in self.users:
-            all_sinr.append(user.get_sinr())
+        for ind, user in enumerate(self.users):
+            beam = self.beam_forming_matrix[:,ind]
+            channel = user.get_channel_for_base_station(self.ID)
+            all_sinr.append(cp.log(beam.H@channel*channel.conj().T@beam))
         return all_sinr
 
 

@@ -43,7 +43,7 @@ def test_central_optimization():
 
 
     # Setup the Objective Function
-    objective = cp.Minimize(sum(sum(1)))
+    objective = cp.Minimize(network.central_utility_function)
 
     # Setup Solver
     prob = cp.Problem(objective, constraints)
