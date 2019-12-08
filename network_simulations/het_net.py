@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import cvxpy as cp
 
 class Het_Network():
     def __init__(self, num_femto_cells, num_macro_users, max_users, max_antennas, interference_threshold):
@@ -29,13 +30,37 @@ class Het_Network():
         :return: A list of the base stations and their downlink channels as two lists. The first as the channels to users
         and the second as channels to the macro users they interfere with.
         """
-        ret = []
+        ret = dict()
         for station in self.base_stations:
-            station_l = []
-            station_l.append(station.get_macro_channel_matrices())
-            station_l.append(station.get_user_channel_matrices())
-            ret.append(station_l)
+            station_l = dict()
+            station_l["macro"] = station.get_macro_channel_matrices()
+            station_l["femto"] = station.get_user_channel_matrices()
+            ret[str(station.ID)] = station_l
         return ret
+
+    def get_power_constaints(self):
+        constaints = dict()
+        for station in self.base_stations:
+            constaints[str(station.ID)] = station.power_constaint
+        return constaints
+
+    def get_beam_formers(self):
+        beam_formers = []
+        for base_station in self.base_stations:
+            beam_formers.append(base_station.beam_forming_matrix)
+        return beam_formers
+
+    def get_macro_matrices(self):
+        ret = dict()
+        for macro in self.macro_users:
+            ret[str(macro.ID)] = macro.downlink_channels
+        return ret
+
+    def get_macro_thresholds(self):
+        thresholds = dict()
+        for macro in self.macro_users:
+            thresholds[str(macro.ID)] = macro.interference_threshold
+        return thresholds
 
     def get_femto_cells(self):
         return self.base_stations
@@ -86,13 +111,16 @@ class Femto_Base_Station():
     def __init__(self, ID, network, num_femto_users, num_antenna,utility_function=np.sum):
         self.ID = ID
         self.users = []
-        self.number_antennas = num_antenna
+        # Ensure there are always more antennas than users
+        self.number_antennas = num_antenna+num_femto_users
         self.macro_users = []
         self.network = network
         self.location = self.setup_location()
         self.coverage_size = np.array((5, 5))
         self.connect_users(num_femto_users)
         self.utility_function = utility_function
+        self.beam_forming_matrix = cp.Variable((self.number_antennas, num_femto_users))
+        self.power_constaint = 1
 
     #TODO type this parameter as macro user
     def reconize_macro_user(self, users):
