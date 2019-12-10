@@ -2,33 +2,40 @@ import cvxpy as cp
 import numpy as np
 
 def test_cvx():
-    import cvxpy as cp
-    import numpy as np
-
-    # Generate a random SDP.
-    n = 3
-    p = 3
-    np.random.seed(1)
-    C = np.random.randn(n, n)
+    # Generate a random feasible SOCP.
+    m = 3
+    n = 10
+    p = 5
+    n_i = 5
+    np.random.seed(2)
+    f = np.random.randn(n)
     A = []
     b = []
-    for i in range(p):
-        A.append(np.random.randn(n, n))
-        b.append(np.random.randn())
+    c = []
+    d = []
+    x0 = np.random.randn(n)
+    for i in range(m):
+        A.append(np.random.randn(n_i, n))
+        b.append(np.random.randn(n_i))
+        c.append(np.random.randn(n))
+        d.append(np.linalg.norm(A[i] @ x0 + b, 2) - c[i].T @ x0)
+    F = np.random.randn(p, n)
+    g = F @ x0
 
     # Define and solve the CVXPY problem.
-    # Create a symmetric matrix variable.
-    X = cp.Variable((n, n), symmetric=True)
-    # The operator >> denotes matrix inequality.
-    constraints = [X >> 0]
-    constraints += [
-        cp.trace(A[i] @ X) == b[i] for i in range(p)
+    x = cp.Variable(n)
+    # We use cp.SOC(t, x) to create the SOC constraint ||x||_2 <= t.
+    soc_constraints = [
+        cp.SOC(c[i].T @ x + d[i], A[i] @ x + b[i]) for i in range(m)
     ]
-    prob = cp.Problem(cp.Minimize(cp.trace(C @ X)),
-                      constraints)
+    prob = cp.Problem(cp.Minimize(f.T @ x),
+                      soc_constraints + [F @ x == g])
     prob.solve()
 
     # Print result.
     print("The optimal value is", prob.value)
-    print("A solution X is")
-    print(X.value)
+    print("A solution x is")
+    print(x.value)
+    for i in range(m):
+        print("SOC constraint %i dual variable solution" % i)
+        print(soc_constraints[i].dual_value)

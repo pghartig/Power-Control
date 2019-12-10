@@ -19,7 +19,7 @@
 
 
 %\begin{abstract}
-This game considers a wireless communications network which includes both macro cell and femto cell users. In order to allow for uncoordinated usage of femto cells within the network, femto cell base stations must ensure that the users served by macro cells only intercept an acceptable amount of interference during transmission. The strategy for transmission across all such femto cells in a network is investigated here in a game theoretic context. 
+This game considers a wireless communications network which includes both macro cell and femto cell users. In order to allow for uncoordinated usage of femto cells within the network, femto cell base stations must ensure that the users served by macro cells  intercept an acceptable amount of interference below a certain threshold. The strategy for transmission across all such femto cell base stations in a network is investigated here in a game theoretic context. 
 
 %\end{abstract}
 
@@ -42,23 +42,23 @@ Femto Cells are characterized by the following parameters
 	Each FC-BS  $f \in \{1 ... F\}$ is considered to have a number of antennas $T_f$ with which to transmit to $K_f$ femto cell users. It is assumed throughout the remainder that $T_f \geq K_f$.
 \\
 \item 
-	FC-BSs with multiple antennas ($T_f >1$) can beamform their transmission using the precoding 	
+	FC-BSs with multiple antennas ($T_f >=1$) can beamform their transmission using the precoding 	
 	matrix $\mathbf{U}_{\mathrm{f}} \in \mathbb{C}_{T_f \times K_f}$ such that the transmitted 		
 	signal is $\mathbf{s}_{\mathrm{f}
 	}= \mathbf{U_{\mathrm{f}}}\mathbf{x_{\mathrm{f}}}$. Here $\mathbf{x_{\mathrm{f}}}$ is the 		
 	normalized vector of symbols for users of FC-BS $f$ (i.e. $E[\|\mathbf{x}_{\mathrm{f}}
-	\|_2^2] \; f \in \{1 ... F\}$).
+	\|_2^2]=1 \; \forall f \in \{1 ... F\}$).
 \\
 \item 
 	FC-BS $f$ has power constraint $trace(\mathbf{U}_f^H\mathbf{U}_f) \leq P^{Total}_{f} $.
 \\
 \item
-	 FC-BSs are assumed to be spaced far apart in distance. Therefore, FC-BS $f$ can be modeled as 
+	 FC-BSs are assumed to be spaced far apart in distance such that FC-BS $f$ can be modeled as 
 	 causing no interference to the users of FC-BS $j \in \{1 ... F\}\backslash f$
 \item 
-	FC-BSs are assumed to have a cost function $U_f()$ based upon the quality of service 		
-	provided to its users. TODO (Discuss Reasonable functions)
-\\
+	FC-BSs are assumed to have a cost function  based upon the quality of service 		
+	provided to its users $U_f()$ which is strictly concave in its argument.
+
 \item 
 	FC-BS $f$ is assumed to know the downlink channel ($\mathbf{H_\mathrm{f}}$) from its transmission 		
 	antennas to all served users.
@@ -89,7 +89,7 @@ Femto Cells are characterized by the following parameters
 %\item TODO Decide if there should be minimum rate constraints for femto cell users in case (Look back at later in case some users are beam-formed out of the transmission). Check if this constraint will disrupt solution.
 %\\
 
-\item Users of FC-BS $f$ have SINR:
+\item User $i$ of FC-BS $f$ has SINR:
 	\begin{equation*}
 	\gamma_{\mathrm{f,i}} = \frac{\|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}\|^2}
 	{\sigma^2_{noise}   +
@@ -98,7 +98,7 @@ Femto Cells are characterized by the following parameters
 	\|\mathbf{h^H_{\mathrm{\tilde{f},u}}u_{\mathrm{f,i}}}\|^2}_{\mathrm{Inter-cell}}
 	 + 
 	 \underbrace{
-	 \sum_{\mathrm{\tilde{k}\neq i}}
+	 \sum_{\mathrm{\tilde{k}\neq i}}^{\mathrm{K_f}}
 	 \|\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}\|^2}_{\mathrm{Intra-cell}}}
 	  \; \mathrm{i \in \{1 ... K_f\}}\end{equation*}
 \\
@@ -109,7 +109,7 @@ Assuming negligible inter-cell interference, this reduces to
 	\begin{equation*}
 	\gamma_{\mathrm{f,i}} = \frac{\|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}\|^2}
 	{\sigma^2_{noise} 
-	 + \sum_{\mathrm{\tilde{k}\neq i}}
+	 + \sum_{\mathrm{\tilde{k}\neq i}}^{\mathrm{K_f}}
 	  \|\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}\|^2}
 	  \; \mathrm{i \in \{1 ... K_f\}}
 	\end{equation*}
@@ -138,14 +138,12 @@ Assuming negligible inter-cell interference, this reduces to
 
 \subsection{General Optimization Problem}
 
-Each player $f$ attempts to maximize utility function $U_f()$ while playing a strategy that falls in the region constrained by the interference constraints imposed by the macro cell users.
+Each player $f$ attempts to maximize utility function $U_f()$ while playing a feasible strategy with respect to the region constrained by the interference constraints imposed by the macro cell users.
 \par
 
 If intra-cell interference is  prohibited by the restriction of $\mathbf{U}_f$ to the set of zero-forcing matrices, the player optimization problem of player $f$ can be written as:
-\\\\
-TODO: Clarify why the player utility function should be broken out like this. This would not allow for intracell interference later on. 
 
-	
+
 	\begin{subequations}
 	\label{optim}
 	\begin{align}
@@ -176,17 +174,6 @@ Note that over the feasible region of this problem, the SINR of femto cell users
 	\end{equation}
 due to  \eqref{zf_const}
 \section{Solving the Game}
-\subsection{Player Utility Functions}
-
-Say $U_f() $ is the sum of all capacities for femto cell users of FC-BS $f$ 
-\begin{equation*}
-U_f(\mathbf{U}_\mathrm{f}) = \sum^{K_f}_{i=1} log(1+\gamma_{\mathrm{f,i}})
-\end{equation*}
-TODO generalize to a set of functions that satisfy required concavity conditions
-\begin{itemize}
-\item needs to satisfy condition of creating an n-persion concave game
-\item needs to fulfill conditions in order to create negative definite $[G(b,r)+G^{T}(b,r)] $
-\end{itemize}
 
 \subsection{Verifying Conexity of Player Optimization Problem}
 
@@ -196,8 +183,10 @@ Sufficient conditions for a convex problem are:
 \item The utility function is concave in its argument 
 \begin{itemize}
 \item 
-First note that constraint \eqref{zf_const}  ensures that $\gamma_{\mathrm{f,i}}$ takes the form of \eqref{zf_snr}.
-As $U_f() $ is concave in its argument by definition and the argument is a positive semi-definite quadratic term in the variables, the result is concave.
+First note that constraint \eqref{zf_const}  ensures that $\gamma_{\mathrm{f,i}}$ takes the form of \eqref{zf_snr} and is therefore convex in ${\mathbf{u}_{\mathrm{f,i}}}$.
+No further assumptions can be made, however, wrt increasing or decreasing.
+\item
+As $U_f(\gamma_{\mathrm{f,i}}) $ is strictly concave (non-decreasing?) by definition and the argument is a positive semi-definite quadratic term.
 \end{itemize}
 
 \item
@@ -303,8 +292,7 @@ The argument of the function $- U_{\mathrm{f,i}}()$  is $\gamma_{\mathrm{f,i}}$ 
 	$\mathbf{h}_{\mathrm{f,i}}\mathbf{hh}^H_{\mathrm{f,i}}$
 	is limited to rank = 1. This is only a positive semidefinite function in 
 	$u_{\mathrm{f,i}}$ and therefore is convex but not strictly convex.
-	TODO: If the utility function Uf is by assumption strictly concave increasing then does it work? 
-	TODO: also consider that gamma is convex strictly increasing in ufi
+
 
 \end{itemize}
 
@@ -312,6 +300,8 @@ The argument of the function $- U_{\mathrm{f,i}}()$  is $\gamma_{\mathrm{f,i}}$ 
 \item
 Summary of above: 
 While NE for the game are known to exist for the problem, these are not necessarily unique. 
+\item 
+If the utility function Uf is by assumption strictly concave increasing  and the argument to this function (gamma) is strictly convex in ufi then does it work?
 
 \end{enumerate}
 
@@ -431,7 +421,7 @@ The following steps can then be iterated in order to reach an optimal solution.
 \begin{enumerate}
 \item 
 Individual players can solve $ g_f(\lambda,\nu) $ independently.
-TODO: The Lagrangian is only guaranteed to be convex wrt the dual variables. 
+TODO: The Lagrangian is only guaranteed to be convex wrt the dual variables thus there is no guarantee this problem is bounded. 
 \item 
 Using $g(\lambda,\nu) = \sum_{f=1}^{F}g_f(\lambda,\nu)$ and the calculus of subgradients $\partial g(\lambda,\nu) = \sum_{f=1}^{F} \partial g_f(\lambda,\nu)$, the dual variables can updated by 
 
@@ -458,8 +448,15 @@ TODO
 \item after writing explicitly, verify that no information passing between femto cells will be needed 
 \end{itemize}
 
-\section{Uniqueness of Zero-Forcing}
+\section{Additional Points of Interest}
+\begin{itemize}
+\item 
 Also of interest is studying whether or not the zero-forcing matrix typically chosen which minimizes the error covariance matrix is unique in the presence of interference constraints. 
+\item 
+See why Potential game requires equality of gradient and not just the same sign (strictly)
+\item Similarly it might be interesting to extend this to cased of non-differentiable potential or utility functions
+\end{itemize}
+
 
 \newpage
 \bibliography{system_model_bib}

@@ -66,8 +66,21 @@ class Het_Network():
     def get_femto_cells(self):
         return self.base_stations
 
-    def allocate_power(self):
-        [player.allocate_femto_users_power() for player in self.base_stations]
+    def allocate_power_step(self, num_iterations):
+        for i in range(num_iterations):
+            [player.solve_local_opimization() for player in self.base_stations]
+            self.__update_dual_variables()
+
+    def __update_dual_variables(self):
+        """
+        Update all dual variables in the distributed optimization problem
+        :return:
+        """
+        # First update the dual variables of the macro users
+        [macro_user.update_dual_variabls() for macro_user in self.macro_users]
+        # Second update the dual variables for the other constaints (Note this order doesn't matter)
+        #TODO UPDATE
+
 
     def update_macro_cells(self):
         for cell in self.base_stations:
@@ -122,7 +135,7 @@ class Femto_Base_Station():
         self.location = self.setup_location()
         self.coverage_size = np.array((5, 5))
         self.connect_users(num_femto_users)
-        self.beam_forming_matrix = cp.Variable((self.number_antennas, num_femto_users))
+        self.beam_forming_matrix = cp.Variable((self.number_antennas, num_femto_users), complex=True)
         self.power_constaint = 1
         self.utility_function = utility_function
 
@@ -169,12 +182,6 @@ class Femto_Base_Station():
     def setup_location(self):
         return np.array((np.random.randint(0,self.network.coverage_area[0]), np.random.randint(0,self.network.coverage_area[1])))
 
-    def allocate_femto_users_power(self):
-        power = 1
-        for user in self.users:
-            user.update_power(power)
-        self.update_utility()
-
     def get_user_sinr(self):
         all_sinr = []
         for ind, user in enumerate(self.users):
@@ -182,6 +189,11 @@ class Femto_Base_Station():
             channel = user.get_channel_for_base_station(self.ID)
             all_sinr.append(cp.log(beam.H@channel*channel.conj().T@beam))
         return all_sinr
+
+    def solve_local_opimization(self):
+        # The distributed dual of the potential game
+        g_x_lambda = self.utility_function
+        cp.Minimize(g_x_lambda)
 
 
 class User:
@@ -210,9 +222,12 @@ class Macro_User(User):
         self.interference = 0
         self.interference_threshold = interference_threshold
 
-
     def add_interferer(self, interferer :Femto_Base_Station):
         self.downlink_channels[str(interferer.ID)] = np.random.randn(interferer.number_antennas)
+
+    def update_dual_variabls(self):
+        pass
+
 
 
 class Femto_User(User):
