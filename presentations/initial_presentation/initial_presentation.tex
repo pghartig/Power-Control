@@ -35,9 +35,9 @@
 
 \AtBeginSection[] 
 { 
-	\begin{frame}<beamer> 
-		\tableofcontents[currentsection,currentsubsection] 
-	\end{frame} 
+%	\begin{frame}<beamer> 
+%		\tableofcontents[currentsection,currentsubsection] 
+%	\end{frame} 
 } 
 
 
@@ -68,38 +68,7 @@
 \section{System Description}
 \begin{frame}
 \frametitle{The Heterogeneous Network}
-TODO get image of network
-\end{frame}
-
-\begin{frame}
-\frametitle{Players of the Game}
-Femto Cell Base Stations (FC-BSs) are characterized by the following:
-\begin{itemize}
-\item 
-	Each FC-BS  $f \in \{1 ... F\}$ has $T_f$ antennas with which to transmit to $K_f$  users with  $T_f \geq K_f$.
-\\
-\item 
-	FC-BSs  can beamform using the precoding 	
-	matrix $\mathbf{U}_{\mathrm{f}} \in \mathbb{C}_{T_f \times K_f}$ such that the transmitted 		
-	signal is $\mathbf{s}_{\mathrm{f}
-	}= \mathbf{U_{\mathrm{f}}}\mathbf{x_{\mathrm{f}}}$ with $E[\|\mathbf{x}_{\mathrm{f}}\|_2^2 = 1]$.
-\\
-\item 
-	FC-BS $f$ has power constraint $trace(\mathbf{U}_f^H\mathbf{U}_f) \leq P^{Total}_{f} $.
-\\
-\item
-	 FC-BSs are assumed to be spaced such that FC-BS $f$ causes no interference to the users of FC-BS $j \in \{1 ... F\}\backslash f$
-\item 
-	FC-BSs has utility function $U_f()$ based upon the quality of service 		
-	provided to its users. TODO (Discuss Reasonable functions)
-\\
-\item 
-	FC-BS $f$ knows the downlink channel ($\mathbf{H_\mathrm{f}}$) from its transmission antennas to all served users.
-\\
-\item
-	The interference tolerance of macro cell users cannot be exceeded 
-\end{itemize}
-
+	\includegraphics[width=\textwidth]{het_net}
 \end{frame}
 
 
@@ -108,7 +77,8 @@ Femto Cell Base Stations (FC-BSs) are characterized by the following:
 \begin{columns}
 
 \begin{column}{0.5\linewidth}
-Image of HetNet
+	\includegraphics[width=\textwidth]{het_net}
+
 \end{column}
 \begin{column}{0.5\linewidth}
 \begin{table}
@@ -125,14 +95,17 @@ Image of HetNet
 
 \end{frame}
 
+
+\section{Project Goals}
+
 \begin{frame}
 \frametitle{Objectives}
 \begin{enumerate}
 \item Find a Nash Equilibrium between all players.
 \begin{itemize}
-\item Preferably, one which is unique and close a social optimum.
+\item Preferably, one which is unique and close to socially optimal.
 \end{itemize}
-\item Achieve a Nash Equilibrium in a distributed solution.
+\item Achieve the Nash Equilibrium using a distributed solution.
 \begin{itemize}
 \item Minimize communication overhead in system to reach Nash Equilibrium.
 \end{itemize}
@@ -150,6 +123,24 @@ Image of HetNet
 \end{tikzpicture}
 \end{center}
 \end{frame}
+
+\begin{frame}
+\frametitle{Initial work}
+\begin{enumerate}
+\item Find a Nash Equilibrium between all players.
+\begin{itemize}
+\item Preferably, one which is unique and (close to) socially optimal.
+\end{itemize}
+\end{enumerate}
+\end{frame}
+%
+\section{Conclusion}
+
+\begin{frame}
+\bibliography{system_model_bib}
+
+\end{frame}
+
 
 
 \end{document}
