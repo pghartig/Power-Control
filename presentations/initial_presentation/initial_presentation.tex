@@ -107,15 +107,15 @@
 \end{itemize}
 \item Achieve the Nash Equilibrium using a distributed solution.
 \begin{itemize}
-\item Minimize communication overhead in system to reach Nash Equilibrium.
+\item Minimize resource required to reach Nash Equilibrium.
 \end{itemize}
 \end{enumerate}
 
 \begin{center}
 \begin{tikzpicture}{center}
-\node [block] (game) {Game with many players};
-\node [block, right = of game] (central) {Central Opt. Problem};
-\node [block, right = of central] (distributed) {Distributed Version of Opt. Problem};
+\node [block] (game) {Game with Many Players};
+\node [block, right = of game] (central) {Central Problem};
+\node [block, right = of central] (distributed) {Distributed Solution to Central Problem};
 
 \path[line] (game) -- (central);
 \path[line] (central) -- (distributed);
@@ -125,11 +125,17 @@
 \end{frame}
 
 \begin{frame}
-\frametitle{Initial work}
+\frametitle{Key Tools}
 \begin{enumerate}
-\item Find a Nash Equilibrium between all players.
+\item "N-Person Concave Games"
 \begin{itemize}
-\item Preferably, one which is unique and (close to) socially optimal.
+\item Proves existence of (Pure Strategy) Nash Equilibrium.
+\item Provides sufficient conditions for uniqueness of Nash Equilibrium.
+\end{itemize}
+\item 
+Potential Games
+\begin{itemize}
+\item "Central" optimization problem with Nash Equilibria as solution(s).
 \end{itemize}
 \end{enumerate}
 \end{frame}
