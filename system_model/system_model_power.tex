@@ -43,14 +43,33 @@ Femto Cells are characterized by the following parameters
 \\
 \item 
 	FC-BSs with multiple antennas ($T_f >=1$) can beamform their transmission using the precoding 	
-	matrix $\mathbf{U}_{\mathrm{f}} \in \mathbb{C}_{T_f \times K_f}$ such that the transmitted 		
-	signal is $\mathbf{s}_{\mathrm{f}
-	}= \mathbf{U_{\mathrm{f}}}\mathbf{x_{\mathrm{f}}}$. Here $\mathbf{x_{\mathrm{f}}}$ is the 		
+	matrix $\mathbf{U}_{\mathrm{f}} \in \mathbb{C}_{T_f \times K_f}$ .
+	The columns of $\mathbf{U}_{\mathrm{f}}$ are normalized such that 
+	 $\|\mathbf{u}_{\mathrm{fi}}\|^2  \;\forall i \in \{1 ... T_f\}$.
+	 Similarly, $\mathbf{x_{\mathrm{f}}}$ is the 		
 	normalized vector of symbols for users of FC-BS $f$ (i.e. $E[\|\mathbf{x}_{\mathrm{f}}
 	\|_2^2]=1 \; \forall f \in \{1 ... F\}$).
 \\
+\item  
+	FC-BSs allocate their transmission power using the diagonal power allocation  	
+	matrix $\mathrm{diag}(\mathbf{p}_{\mathrm{f}})$ with $p_{\mathrm{fi}} \geq 0 $
+such that the final transmitted 		
+	signal is 
+	$\mathbf{s}_{\mathrm{f}	}= \mathbf{U_{\mathrm{f}}} 
+	\mathrm{diag}(\mathbf{p}_{\mathrm{f}})
+	\mathbf{x_{\mathrm{f}}}$
+\\
 \item 
-	FC-BS $f$ has power constraint $trace(\mathbf{U}_f^H\mathbf{U}_f) \leq P^{Total}_{f} $.
+	FC-BS $f$ has power constraint 
+	$trace(\mathbf{s}_\mathrm{f}\mathbf{s}_\mathrm{f}^H) =
+	 trace(\mathbf{U_{\mathrm{f}}} 
+	\mathrm{diag}(\mathbf{p}_{\mathrm{f}})
+	\mathbf{x_{\mathrm{f}}}
+	\mathbf{x_{\mathrm{f}}^H}
+	\mathrm{diag}(\mathbf{p}_{\mathrm{f}})
+	\mathbf{U_{\mathrm{f}}}^H 
+	)
+	  \leq P^{Total}_{f} $.
 \\
 \item
 	 FC-BSs are assumed to be spaced far apart in distance such that FC-BS $f$ can be modeled as 
@@ -72,8 +91,8 @@ Femto Cells are characterized by the following parameters
 \item 
 	Macro Cell user $m \in \{1 ... M\}$ experiences receiver interference due to transmission by
 	FC-	BSs. These macro-cell users have limits to the amount of interference they may tolerate 
-	$\sum^F_{f=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{U_{\mathrm{f}}} 						
-	\mathbf{U_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} \leq I^{Threshold}		
+	$\sum^F_{f=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{s}_{\mathrm{f}} 						
+	\mathbf{s_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} \leq I^{Threshold}		
 	_{\mathrm{m}} $.
 
 \item 
@@ -90,16 +109,19 @@ Femto Cells are characterized by the following parameters
 %\\
 
 \item User $i$ of FC-BS $f$ has SINR:
+
 	\begin{equation*}
-	\gamma_{\mathrm{f,i}} = \frac{\|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}\|^2}
+	\gamma_{\mathrm{f,i}} = 
+	\frac{\|p_{\mathrm{fi}}\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}x_{\mathrm{fi}}\|^2}
 	{\sigma^2_{noise}   +
 	\underbrace{
-	 \sum_{\mathrm{\tilde{f}}\neq f} \sum_{\mathrm{u=1}}^{K_{\mathrm{\tilde{f}}}}
-	\|\mathbf{h^H_{\mathrm{\tilde{f},u}}u_{\mathrm{f,i}}}\|^2}_{\mathrm{Inter-cell}}
-	 + 
-	 \underbrace{
-	 \sum_{\mathrm{\tilde{k}\neq i}}^{\mathrm{K_f}}
-	 \|\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}\|^2}_{\mathrm{Intra-cell}}}
+	\sum_{\mathrm{\tilde{f}=1,\tilde{f} \neq f}}^{\mathrm{F}}
+	\sum_{\mathrm{\tilde{k}\neq i}}^{\mathrm{K_f}}
+	  \|p_{\mathrm{f\tilde{k}}}\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}x_{\mathrm{f\tilde{k}}}\|^2}_
+	  {\mathrm{Inter-cell}}+ \underbrace{
+	\sum_{\mathrm{\tilde{k}\neq i}}^{\mathrm{K_f}}
+	  \|p_{\mathrm{f\tilde{k}}}\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}x_{\mathrm{f\tilde{k}}}\|^2}
+	 _{\mathrm{Intra-cell}}}
 	  \; \mathrm{i \in \{1 ... K_f\}}\end{equation*}
 \\
 with AWGN $\sim \mathcal{N}(0,\sigma^2_n)$
@@ -107,10 +129,11 @@ with AWGN $\sim \mathcal{N}(0,\sigma^2_n)$
 
 Assuming negligible inter-cell interference, this reduces to
 	\begin{equation*}
-	\gamma_{\mathrm{f,i}} = \frac{\|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}\|^2}
+	\gamma_{\mathrm{f,i}} = \frac{\|p_{\mathrm{fi}}\mathbf{h^H_{\mathrm{f,i}}
+	u_{\mathrm{f,i}}}x_{\mathrm{fi}}\|^2}
 	{\sigma^2_{noise} 
 	 + \sum_{\mathrm{\tilde{k}\neq i}}^{\mathrm{K_f}}
-	  \|\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}\|^2}
+	  \|p_{\mathrm{f\tilde{k}}}\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}x_{\mathrm{f\tilde{k}}}\|^2}
 	  \; \mathrm{i \in \{1 ... K_f\}}
 	\end{equation*}
 \\
