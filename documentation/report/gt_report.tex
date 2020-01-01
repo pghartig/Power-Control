@@ -22,17 +22,475 @@ Modern communication systems often incorporate numerous, uncoordinated users wit
 \newpage
 
 \section{Introduction}
+This game considers a wireless communications network which includes both macro cell and femto cell users. In order to allow for uncoordinated usage of femto cells within the network, femto cell base stations must ensure that the users served by macro cells  intercept an acceptable amount of interference below a certain threshold. The strategy for transmission across all such femto cell base stations in a network is investigated here in a game theoretic context. 
 
 
 \section{System Model}
+One of the primary goals of this work is to enable NE to be achieved with distributed solutions. As seen in the following, the most general setup of this game does not permit such solutions and therefore a refined problem is purposed. 
 
-\subsection{General Problem}
-\subsection{Concave Setup}
+\subsection{General System Model}
+
+\subsubsection{Players: Femto Cell Base Stations}
+
+
+Individual femto cell base stations (FC-BS) are the players of this game.
+\\
+Femto Cells are characterized by the following parameters
+\begin{itemize}
+\item 
+	Each FC-BS  $f \in \{1 ... F\}$ is considered to have a number of antennas $T_f$ with which to transmit to $K_f$ femto cell users. It is assumed throughout the remainder that $T_f \geq K_f$.
+\\
+\item 
+	FC-BSs with multiple antennas ($T_f >=1$) can beamform their transmission using the precoding 	
+	matrix $\mathbf{U}_{\mathrm{f}} \in \mathbb{C}_{T_f \times K_f}$ such that the transmitted 		
+	signal is $\mathbf{s}_{\mathrm{f}
+	}= \mathbf{U_{\mathrm{f}}}\mathbf{x_{\mathrm{f}}}$. Here $\mathbf{x_{\mathrm{f}}}$ is the 		
+	normalized vector of symbols for users of FC-BS $f$ (i.e. $E[\|\mathbf{x}_{\mathrm{f}}
+	\|_2^2]=1 \; \forall f \in \{1 ... F\}$).
+\\
+\item 
+	FC-BS $f$ has power constraint $trace(\mathbf{U}_f^H\mathbf{U}_f) \leq P^{Total}_{f} $.
+\\
+\item
+	 FC-BSs are assumed to be spaced far apart in distance such that FC-BS $f$ can be modeled as 
+	 causing no interference to the users of FC-BS $j \in \{1 ... F\}\backslash f$
+\item 
+	FC-BSs are assumed to have a cost function  based upon the quality of service 		
+	provided to its users $U_f()$ which is strictly concave in its argument.
+
+\item 
+	FC-BS $f$ is assumed to know the downlink channel ($\mathbf{H_\mathrm{f}}$) from its transmission 		
+	antennas to all served users.
+% TODO(Simulate degradation with incomplete CSI solution?)
+\\
+\end{itemize}
+
+\subsubsection{Macro Cell Users}
+
+\begin{itemize}
+\item 
+	Macro Cell user $m \in \{1 ... M\}$ experiences receiver interference due to transmission by
+	FC-	BSs. These macro-cell users have limits to the amount of interference they may tolerate 
+	$\sum^F_{f=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{U_{\mathrm{f}}} 						
+	\mathbf{U_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} \leq I^{Threshold}		
+	_{\mathrm{m}} $.
+
+\item 
+	FC-BS $f$ is assumed to know the downlink channel ($\tilde{\mathbf{H}_{\mathrm{f}}}$) from its $T_f$
+	transmission antennas to all $M$ macro-cells with which it interferes.
+\\
+\end{itemize}
+
+\subsubsection{Femto Cell Users}
+\begin{itemize}
+
+
+%\item TODO Decide if there should be minimum rate constraints for femto cell users in case (Look back at later in case some users are beam-formed out of the transmission). Check if this constraint will disrupt solution.
+%\\
+
+\item User $i$ of FC-BS $f$ has SINR:
+	\begin{equation*}
+	\gamma_{\mathrm{f,i}} = \frac{\|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}\|^2}
+	{\sigma^2_{noise}   +
+	\underbrace{
+	 \sum_{\mathrm{\tilde{f}}\neq f} \sum_{\mathrm{u=1}}^{K_{\mathrm{\tilde{f}}}}
+	\|\mathbf{h^H_{\mathrm{\tilde{f},u}}u_{\mathrm{f,i}}}\|^2}_{\mathrm{Inter-cell}}
+	 + 
+	 \underbrace{
+	 \sum_{\mathrm{\tilde{k}\neq i}}^{\mathrm{K_f}}
+	 \|\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}\|^2}_{\mathrm{Intra-cell}}}
+	  \; \mathrm{i \in \{1 ... K_f\}}\end{equation*}
+\\
+with AWGN $\sim \mathcal{N}(0,\sigma^2_n)$
+\\
+
+Assuming negligible inter-cell interference, this reduces to
+	\begin{equation*}
+	\gamma_{\mathrm{f,i}} = \frac{\|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}\|^2}
+	{\sigma^2_{noise} 
+	 + \sum_{\mathrm{\tilde{k}\neq i}}^{\mathrm{K_f}}
+	  \|\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}\|^2}
+	  \; \mathrm{i \in \{1 ... K_f\}}
+	\end{equation*}
+\\
+
+%This further simplifies assuming that users use a zero-forcing beam-former
+%
+%\begin{equation}\label{zf_snr}
+%\gamma_{\mathrm{f,i}} = \frac{|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}|^2}
+%{\sigma^2_{noise}  
+%}
+%\end{equation}
+%\\
+
+\end{itemize}
+\subsubsection{General Optimization Problem}
+
+Each player $f$ attempts to maximize utility function $U_f()$ while playing a feasible strategy with respect to the region constrained by the interference constraints imposed by the macro cell users.
+\par
+
+If intra-cell interference is  prohibited by the restriction of $\mathbf{U}_f$ to the set of zero-forcing matrices, the player optimization problem of player $f$ can be written as:
+
+
+	\begin{subequations}
+	\label{optim}
+	\begin{align}
+	    \underset{\mathbf{U}_{\mathrm{f}} }{\text{minimize}} \;
+	    & - \sum_{\mathrm{i=1}}^{\mathrm{K_f}}
+    	U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) \label{player_opt} \\
+	    \text{subject to} \; &
+	   \sum^F_{f=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{U_{\mathrm{f}}}		
+	\mathbf{U_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} \leq I^{Threshold}		
+	_{\mathrm{m}} & m \in \{1 ...M\} 
+		\label{interference_const}\\
+        & trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f} \label{power_const}\\
+        & \langle \mathbf{h_{f,j}}\mathbf{u_{f,i}} \rangle =0\ & \; \forall j \in \{1... K_f\}\backslash i ,\; \forall i \in \{1 ... K_f\} \label{zf_const}
+	\end{align}
+	\end{subequations}
+
+	
+Note that over the feasible region of this problem, the SINR of femto cell users reduces to 
+
+	\begin{equation}\label{zf_snr}
+	\gamma_{\mathrm{f,i}} = \frac{\|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}\|^2}
+	{\sigma^2_{noise}  
+	}
+	= 
+	\frac{\mathbf{u^H_{\mathrm{f,i}}h_{\mathrm{f,i}}h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}}
+	{\sigma^2_{noise}  
+	}
+	\end{equation}
+due to  \eqref{zf_const}
+\subsection{Solving the General Problem}
+
+\subsubsection{Verifying Conexity of Player Optimization Problem}
+
+Sufficient conditions for a convex problem are:
+
+\begin{enumerate}
+\item The utility function is concave in its argument 
+\begin{itemize}
+\item 
+First note that constraint \eqref{zf_const}  ensures that $\gamma_{\mathrm{f,i}}$ takes the form of \eqref{zf_snr} and is therefore convex in ${\mathbf{u}_{\mathrm{f,i}}}$. 
+\item
+As $U_f(\gamma_{\mathrm{f,i}}) $ is strictly concave (non-decreasing?) by definition.
+This result is not generally a convex composition.
+\end{itemize}
+
+\item
+Constraints form convex, closed and bounded set. 
+\\
+TODO show closed and boundedness of set
+
+\begin{itemize}
+
+\item
+	Constaint \eqref{interference_const} contains $M$ quadratic constraints on $\mathbf{U_f}$ and 
+	can be rewritten as 
+
+\begin{gather*}
+	\sum_{f=1}^F
+	trace(\mathbf{U_f^H} \mathbf{\tilde{h}_{m,f}} \mathbf{\tilde{h}_{m,f}^H} \mathbf{U_f} )\leq 
+	I^{Threshold}_{m}.
+\end{gather*}
+This can be decomposed into \textit{independent} components 
+	\begin{gather*}
+	\sum_{f=1}^F
+	\sum_{i=1}^{f_i}
+	\mathbf{u_{\mathrm{f,i}}^H}\mathbf{\tilde{h}_{\mathrm{m,f}}} \mathbf{\tilde{h}}_{\mathrm{m,f}}^H
+	\mathbf{u_{\mathrm{f,i}}} \leq I^{Threshold}_{m}
+	\end{gather*}
+in which the term $ \mathbf{\tilde{h}_{\mathrm{m,f}}} \mathbf{\tilde{h}}_{\mathrm{m,f}}^H$ is always a positive semi-definite matrix and is, therefore, a convex set as shown in 
+\cite[p.8,9]{BoV:04}. 
+%This is essentially high dimensional ellipsoid.
+
+
+\item \
+	Constraint \eqref{power_const} can be similarly decomposed into the sum
+	\begin{gather*}
+		\sum_{i=1}^{K_f}\mathbf{u_{\mathrm{f,i}}^{\mathrm{H}}} \mathbf{I} 		
+		\mathbf{u_{\mathrm{f,i}}} \leq  P^{Total}_{f}
+	\end{gather*}
+	in which $\mathbf{I}$ is always positive definite and 			
+	therefore the constraint is strictly convex by the same 		
+	reasons as \eqref{interference_const}.
+\end{itemize}
+
+\item 
+	Constaint \eqref{zf_const} is an affine constraint. 
+
+		\begin{gather*}
+		\langle \mathbf{h_{\mathrm{f,j}}}\mathbf{u_{\mathrm{f,i}}} \rangle =0
+		\end{gather*}
+%Note that affine constaints to not have to satisfy Slater's condition
+
+\end{enumerate}
+
+\subsection{Potential Game for General Problem}
+
+
+\subsection{Concave System Model}
+An adaption of the general problem seen in the following permits Nash Equilibrium to be found via a single convex problem which may then be distributed across players of the game.
+\subsubsection{Players: Femto Cell Base Stations}
+
+
+Individual femto cell base stations (FC-BS) are the players of this game.
+\\
+Femto Cells are characterized by the following parameters
+\begin{itemize}
+\item 
+	Each FC-BS  $f \in \{1 ... F\}$ is considered to have a number of antennas $T_f$ with which to transmit to $K_f$ femto cell users. It is assumed that $T_f \geq K_f$.
+\\
+\item 
+	FC-BSs with multiple antennas ($T_f >=1$) can beamform their transmission using the precoding 	
+	matrix $\mathbf{U}_{\mathrm{f}} \in \mathbb{C}_{T_f \times K_f}$ .
+	The columns of $\mathbf{U}_{\mathrm{f}}$ are normalized such that 
+	 $\|\mathbf{u}_{\mathrm{fi}}\|^2 =1 \;\forall i \in \{1 ... T_f\}$.
+	 $\mathbf{x_{\mathrm{f}}}$ is the 		
+	normalized vector of symbols for users of FC-BS $f$  such that $E[\|\mathbf{x}_{\mathrm{f}}
+	\|_2^2]=1 \; \forall f \in \{1 ... F\}$.
+\\
+\item  
+	FC-BSs allocate their transmission power using the diagonal, power allocation  	
+	matrix $\mathrm{diag}(\mathbf{p}_{\mathrm{f}})$ with $p_{\mathrm{fi}} \geq 0, \forall i \in \{1 ... K_f\}$
+such that the final transmitted 		
+	signal of FC-BS $f$ is 
+	$\mathbf{s}_{\mathrm{f}	}= \mathbf{U_{\mathrm{f}}} 
+	\mathrm{diag}(\mathbf{p}_{\mathrm{f}})
+	\mathbf{x_{\mathrm{f}}}$
+\\
+\item 
+	FC-BS $f$ has power constraint 
+	$trace(\mathbf{s}_\mathrm{f}\mathbf{s}_\mathrm{f}^H) =
+	 trace(\mathbf{U_{\mathrm{f}}} 
+	\mathrm{diag}(\mathbf{p}_{\mathrm{f}})
+	\mathbf{x_{\mathrm{f}}}
+	\mathbf{x_{\mathrm{f}}^H}
+	\mathrm{diag}(\mathbf{p}_{\mathrm{f}})
+	\mathbf{U_{\mathrm{f}}}^H 
+	)
+	  \leq P^{Total}_{f} $.
+\\
+\item
+	 FC-BSs are assumed to be spaced far apart in distance such that FC-BS $f$ can be modeled as 
+	 causing no interference to the users of FC-BS $j \in \{1 ... F\}\backslash f$
+\item 
+	FC-BSs are assumed to have a cost function  based upon the quality of service 		
+	provided to its users $U_f()$ which is strictly concave in its argument.
+
+\item 
+	FC-BS $f$ is assumed to know the downlink channel matrix $\mathbf{H_\mathrm{f}}$ from its transmission 		
+	antennas to all served users.
+% TODO(Simulate degradation with incomplete CSI solution?)
+\\
+\end{itemize}
+
+\subsubsection{Macro Cell Users}
+
+\begin{itemize}
+\item 
+	Macro Cell user $m \in \{1 ... M\}$ experiences receiver interference due to transmission by
+	FC-	BSs. These macro-cell users have limits to the amount of interference they may tolerate 
+	$\sum^F_{f=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{s}_{\mathrm{f}} 						
+	\mathbf{s_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} \leq I^{Threshold}		
+	_{\mathrm{m}} $.
+
+\item 
+	FC-BS $f$ is assumed to know the downlink channel matrix $\tilde{\mathbf{H}_{\mathrm{f}}}$ from its $T_f$
+	transmission antennas to all $M$ macro-cells with which it interferes.
+\\
+\end{itemize}
+
+\subsubsection{Femto Cell Users}
+\begin{itemize}
+
+
+%\item TODO Decide if there should be minimum rate constraints for femto cell users in case (Look back at later in case some users are beam-formed out of the transmission). Check if this constraint will disrupt solution.
+%\\
+
+\item User $i$ of FC-BS $f$ has SINR:
+
+	\begin{equation*}
+	\gamma_{\mathrm{f,i}} = 
+	\frac{p_{\mathrm{fi}}\|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}x_{\mathrm{fi}}\|^2}
+	{\sigma^2_{noise}   +
+	\underbrace{
+	\sum_{\mathrm{\tilde{f}=1,\tilde{f} \neq f}}^{\mathrm{F}}
+	\sum_{\mathrm{\tilde{k}\neq i}}^{\mathrm{K_f}}
+	  p_{\mathrm{f\tilde{k}}}\|\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}x_{\mathrm{f\tilde{k}}}\|^2}_
+	  {\mathrm{Inter-cell}}+ \underbrace{
+	\sum_{\mathrm{\tilde{k}\neq i}}^{\mathrm{K_f}}
+	  p_{\mathrm{f\tilde{k}}}\|\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}x_{\mathrm{f\tilde{k}}}\|^2}
+	 _{\mathrm{Intra-cell}}}
+	  \; \mathrm{i \in \{1 ... K_f\}}\end{equation*}
+\\
+with AWGN $\sim \mathcal{N}(0,\sigma^2_n)$
+\\
+
+Assuming negligible inter-cell interference, this reduces to
+	\begin{equation*}
+	\gamma_{\mathrm{f,i}} = \frac{p_{\mathrm{fi}}\|\mathbf{h^H_{\mathrm{f,i}}
+	u_{\mathrm{f,i}}}x_{\mathrm{fi}}\|^2}
+	{\sigma^2_{noise} 
+	 + \sum_{\mathrm{\tilde{k}\neq i}}^{\mathrm{K_f}}
+	  p_{\mathrm{f\tilde{k}}}\|\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}x_{\mathrm{f\tilde{k}}}\|^2}
+	  \; \mathrm{i \in \{1 ... K_f\}}
+	\end{equation*}
+\\
+
+%This further simplifies assuming that users use a zero-forcing beam-former
+%
+%\begin{equation}\label{zf_snr}
+%\gamma_{\mathrm{f,i}} = \frac{|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}|^2}
+%{\sigma^2_{noise}  
+%}
+%\end{equation}
+%\\
+
+\end{itemize}
+
+
+\subsubsection{Concave Optimization Problem}
+
+
+	\begin{subequations}
+	\label{optim}
+	\begin{align}
+	    \underset{\mathbf{p}_{\mathrm{f}} }{\text{minimize}} \;
+	    & - \sum_{\mathrm{i=1}}^{\mathrm{K_f}}
+    	U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) \label{player_opt} \\
+	    \text{subject to} \; &
+	  \sum^F_{f=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{s}_{\mathrm{f}} 						
+	\mathbf{s_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} \leq I^{Threshold}		
+	_{\mathrm{m}} & m \in \{1 ...M\} 
+		\label{interference_const}\\
+        & trace(\mathbf{s}_\mathrm{f}\mathbf{s}_\mathrm{f}^H)  \leq P^{Total}_{f}  \label{power_const}\\
+        & p_{\mathrm{f,i}} \geq 0 &  i \in \{1 ...K_{\mathrm{f}}\} \label{pos_power_const}
+	\end{align}
+	\end{subequations}
+
+
+\subsection{Solving the Concave Game}
+
+\subsubsection{Verifying Conexity of Player Optimization Problem}
+
+Sufficient conditions for a convex problem are:
+
+\begin{enumerate}
+\item The utility function is assumed concave in its argument $\gamma_{\mathrm{f,i}}$
+\begin{itemize}
+\item 
+$\mathbf{U}_f$ is now assumed to be the normalized, Moore Penrose inverse to $\mathbf{H_\mathrm{f}}$ and therefore:
+	\begin{equation*}
+	\gamma_{\mathrm{f,i}} = \frac{p_{\mathrm{f,i}}\|\mathbf{h^H_{\mathrm{f,i}}
+	u_{\mathrm{f,i}}}x_{\mathrm{f,i}}\|^2}
+	{\sigma^2_{noise} }
+	  \; \mathrm{i \in \{1 ... K_f\}}
+	\end{equation*}
+	is affine in $p_{\mathrm{f,i}}$
+\end{itemize}
+
+\item
+Constraints form a convex, closed and bounded set. 
+
+\begin{itemize}
+
+\item
+	Constaint \eqref{interference_const} contains $M$ affine constraints on $diag(\mathbf{p_{\mathrm{f}}})$ and 
+	can be rewritten as 
+
+\begin{gather*}
+	  \sum^F_{f=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{s}_{\mathrm{f}} 						
+	\mathbf{s_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} = 
+	\sum^F_{f=1} trace(\mathbf{\tilde{h}}_{\mathrm{m,f}}^T U_{\mathrm{f}}diag(\mathbf{p_{\mathrm{f}}})^{\frac{1}{2}}\mathbf{x_{\mathrm{f}}}
+	 \mathbf{x_{\mathrm{f}}}^H  diag(\mathbf{p_{\mathrm{f}}})^{\frac{1}{2}} U_{\mathrm{f}}^H
+	 \mathbf{\tilde{h}}_{\mathrm{m,f}}^*
+	)	
+	\leq I^{Threshold}_{\mathrm{m}} 
+\end{gather*}
+
+\item \
+	Constraint \eqref{power_const} is  afine in $diag(\mathbf{p_{\mathrm{f}}})$.
+	
+\item \
+	Constraint \eqref{pos_power_const} is affine in $diag(\mathbf{p_{\mathrm{f}}})$.
+\end{itemize}
+
+%Note that affine constaints to not have to satisfy Slater's condition
+
+\end{enumerate}
+
+
+
+\subsubsection{Finding Nash Equilibrium}
+
+\begin{enumerate}
+\item \textbf{Existence of Nash Equilibrium:} As the individual, player optimization problem is concave, this is an n-person concave game and therefore a NE exists \cite[Thm1]{rosen1964existence}. 
+\item \textbf{Uniqueness of Nash Equilibrium:} In order to use the tools defined in \cite[Thm4]{rosen1964existence} for proving uniqueness of Nash Equilibrium. The function $G(b,r) $ is defined as the Jacobian of $g(b,r) $ which is defined as 
+
+\begin{equation}
+g(b,r)= 
+\begin{bmatrix}
+r_1 \nabla V_{1}(b)
+\\
+r_2 \nabla V_{1}(b)
+\\
+\vdots\\
+r_F \nabla V_{1}(b)
+\end{bmatrix}
+\end{equation}
+
+with $r_i>0$.
+In the setup of this game, $\nabla V_{1}(b)$
+is the gradient of the utility function of FCBS $U_f(\mathbf{U}_{\mathrm{f}}) $ with respect to elements of the  beam-forming matrix 
+$\mathbf{U}_{\mathrm{f}}$
+
+
+\begin{itemize}
+\item
+Negative Definiteness of the matrix $[G(b,r)+G^{T}(b,r)] $ is a sufficient condition for Diagonally Strict Concavity of the game and therefore implies uniqueness of a NNE in n-person concave games \cite[Thm6]{rosen1964existence}
+	 
+\item First, \eqref{player_opt} contains no inter-cell interference by assumption and therefore, the derivative with respect to any beam-forming variables from other players is zero. Therefore all off-diagonal elements of $[G(b,r)+G^{T}(b,r)] $ wil be zero.
+\item Second, in order to obtain a negative definite result, \eqref{player_opt} must have strictly negative second derivative with respect to the variables in the argument. If we allow
+\begin{equation*}
+		U_f(\mathbf{U}_\mathrm{f})=
+	    - \sum_{\mathrm{i=1}}^{\mathrm{K_f}}
+    	U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}})
+\end{equation*}
+By definition, $U_{\mathrm{f,i}}()$ is concave in its argument and therefore $- U_{\mathrm{f,i}}()$ is convex.
+The argument of the function $- U_{\mathrm{f,i}}()$  is $\gamma_{\mathrm{f,i}}$ which can we expanded under the constraints of  \eqref{optim} can be expanded as 
+
+	\begin{equation}\label{zf_snr_expanded}
+	\gamma_{\mathrm{f,i}} = \frac{\|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}\|^2}
+	{\sigma^2_{noise}  
+	}
+	= 
+	\frac{\mathbf{u^H_{\mathrm{f,i}}h_{\mathrm{f,i}}h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}}
+	{\sigma^2_{noise}  
+	}
+	\end{equation}
+	
+	Noting that the matrix 
+	$\mathbf{h}_{\mathrm{f,i}}\mathbf{hh}^H_{\mathrm{f,i}}$
+	is limited to rank = 1. This is only a positive semidefinite function in 
+	$u_{\mathrm{f,i}}$ and therefore is convex but not strictly convex.
+
+
+\end{itemize}
+
+
+\item
+Summary of above: 
+A unique NE exist for every $\mathbf{r} \geq 0$ 
+
+\end{enumerate}
+
+\subsection{Potential Game for Concave Problem}
 
 \section{Results}
 
 \section{Conclusion}
 
 \newpage
-\bibliography{mc_report}
+\bibliography{gt_report}
 \end{document}
