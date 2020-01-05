@@ -4,8 +4,8 @@ import cvxpy as cp
 first setup the network according using the het_net class then consolidate all of the information from the network to solve the central optimization problem
 """
 
-def test_central_optimization():
-    network = het_net.Het_Network(10, 10, 5, 10, 1)
+def test_dist_optimization():
+    network = het_net.Het_Network(10, 10, 5, 10, 1,power_vector_setup=True)
 
     # Choose number of iterations to allow
     num_iterations = 10
