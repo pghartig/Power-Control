@@ -14,7 +14,7 @@
 \maketitle
 
 \begin{abstract}
-Modern communication systems often incorporate numerous, uncoordinated users with MIMO communication links competing for a limited resource. This work investigate resource allocation strategies for such systems and in particular, those strategies minimizing system overhead. 
+This work investigate resource allocation strategies for such systems and in particular, those strategies minimizing system overhead. 
 \end{abstract}
 
 \newpage
@@ -22,85 +22,117 @@ Modern communication systems often incorporate numerous, uncoordinated users wit
 \newpage
 
 \chapter{Introduction}
-This game considers a wireless communications network which includes uncoordinated  macro cell and Femtocell users. Femtocell base stations must ensure that macro cells users intercept an amount of interference below a threshold. The strategy for transmission across all such Femtocell base stations in a network is investigated here in a game theoretic context. 
+\section{Introduction}
+Modern communication systems often incorporate numerous, uncoordinated users competing for a limited resource.
+In this work, a game theoretic approach considers a wireless communications network with uncoordinated  macrocell and femtocell users. The goal of this approach is to find Nash Equilibrium in which Femtocell base stations optimize their utility while ensuring macrocell users intercept interference below a given threshold. 
+Previous work has shown solutions for systems in which the femtocell base stations transmit over a SISO channel; thus the MIMO case is investigated here. 
 One of the primary goals of this work is to achieve Nash Equilibrium via distributed solutions. As seen in the following, the most general setup of this game does not permit such solutions and therefore a refined problem is purposed.
 
+The following provides an overview of the approach taken in seeking solutions to this problem.
 
+\section{Relevant Tools/Theory}
+
+It is useful to outline the desired steps (and their motivations) used in finding and directing the system to NE.
+\begin{enumerate}
+\item Check if the game satisfies the conditions for an "n-concave game".
+\begin{itemize}
+\item "n-concave games" provide an established framework for proving existence and uniqueness of NE.
+\end{itemize}
+\item Form a Potential function to represent the game.
+\begin{itemize}
+\item Global optima to the Potential function correspond to NE of the game.
+\item If an n-concave game admits a potential function, the potential function will be concave. NE may then be found efficiently by convex optimization tools. 
+\end{itemize}
+\item Solve for NE using a distributed version of the Potential Game 
+\begin{itemize}
+\item Distributed solutions minimize the system overhead required in sharing information between network users. 
+\end{itemize}
+\end{enumerate}
+
+
+\section{Outline}
+Look at how the tools described above will be used in the work. 
+\begin{itemize}
+\item 
+\ref{genmodel} Introduces the system model for the most general setup of the problem.
+\item 
+\ref{genproblem} Introduces various tools for solving for Nash Equilibrium and analyzes the general setup for compatibility with these tools. 
+\item
+\ref{conmodel} Provides refinements to the system model in order to allow for ...
+\item 
+\ref{conproblem} Details solving the full problem ...
+\item 
+details numerical comparisons of the two proposed methods for identifying Nash Equilibrium of the game. 
+\end{itemize}
 \chapter{System Model}
 
-\section{General System Model}
+\section{General System Model}\label{genmodel}
 
 \subsection{Players: Femtocell Base Stations}
 
 
-Individual Femtocell base stations (FC-BS) are the players of this game and are characterized by the following:
+Each players of the game, Individual Femtocell base stations $f \in \{1 ... F\}$ (FC-BS), is characterized by:
 \begin{itemize}
 \item 
-	Each FC-BS  $f \in \{1 ... F\}$ is considered to have a number of antennas $T_f$ with which to transmit to $K_f$ Femtocell users. It is assumed throughout the remainder that $T_f \geq K_f$.
+$T_f$ antennas with which to transmit to $K_f$ femtocell users (it is assumed that $T_f \geq K_f$).
 \\
 \item 
-	FC-BSs with multiple antennas ($T_f >=1$) can beamform their transmission using the precoding 	
-	matrix $\mathbf{U}_{\mathrm{f}} \in \mathbb{C}_{T_f \times K_f}$ such that the transmitted 		
+	Precoding matrix $\mathbf{U}_{\mathrm{f}} \in \mathbb{C}_{T_f \times K_f}$ such that the transmitted 		
 	signal is $\mathbf{s}_{\mathrm{f}
 	}= \mathbf{U_{\mathrm{f}}}\mathbf{x_{\mathrm{f}}}$. Here $\mathbf{x_{\mathrm{f}}}$ is the 		
-	vector of symbols for users of FC-BS $f$ normalized such that $E[\|\mathbf{x}_{\mathrm{f}}
-	\|_2^2]=1$ and $E[\mathbf{x}_{\mathrm{f}}\mathbf{x}_{\mathrm{f}}^H]=\mathbf{I}$ $\forall f \in \{1 ... F\}$.
+	vector of symbols for users of FC-BS $f$ normalized such that $E[\|\mathbf{x}_{\mathrm{f,i}}
+	\|_2^2]=1$ and $E[\mathbf{x}_{\mathrm{f}}\mathbf{x}_{\mathrm{f}}^H]=\mathbf{I}$.
 \\
 \item 
-	FC-BS $f$ has power constraint $trace(\mathbf{U}_f^H\mathbf{U}_f) \leq P^{Total}_{f} $.
-\\
-\item
-	 FC-BSs are assumed to be spaced far apart in distance such that FC-BS $f$ 
-	 causes no interference to the users of any other FC-BS.
+	Power constraint $trace(\mathbf{U}_f^H\mathbf{U}_f) \leq P^{Total}_{f} $.
+
 \item 
-	FC-BSs have a cost function $U_f() =
+	Cost function $U_f() =
 	\sum_{\mathrm{i=1}}^{\mathrm{K_f}}
     	U_{\mathrm{f,i}}() $
     	in which all $U_{\mathrm{f,i}}()$ are strictly concave, non-decreasing in argument.
 
 \item 
-	FC-BS $f$ is assumed to know the downlink channel matrix $\mathbf{H_\mathrm{f}}$ to its $K_f$ users.
+	Knowledge of the downlink channel matrix $\mathbf{H_\mathrm{f}} \in \mathbb{C}_{K_f \times T_f} $ to its $K_f$ users.
 % TODO(Simulate degradation with incomplete CSI solution?)
 \\
+\item
+	 FC-BSs are assumed to be spaced far apart in distance such that FC-BS $f$ 
+	 causes no interference to the users of any other FC-BS.
 \end{itemize}
 
 \subsection{Macrocell Users}
+Macrocell users $m \in \{1 ... M\}$ introduce constraints into this game. These users are characterized by:
 
 \begin{itemize}
 \item 
-	Macrocell user $m \in \{1 ... M\}$ receives interference, due to
-	FC-	BSs, which may not exceed
+	Received interference constraint
 	$\sum^F_{f=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{U_{\mathrm{f}}} 						
 	\mathbf{U_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} \leq I^{Threshold}		
 	_{\mathrm{m}} $.
 
 \item 
-	FC-BS $f$ is assumed to know the downlink channel matrix ($\tilde{\mathbf{H}_{\mathrm{f}}}$) from its $T_f$
-	transmission antennas to all $M$ Macrocells users.
+	FC-BS $f$ is assumed to know the downlink channel matrix $\tilde{\mathbf{H}_{\mathrm{f}}} \in \mathbb{C}_{M \times T_f}$ to all $M$ Macrocells users.
 \\
 \end{itemize}
 
 \subsection{Femtocell Users}
 \begin{itemize}
 
-
-%\item TODO Decide if there should be minimum rate constraints for Femtocell users in case (Look back at later in case some users are beam-formed out of the transmission). Check if this constraint will disrupt solution.
-%\\
-
-\item User $i$ of FC-BS $f$ has SINR:
+\item User $i$ of FC-BS $f$ has signal to interference plus noise ratio (SINR):
 	\begin{equation*}
 	\gamma_{\mathrm{f,i}} = \frac{\|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}\|^2}
 	{\sigma^2_{noise}   +
 	\underbrace{
-	 \sum_{\mathrm{\tilde{f}}\neq f} \sum_{\mathrm{u=1}}^{K_{\mathrm{\tilde{f}}}}
-	\|\mathbf{h^H_{\mathrm{\tilde{f},u}}u_{\mathrm{f,i}}}\|^2}_{\mathrm{inter-cell}}
+	 \sum_{\mathrm{\tilde{f}}=1,\mathrm{\tilde{f}}\neq f}^{\mathrm{F}} \sum_{\mathrm{u=1}}^{K_{\mathrm{\tilde{f}}}}
+	\|\mathbf{h^H_{\mathrm{\tilde{f},u}}u_{\mathrm{\tilde{f},i}}}\|^2}_{\mathrm{inter-cell}}
 	 + 
 	 \underbrace{
 	 \sum_{\mathrm{\tilde{k}\neq i}}^{\mathrm{K_f}}
 	 \|\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}\|^2}_{\mathrm{intra-cell}}}
 	  \; \mathrm{i \in \{1 ... K_f\}}\end{equation*}
 \\
-with AWGN $\sim \mathcal{N}(0,\sigma^2_n)$
+with AWGN $\sim \mathcal{CN}(0,\sigma^2_n)$
 \\
 
 Assuming negligible inter-cell interference, this reduces to
@@ -115,12 +147,17 @@ Assuming negligible inter-cell interference, this reduces to
 
 
 \end{itemize}
+
+
+
+
+
 \subsection{General Optimization Problem}
 
 Each player $f$ attempts to maximize utility function $U_f()$ while satisfying the interference constraints imposed by the macro cell users.
 \par
 
-If intra-cell interference is  prohibited by the restriction of $\mathbf{U}_f$ to the set of zero-forcing matrices, the optimization problem of player $f$ is:
+Note that in order to admit a potential function, $\mathbf{U}_f$ is restricted to the set of zero-forcing matrices ($\mathbf{h}_{\mathrm{f,i}}^T \mathbf{u}_{\mathrm{f,u}}=0 \; \forall  i \neq u $).
 
 
 	\begin{subequations}
@@ -138,10 +175,7 @@ If intra-cell interference is  prohibited by the restriction of $\mathbf{U}_f$ t
         & \langle \mathbf{h_{f,j}}\mathbf{u_{f,i}} \rangle =0\ & \; \forall j \in \{1... K_f\}\backslash i ,\; \forall i \in \{1 ... K_f\} \label{zf_const_gen}
 	\end{align}
 	\end{subequations}
-
-
-\section{Solving the General Problem}
-
+	
 \subsection{Convexity Analysis of Player Optimization Problem}
 
 Sufficient conditions for a concave problem are:
@@ -216,11 +250,10 @@ in which the term $ \mathbf{\tilde{h}_{\mathrm{m,f}}} \mathbf{\tilde{h}}_{\mathr
 TODO: 
 \begin{itemize}
 \item Need to prove that pure strategy NE would exist in this setting.
-\item Remove this section??
-
+\item Explain why even through a potential game can be formed, it may not be useful/feasible to find NE. 
 \end{itemize}
 
-\section{Concave System Model}
+\section{Concave System Model}\label{conmodel}
 An following adaption of the general problem permits a unique Nash Equilibrium to be found via a single convex problem which may be distributed across players of the game.
 \subsection{Players: Femtocell Base Stations}
 
@@ -339,8 +372,6 @@ Assuming negligible inter-cell interference, this reduces to
 	\end{subequations}
 
 
-\section{Solving the Concave Game}
-
 \subsection{Verifying Concavity of Player Optimization Problem}
 
 Sufficient conditions for a concave problem are:
@@ -419,13 +450,10 @@ By definition, $U_{\mathrm{f,i}}()$ is concave in its argument and therefore $- 
 The argument of the function $- U_{\mathrm{f,i}}()$  is $\gamma_{\mathrm{f,i}}$ which can we expanded under the constraints of  \eqref{optim} can be expanded as 
 
 	\begin{equation}\label{zf_snr_expanded}
-	\gamma_{\mathrm{f,i}} = \frac{\|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}\|^2}
-	{\sigma^2_{noise}  
-	}
-	= 
-	\frac{\mathbf{u^H_{\mathrm{f,i}}h_{\mathrm{f,i}}h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}}
-	{\sigma^2_{noise}  
-	}
+	\gamma_{\mathrm{f,i}} = \frac{p_{\mathrm{fi}}\|\mathbf{h^H_{\mathrm{f,i}}
+	u_{\mathrm{f,i}}}x_{\mathrm{fi}}\|^2}
+	{\sigma^2_{noise} }
+	  \; \mathrm{i \in \{1 ... K_f\}}
 	\end{equation}
 	
 	Noting that the matrix 
@@ -509,7 +537,7 @@ L(\mathbf{U,\lambda}) =
 +
 \sum_{f=1}^F
 \sum_{i=1}^{K_f}
-\nu_{\mathrm{f,i,j}}(-p_{\mathrm{f,i}})
+\nu_{\mathrm{f,i}}(-p_{\mathrm{f,i}})
 \end{multline}
 
 The corresponding dual function and dual problem are then 
@@ -547,7 +575,29 @@ The following steps can then be iterated in order to reach an optimal solution.
 \begin{enumerate}
 \item 
 Individual players can solve $ g_f(\lambda,\nu) $ independently.
-TODO: The Lagrangian is only guaranteed to be convex wrt the dual variables thus there is no guarantee this problem is bounded. 
+\begin{itemize}
+\item Setting $\frac{\partial g_f(\lambda,\nu)}{\partial p_{\mathrm{f,i}}} = 0$ 
+\item 
+\begin{gather}
+ \frac{\partial g_f(\lambda,\nu)}{\partial p_{\mathrm{f,i}}} =
+  \frac{-1}{1+\gamma_{\mathrm{f,i}}}(\frac{\|\mathbf{h^H_{\mathrm{f,i}}
+	u_{\mathrm{f,i}}}x_{\mathrm{fi}}\|^2_2}{\sigma^2})+
+\sum_{\mathrm{m=1}}^{\mathrm{M}}\lambda_{\mathrm{m}}\|[\mathbf{\tilde{h}}_{m,f}^T \mathbf{U_f}]_{\mathrm{i}}\|^2_2 +
+\lambda^{\prime}_{f} \|\mathbf{u}_{\mathrm{f,i}}\|^2_2
+-\nu_{\mathrm{f,i}} = 0
+\end{gather}
+\item 
+Solving for $p_{\mathrm{f,i}}$ using \eqref{zf_snr_expanded}
+
+\begin{gather}
+p_{\mathrm{f,i}} =
+  \frac{-1}{1+\gamma_{\mathrm{f,i}}}(\frac{\| ...\|^2_2}{\sigma^2})+
+\sum_{\mathrm{m=1}}^{\mathrm{M}}+\lambda_{\mathrm{m}}\| ...\|^2_2 +
+\lambda^{\prime}_{f} \|\|^2_2
+-\nu_{\mathrm{f,i}} = 0
+\end{gather}
+
+\end{itemize}
 \item 
 Using $g(\lambda,\nu) = \sum_{f=1}^{F}g_f(\lambda,\nu)$ and the calculus of subgradients $\partial g(\lambda,\nu) = \sum_{f=1}^{F} \partial g_f(\lambda,\nu)$, the dual variables can updated by 
 
