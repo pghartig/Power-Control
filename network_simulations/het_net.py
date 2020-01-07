@@ -3,7 +3,8 @@ import numpy as np
 import cvxpy as cp
 
 class Het_Network():
-    def __init__(self, num_femto_cells, num_macro_users, max_users, max_antennas, interference_threshold):
+    def __init__(self, num_femto_cells, num_macro_users, max_users,
+                 max_antennas, interference_threshold, power_vector_setup=False):
         """
         TODO Enforce players have more antennas than users
         :param num_femto_cells:
@@ -16,8 +17,8 @@ class Het_Network():
         self.base_stations = []
         # these loops should probably be moved out of the constructor
         [self.base_stations.append(Femto_Base_Station(i, self, np.random.randint(1, max_users+1)
-                                                      , np.random.randint(1, max_antennas+1))) for i in range(num_femto_cells)]
-
+                                                      , np.random.randint(1, max_antennas+1),power_vector_setup))
+         for i in range(num_femto_cells)]
         self.macro_users = []
         [self.macro_users.append(Macro_User(i, self, interference_threshold)) for i in range(num_macro_users)]
         self.update_macro_cells()
@@ -77,10 +78,10 @@ class Het_Network():
         :return:
         """
         # First update the dual variables of the macro users
-        [macro_user.update_dual_variabls() for macro_user in self.macro_users]
-        # Second update the dual variables for the other constaints (Note this order doesn't matter)
+        [player.update_dual_variables() for player in self.base_stations]
+        [macro_user.update_dual_variables() for macro_user in self.macro_users]
+        # Second update the dual variables for the other constraints (Note this order doesn't matter)
         #TODO UPDATE
-
 
     def update_macro_cells(self):
         for cell in self.base_stations:
@@ -90,9 +91,10 @@ class Het_Network():
         self.central_utility_function = 0
         for base_station in self.base_stations:
             base_station.setup_users()
-            base_station.setup_utility()
-            self.central_utility_function += base_station.utility_function
-        self.central_utility_function = cp.sum(self.central_utility_function)
+            # base_station.setup_utility()
+            base_station.update_beamformer()
+            # self.central_utility_function += base_station.utility_function
+        # self.central_utility_function = cp.sum(self.central_utility_function)
 
     def move_femto_users(self):
         for cell in self.base_stations:
@@ -125,7 +127,7 @@ class Het_Network():
 
 
 class Femto_Base_Station():
-    def __init__(self, ID, network, num_femto_users, num_antenna,utility_function=np.sum):
+    def __init__(self, ID, network, num_femto_users, num_antenna, power_vector_setup, utility_function=np.sum):
         self.ID = ID
         self.users = []
         # Ensure there are always more antennas than users
@@ -134,15 +136,27 @@ class Femto_Base_Station():
         self.network = network
         self.location = self.setup_location()
         self.coverage_size = np.array((5, 5))
+        if power_vector_setup == False:
+            self.beam_forming_matrix = cp.Variable((self.number_antennas, num_femto_users), complex=True)
+        else:
+            self.beam_forming_matrix = np.zeros((self.number_antennas, num_femto_users))
+            self.power_vector = np.zeros((num_femto_users, 1))
         self.connect_users(num_femto_users)
-        self.beam_forming_matrix = cp.Variable((self.number_antennas, num_femto_users), complex=True)
         self.power_constaint = 1
         self.utility_function = utility_function
+        self.H = None
+        self.H_tilde = None
+        self.power_vector_setup = power_vector_setup
 
     #TODO type this parameter as macro user
     def setup_utility(self):
         self.utility_function = self.utility_function(self.get_user_sinr())
         pass
+
+    def update_beamformer(self):
+        self.beam_forming_matrix = np.linalg.pinv(self.H)
+        check = self.H@self.beam_forming_matrix
+        return None
 
     def reconize_macro_user(self, users):
         for macro_user in users:
@@ -157,12 +171,15 @@ class Femto_Base_Station():
     def setup_users(self):
         for user in self.users:
             user.setup_channels()
+        self.get_user_channel_matrices()
+
 
     def get_user_channel_matrices(self):
         downlink = []
         for m_user in self.users:
             downlink.append(m_user.get_channel_for_base_station(self.ID))
         downlink = np.asarray(downlink)
+        self.H = downlink
         return downlink
 
     def get_macro_channel_matrices(self):
@@ -170,6 +187,7 @@ class Femto_Base_Station():
         for m_user in self.macro_users:
             downlink.append(m_user.get_channel_for_base_station(self.ID))
         downlink = np.asarray(downlink)
+        self.H_tilde = downlink
         return downlink
 
     def getID(self):
@@ -187,13 +205,19 @@ class Femto_Base_Station():
         for ind, user in enumerate(self.users):
             beam = self.beam_forming_matrix[:,ind]
             channel = user.get_channel_for_base_station(self.ID)
-            all_sinr.append(cp.log(beam.H@channel*channel.conj().T@beam))
+            all_sinr.append(cp.log(cp.abs(beam.H@channel*channel.conj().T@beam)))
         return all_sinr
 
     def solve_local_opimization(self):
         # The distributed dual of the potential game
-        g_x_lambda = self.utility_function
-        cp.Minimize(g_x_lambda)
+        # g_x_lambda = self.utility_function
+        # cp.Minimize(g_x_lambda)
+        for ind, element in enumerate(self.power_vector):
+            updated_power = 0
+            self.power_vector[ind] = updated_power
+
+    def update_dual_variables(self):
+        pass
 
 
 class User:
@@ -225,9 +249,8 @@ class Macro_User(User):
     def add_interferer(self, interferer :Femto_Base_Station):
         self.downlink_channels[str(interferer.ID)] = np.random.randn(interferer.number_antennas)
 
-    def update_dual_variabls(self):
+    def update_dual_variables(self):
         pass
-
 
 
 class Femto_User(User):
