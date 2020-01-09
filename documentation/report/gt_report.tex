@@ -32,21 +32,24 @@ The following provides an overview of the approach taken in seeking solutions to
 
 \section{Relevant Tools/Theory}
 
-It is useful to outline the desired steps (and their motivations) used in finding and directing the system to NE.
+It is useful to first review relevant tools for solving such games as these tools will provide steps to take in reaching the goal of finding pure strategy Nash Equilibrium the do not require system overhead to arrive at. 
+
 \begin{enumerate}
-\item Check if the game satisfies the conditions for an "n-concave game".
+\item The "n-concave game".
 \begin{itemize}
 \item "n-concave games" provide an established framework for proving existence and uniqueness of NE.
 \end{itemize}
-\item Form a Potential function to represent the game.
+\item The Potential function of a game.
 \begin{itemize}
 \item Global optima to the Potential function correspond to NE of the game.
 \item If an n-concave game admits a potential function, the potential function will be concave. NE may then be found efficiently by convex optimization tools. 
 \end{itemize}
-\item Solve for NE using a distributed version of the Potential Game 
+\item Distributed Optimization
 \begin{itemize}
 \item Distributed solutions minimize the system overhead required in sharing information between network users. 
 \end{itemize}
+\item Concave Programming?
+
 \end{enumerate}
 
 
