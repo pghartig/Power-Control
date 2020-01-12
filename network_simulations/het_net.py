@@ -69,7 +69,9 @@ class Het_Network():
 
     def allocate_power_step(self, num_iterations):
         for i in range(num_iterations):
+            #   First step in dual ascent -> find dual function
             [player.solve_local_opimization() for player in self.base_stations]
+            #   Second step of dual ascent -> update dual variables based on values from first step
             self.__update_dual_variables()
 
     def __update_dual_variables(self):
@@ -84,6 +86,10 @@ class Het_Network():
         #TODO UPDATE
 
     def update_macro_cells(self):
+        """
+        Have femto cell base stations find macro users
+        :return:
+        """
         for cell in self.base_stations:
             cell.reconize_macro_user(self.macro_users)
 
@@ -147,6 +153,8 @@ class Femto_Base_Station():
         self.H = None
         self.H_tilde = None
         self.power_vector_setup = power_vector_setup
+        self.sigma_square = 1
+        self.power_dual_variable = 1
 
     #TODO type this parameter as macro user
     def setup_utility(self):
@@ -154,8 +162,16 @@ class Femto_Base_Station():
         pass
 
     def update_beamformer(self):
+        """
+        For the power vector setup this function is used to update the zero-forcing pre-coder
+        to the current down-link channel
+        :return:
+        """
+        #   find zero-forcing matrix
         self.beam_forming_matrix = np.linalg.pinv(self.H)
-        check = self.H@self.beam_forming_matrix
+        #   normalize columns of the matrix
+        for column in range(self.beam_forming_matrix.shape[1]):
+            self.beam_forming_matrix[:,column] /= np.linalg.norm(self.beam_forming_matrix[:,column])
         return None
 
     def reconize_macro_user(self, users):
@@ -167,12 +183,13 @@ class Femto_Base_Station():
         for ind in range(num_femto_users):
             new_user = Femto_User(ind, self.network, self)
             self.users.append(new_user)
+        self.positivity_dual_variable = np.ones((len(self.users)))
+
 
     def setup_users(self):
         for user in self.users:
             user.setup_channels()
         self.get_user_channel_matrices()
-
 
     def get_user_channel_matrices(self):
         downlink = []
@@ -209,11 +226,17 @@ class Femto_Base_Station():
         return all_sinr
 
     def solve_local_opimization(self):
-        # The distributed dual of the potential game
-        # g_x_lambda = self.utility_function
-        # cp.Minimize(g_x_lambda)
         for ind, element in enumerate(self.power_vector):
-            updated_power = 0
+            c = 0
+            user_i_channel = self.users[ind].get_channel_for_base_station(self.ID)
+            for m_user in self.macro_users:
+                macro_user_channel = m_user.get_channel_for_base_station(self.ID)
+                #TODO make sure this is correct norm taken below
+                c += m_user.get_dual_variable()*pow(np.linalg.norm(user_i_channel*macro_user_channel),2)
+            check = pow(np.linalg.norm(user_i_channel),2)
+            c += pow(np.linalg.norm(user_i_channel),2)*self.power_dual_variable
+            c -= self.positivity_dual_variable[ind]
+            updated_power = 1/c - self.sigma_square
             self.power_vector[ind] = updated_power
 
     def update_dual_variables(self):
@@ -245,12 +268,16 @@ class Macro_User(User):
         User.__init__(self, ID, network)
         self.interference = 0
         self.interference_threshold = interference_threshold
+        self.dual_variable = 1
 
     def add_interferer(self, interferer :Femto_Base_Station):
         self.downlink_channels[str(interferer.ID)] = np.random.randn(interferer.number_antennas)
 
     def update_dual_variables(self):
         pass
+
+    def get_dual_variable(self):
+        return self.dual_variable
 
 
 class Femto_User(User):

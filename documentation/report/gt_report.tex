@@ -26,24 +26,66 @@ This work investigate resource allocation strategies for such systems and in par
 Modern communication systems often incorporate numerous, uncoordinated users competing for a limited resource.
 In this work, a game theoretic approach considers a wireless communications network with uncoordinated  macrocell and femtocell users. The goal of this approach is to find Nash Equilibrium in which Femtocell base stations optimize their utility while ensuring macrocell users intercept interference below a given threshold. 
 Previous work has shown solutions for systems in which the femtocell base stations transmit over a SISO channel; thus the MIMO case is investigated here. 
-One of the primary goals of this work is to achieve Nash Equilibrium via distributed solutions. As seen in the following, the most general setup of this game does not permit such solutions and therefore a refined problem is purposed.
+One of the primary goals of this work is to achieve Nash Equilibrium via distributed solutions which minimize system overhead. As seen in the following, the most general setup of this game does not permit such solutions and therefore a refined problem is purposed.
 
 The following provides an overview of the approach taken in seeking solutions to this problem.
 
 \section{Relevant Tools/Theory}
 
-It is useful to first review relevant tools for solving such games as these tools will provide steps to take in reaching the goal of finding pure strategy Nash Equilibrium the do not require system overhead to arrive at. 
+It is useful to first review relevant tools for solving such games. Together, these tools provide a series of steps to reach strategy Nash Equilibrium via a distributed solutions. 
 
 \begin{enumerate}
-\item The "n-concave game".
+\item The "n-concave game": a framework for proving existence and uniqueness of NE for game fulfilling certain.
+
 \begin{itemize}
-\item "n-concave games" provide an established framework for proving existence and uniqueness of NE.
+\item
+\textbf{Definition:} A game in which the individual player optimization problems are concave and the strategy set resulting from problem constraints (potentially player coupled) is convex.
+\item 
+\textbf{Existence of Nash Equilibrium:} Pure Strategy NE exist for n-concave games \cite[Thm1]{rosen1964existence}. 
+\item
+\textbf{Uniqueness of Nash Equilibrium:} To prove uniqueness of n-concave game NE, the "Normalized Nash Equilibrium" is introduced.
+ \cite[Thm4]{rosen1964existence} for proving uniqueness of Nash Equilibrium. The function $G(b,r) $ is defined as the Jacobian of $g(b,r) $ which is defined as
+\begin{enumerate}
+\item  
+\begin{equation}
+g(b,r)= 
+\begin{bmatrix}
+r_1 \nabla V_{1}(b)
+\\
+r_2 \nabla V_{1}(b)
+\\
+\vdots\\
+r_F \nabla V_{1}(b)
+\end{bmatrix}
+\end{equation}
+
+with $r_i>0$.
+In the setup of this game, $\nabla V_{1}(b)$
+is the gradient of the utility function of FCBS $U_f(\mathbf{U}_{\mathrm{f}}) $ with respect to elements of the  beam-forming matrix 
+$\mathbf{U}_{\mathrm{f}}$
+
+
+\begin{itemize}
+\item
+Negative Definiteness of the matrix $[G(b,r)+G^{T}(b,r)] $ is a sufficient condition for Diagonally Strict Concavity of the game and therefore implies uniqueness of a NNE in n-person concave games \cite[Thm6]{rosen1964existence}
+
+\end{itemize}
+
+\end{enumerate}
 \end{itemize}
 \item The Potential function of a game.
 \begin{itemize}
+\item
+\textbf{Definition:} A function
+$ \Psi()$ which satisfies:
+\begin{equation}\label{potential_game_condition}
+\end{equation}.
 \item Global optima to the Potential function correspond to NE of the game.
 \item If an n-concave game admits a potential function, the potential function will be concave. NE may then be found efficiently by convex optimization tools. 
 \end{itemize}
+
+
+
 \item Distributed Optimization
 \begin{itemize}
 \item Distributed solutions minimize the system overhead required in sharing information between network users. 
@@ -51,6 +93,12 @@ It is useful to first review relevant tools for solving such games as these tool
 \item Concave Programming?
 
 \end{enumerate}
+\subsection{Using the tools}
+(May want to make a flow chart?)
+The typical usage of these tools is:
+first verify existence and uniqueness for a Normalized NE of the game using n-concave games,
+second find a centralized version n-concave game which will be a concave function over a concave set,
+find a distributed solution to the single convex problem resulting from the potential funciton.
 
 
 \section{Outline}
@@ -93,7 +141,7 @@ $T_f$ antennas with which to transmit to $K_f$ femtocell users (it is assumed th
 	Cost function $U_f() =
 	\sum_{\mathrm{i=1}}^{\mathrm{K_f}}
     	U_{\mathrm{f,i}}() $
-    	in which all $U_{\mathrm{f,i}}()$ are strictly concave, non-decreasing in argument.
+    	in which all $U_{\mathrm{f,i}}()$ are non-decreasing in argument. No assumption about concavity yet.
 
 \item 
 	Knowledge of the downlink channel matrix $\mathbf{H_\mathrm{f}} \in \mathbb{C}_{K_f \times T_f} $ to its $K_f$ users.
@@ -199,8 +247,7 @@ Constraint \eqref{zf_const_gen} implies $\gamma_{\mathrm{f,i}}$ to take the form
 	\end{equation}
 and is therefore $\gamma_{\mathrm{f,i}}$ is convex in ${\mathbf{u}_{\mathrm{f,i}}}$. 
 \item
-As $U_{\mathrm{f,i}}() $ is strictly concave by definition.
-The resulting composition $U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $ is generally (grammar? ) non-convex.
+As $U_{\mathrm{f,i}}() $ is non-decreasing by definition, the composition $U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $ is convex only if $U_{\mathrm{f,i}}() $ is convex.
 \end{itemize}
 
 \item
@@ -250,6 +297,8 @@ in which the term $ \mathbf{\tilde{h}_{\mathrm{m,f}}} \mathbf{\tilde{h}}_{\mathr
 \end{enumerate}
 
 \subsection{Potential Game for General Problem}
+Under the current system model, the game is not a Concave N-Person game. Nevertheless, the game may still admit a potential function which would allow normalized Nash equilibrium to be found if global optima to the potential function can be found. With this in mind, we restrict $U_{\mathrm{f,i}}() $ to the set of convex functions. The potential function problem now become the minimization of concave function.
+
 TODO: 
 \begin{itemize}
 \item Need to prove that pure strategy NE would exist in this setting.
@@ -257,7 +306,7 @@ TODO:
 \end{itemize}
 
 \section{Concave System Model}\label{conmodel}
-An following adaption of the general problem permits a unique Nash Equilibrium to be found via a single convex problem which may be distributed across players of the game.
+The following adaption of the general problem permits a unique Nash Equilibrium to be found via a single convex problem which may be distributed across players of the game.
 \subsection{Players: Femtocell Base Stations}
 
 
@@ -269,10 +318,10 @@ Femtocells are characterized by the following parameters
 	FC-BSs with multiple antennas ($T_f >=1$) can beamform their transmission using the precoding 	
 	matrix $\mathbf{U}_{\mathrm{f}} \in \mathbb{C}_{T_f \times K_f}$ .
 	The columns of $\mathbf{U}_{\mathrm{f}}$ are normalized such that 
-	 $\|\mathbf{u}_{\mathrm{fi}}\|^2 =1 \;\forall i \in \{1 ... T_f\}$.
+	 $\|\mathbf{u}_{\mathrm{fi}}\|^2 =1 \;\forall i \in \{1 ... K_f\}$.
 	 $\mathbf{x_{\mathrm{f}}}$ is the 		
 	normalized information symbol vector of FC-BS $f$ such that $E[\|\mathbf{x}_{\mathrm{f}}
-	\|_2^2]=1$ and $E[\mathbf{x}_{\mathrm{f}}\mathbf{x}_{\mathrm{f}}^H]=\mathbf{I}$ $\forall f \in \{1 ... F\}$.
+	\|_2^2]=1$ and $E[\mathbf{x}_{\mathrm{f}}\mathbf{x}_{\mathrm{f}}^H]=\mathbf{I}_{K_f \times K_f}$ $\forall f \in \{1 ... F\}$.
 \\
 \item  
 	FC-BS $f$ allocates  transmission power using the diagonal, power allocation  	
@@ -280,7 +329,7 @@ Femtocells are characterized by the following parameters
 such that the transmitted 		
 	signal is 
 	$\mathbf{s}_{\mathrm{f}	}= \mathbf{U_{\mathrm{f}}} 
-	\mathrm{diag}(\mathbf{p}_{\mathrm{f}})
+	\mathrm{diag}(\mathbf{p}_{\mathrm{f}})^{\frac{1}{2}}
 	\mathbf{x_{\mathrm{f}}}$.
 \\
 \item 
@@ -288,10 +337,10 @@ such that the transmitted
 	\begin{gather*}
 	trace(E[\mathbf{s}_\mathrm{f}\mathbf{s}_\mathrm{f}^H]) =
 	 trace(\mathbf{U_{\mathrm{f}}} 
-	\mathrm{diag}(\mathbf{p}_{\mathrm{f}})
+	\mathrm{diag}(\mathbf{p}_{\mathrm{f}}^{\frac{1}{2}})
 	E[\mathbf{x_{\mathrm{f}}}
 	\mathbf{x_{\mathrm{f}}^H}]
-	\mathrm{diag}(\mathbf{p}_{\mathrm{f}})
+	\mathrm{diag}(\mathbf{p}_{\mathrm{f}}^{\frac{1}{2}})
 	\mathbf{U_{\mathrm{f}}}^H 
 	)
 	  \leq P^{Total}_{f} 
@@ -301,10 +350,11 @@ such that the transmitted
 
 \item 
 $\mathbf{U}_f$ is the normalized, Moore-Penrose inverse to $\mathbf{H_\mathrm{f}}$.
+(Check how this is introduced for general case)
 \end{itemize}
 
 \subsection{Macro Cell Users}
-No general setup.
+Same as the general setup.
 
 \subsection{Femtocell Users}
 \begin{itemize}
@@ -363,14 +413,14 @@ Assuming negligible inter-cell interference, this reduces to
 	\begin{align}
 	    \underset{\mathbf{p}_{\mathrm{f}} }{\text{minimize}} \;
 	    & - \sum_{\mathrm{i=1}}^{\mathrm{K_f}}
-    	U_{\mathrm{f,i}}(p_{\mathrm{f,i}}) \label{player_opt} \\
+    	U_{\mathrm{f,i}}(p_{\mathrm{f,i}}) \label{player_opt_c} \\
 	    \text{subject to} \; &
 	  \sum^F_{f=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{s}_{\mathrm{f}} 						
 	\mathbf{s_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} \leq I^{Threshold}		
 	_{\mathrm{m}} & m \in \{1 ...M\} 
-		\label{interference_const}\\
-        & trace(\mathbf{s}_\mathrm{f}\mathbf{s}_\mathrm{f}^H)  \leq P^{Total}_{f}  \label{power_const}\\
-        & p_{\mathrm{f,i}} \geq 0 &  i \in \{1 ...K_{\mathrm{f}}\} \label{pos_power_const}
+		\label{interference_const_c}\\
+        & trace(\mathbf{s}_\mathrm{f}\mathbf{s}_\mathrm{f}^H)  \leq P^{Total}_{f}  \label{power_const_c}\\
+        & p_{\mathrm{f,i}} \geq 0 &  i \in \{1 ...K_{\mathrm{f}}\} \label{pos_power_const_c}
 	\end{align}
 	\end{subequations}
 
@@ -388,7 +438,7 @@ The constraints form a convex, closed and bounded set.
 \begin{itemize}
 
 \item
-	Constaint \eqref{interference_const} contains $M$ affine constraints on $diag(\mathbf{p_{\mathrm{f}}})$ and 
+	Constaint \eqref{interference_const_c} contains $M$ affine constraints on $diag(\mathbf{p_{\mathrm{f}}})$ and 
 	can be rewritten as 
 
 \begin{gather*}
@@ -402,10 +452,10 @@ The constraints form a convex, closed and bounded set.
 \end{gather*}
 
 \item \
-	Constraint \eqref{power_const} is  afine in $diag(\mathbf{p_{\mathrm{f}}})$.
+	Constraint \eqref{power_const_c} is  afine in $diag(\mathbf{p_{\mathrm{f}}})$.
 	
 \item \
-	Constraint \eqref{pos_power_const} is affine in $diag(\mathbf{p_{\mathrm{f}}})$.
+	Constraint \eqref{pos_power_const_c} is affine in $diag(\mathbf{p_{\mathrm{f}}})$.
 \end{itemize}
 
 %Note that affine constaints to not have to satisfy Slater's condition
@@ -416,72 +466,11 @@ The constraints form a convex, closed and bounded set.
 
 \subsection{Finding Nash Equilibrium}
 
-\begin{enumerate}
-\item \textbf{Existence of Nash Equilibrium:} As the individual, player optimization problem is concave, this is an n-person concave game and therefore a NE exists \cite[Thm1]{rosen1964existence}. 
-\item \textbf{Uniqueness of Nash Equilibrium:} In order to use the tools defined in \cite[Thm4]{rosen1964existence} for proving uniqueness of Nash Equilibrium. The function $G(b,r) $ is defined as the Jacobian of $g(b,r) $ which is defined as 
 
-\begin{equation}
-g(b,r)= 
-\begin{bmatrix}
-r_1 \nabla V_{1}(b)
-\\
-r_2 \nabla V_{1}(b)
-\\
-\vdots\\
-r_F \nabla V_{1}(b)
-\end{bmatrix}
-\end{equation}
-
-with $r_i>0$.
-In the setup of this game, $\nabla V_{1}(b)$
-is the gradient of the utility function of FCBS $U_f(\mathbf{U}_{\mathrm{f}}) $ with respect to elements of the  beam-forming matrix 
-$\mathbf{U}_{\mathrm{f}}$
-
-
-\begin{itemize}
-\item
-Negative Definiteness of the matrix $[G(b,r)+G^{T}(b,r)] $ is a sufficient condition for Diagonally Strict Concavity of the game and therefore implies uniqueness of a NNE in n-person concave games \cite[Thm6]{rosen1964existence}
-	 
-\item First, \eqref{player_opt} contains no inter-cell interference by assumption and therefore, the derivative with respect to any beam-forming variables from other players is zero. Therefore all off-diagonal elements of $[G(b,r)+G^{T}(b,r)] $ wil be zero.
-\item Second, in order to obtain a negative definite result, \eqref{player_opt} must have strictly negative second derivative with respect to the variables in the argument. If we allow
-\begin{equation*}
-		U_f(\mathbf{U}_\mathrm{f})=
-	    - \sum_{\mathrm{i=1}}^{\mathrm{K_f}}
-    	U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}})
-\end{equation*}
-By definition, $U_{\mathrm{f,i}}()$ is concave in its argument and therefore $- U_{\mathrm{f,i}}()$ is convex.
-The argument of the function $- U_{\mathrm{f,i}}()$  is $\gamma_{\mathrm{f,i}}$ which can we expanded under the constraints of  \eqref{optim} can be expanded as 
-
-	\begin{equation}\label{zf_snr_expanded}
-	\gamma_{\mathrm{f,i}} = \frac{p_{\mathrm{fi}}\|\mathbf{h^H_{\mathrm{f,i}}
-	u_{\mathrm{f,i}}}x_{\mathrm{fi}}\|^2}
-	{\sigma^2_{noise} }
-	  \; \mathrm{i \in \{1 ... K_f\}}
-	\end{equation}
-	
-	Noting that the matrix 
-	$\mathbf{h}_{\mathrm{f,i}}\mathbf{hh}^H_{\mathrm{f,i}}$
-	is limited to rank = 1. This is only a positive semidefinite function in 
-	$u_{\mathrm{f,i}}$ and therefore is convex but not strictly convex.
-
-
-\end{itemize}
-
-
-\item
-Summary of above: 
-A unique NE exist for every $\mathbf{r} \geq 0$ 
-
-\end{enumerate}
 
 \subsection{Potential Game for Concave Problem}
 
 \subsubsection{Setup as a Potential Game}
-It is useful to now represent the game by a "Potential Function" 
-$ \Psi(\mathbf{})$ which satisfies:
-\begin{equation}\label{potential_game_condition}
-\frac{d\Psi}{du_\mathrm{f,i}} = \frac{d U_f()}{du_\mathrm{f,i}} \; \forall f \in \{1...F\}
-\end{equation}.
 
 
 With this condition satisfied, the solution to the optimization problem 
