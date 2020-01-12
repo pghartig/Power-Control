@@ -72,18 +72,17 @@ class Het_Network():
             #   First step in dual ascent -> find dual function
             [player.solve_local_opimization() for player in self.base_stations]
             #   Second step of dual ascent -> update dual variables based on values from first step
-            self.__update_dual_variables()
+            self.__update_dual_variables(i)
 
-    def __update_dual_variables(self):
+    def __update_dual_variables(self,itr_step):
         """
         Update all dual variables in the distributed optimization problem
         :return:
         """
         # First update the dual variables of the macro users
-        [player.update_dual_variables() for player in self.base_stations]
-        [macro_user.update_dual_variables() for macro_user in self.macro_users]
+        [player.update_dual_variables(itr_step) for player in self.base_stations]
+        [macro_user.update_dual_variables(itr_step) for macro_user in self.macro_users]
         # Second update the dual variables for the other constraints (Note this order doesn't matter)
-        #TODO UPDATE
 
     def update_macro_cells(self):
         """
@@ -124,6 +123,9 @@ class Het_Network():
         locations = np.asarray(locations)
         return locations
 
+    def get_base_stations(self):
+        return self.base_stations
+
     def print_layout(self):
         bs_locations = self.get_station_locations()
         plt.scatter(bs_locations[:,0],bs_locations[:,1],marker='H')
@@ -146,7 +148,7 @@ class Femto_Base_Station():
             self.beam_forming_matrix = cp.Variable((self.number_antennas, num_femto_users), complex=True)
         else:
             self.beam_forming_matrix = np.zeros((self.number_antennas, num_femto_users))
-            self.power_vector = np.zeros((num_femto_users, 1))
+            self.power_vector = np.zeros((num_femto_users))
         self.connect_users(num_femto_users)
         self.power_constaint = 1
         self.utility_function = utility_function
@@ -238,9 +240,18 @@ class Femto_Base_Station():
             c -= self.positivity_dual_variable[ind]
             updated_power = 1/c - self.sigma_square
             self.power_vector[ind] = updated_power
+            #TODO add factor of 1/N for decomposition
 
-    def update_dual_variables(self):
-        pass
+    def update_dual_variables(self, step):
+        step = .001
+        #update scalar here
+        self.power_dual_variable += step*(np.sum(self.power_vector) - self.power_constaint)
+        #Update whole vector
+        self.positivity_dual_variable += step*(-self.power_vector)
+
+
+
+
 
 
 class User:
@@ -273,8 +284,20 @@ class Macro_User(User):
     def add_interferer(self, interferer :Femto_Base_Station):
         self.downlink_channels[str(interferer.ID)] = np.random.randn(interferer.number_antennas)
 
-    def update_dual_variables(self):
-        pass
+    def update_dual_variables(self,step):
+        """
+        Note that normally the values used here would depend on estimated SNR received at the macro user.
+        :param step:
+        :return:
+        """
+        step = .001
+        total = 0
+        for base_station in self.network.get_base_stations():
+            for ind, power in enumerate(base_station.power_vector):
+                channel = self.get_channel_for_base_station(base_station.ID)
+                beamformer = base_station.beam_forming_matrix[:, ind]
+                total+= power*pow(np.linalg.norm(channel@beamformer))
+        self.dual_variable += step*(total - self.interference_threshold)
 
     def get_dual_variable(self):
         return self.dual_variable
