@@ -89,7 +89,14 @@ $ \Psi()$ which satisfies:
 
 \item Distributed Optimization
 \begin{itemize}
-\item Distributed solutions minimize the system overhead required in sharing information between network users. 
+\item Distributed solutions minimize the system overhead required in sharing
+\begin{itemize}
+\item Begin with a central optimization problem.
+\item For the dual of the central problem
+\item Evaluate if problem can be separated into sub-problems each with independent optimization variables.
+\item Perform an ascent of the dual problem by iterating between solving for the dual function of the sub-problems and then broadcasting these solutions to perform the gradient step of the dual problem. 
+
+\end{itemize} information between network users. 
 \end{itemize}
 \item Concave Programming?
 
@@ -141,7 +148,7 @@ $T_f$ antennas with which to transmit to $K_f$ femtocell users (it is assumed th
 \item 
 	Cost function $U_f() =
 	\sum_{\mathrm{i=1}}^{\mathrm{K_f}}
-    	U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $
+    	 U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $
     	in which all $U_{\mathrm{f,i}}()$ are non-decreasing in argument. (No assumption about concavity yet)
 
 \item 
@@ -250,7 +257,7 @@ Due to constraint \eqref{zf_const_gen}, $\gamma_{\mathrm{f,i}}$ takes the form
 	\end{equation}
 	As $\mathbf{h}_{\mathrm{f,i}}\mathbf{h}^H_{\mathrm{f,i}}$ is positive semi-definite, $\gamma_{\mathrm{f,i}}$ is convex in ${\mathbf{u}_{\mathrm{f,i}}}$. 
 \item
-As $U_{\mathrm{f,i}}() $ is non-decreasing by definition, the composition $U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $ is concave only if $U_{\mathrm{f,i}}() $ is concave and non-increasing.
+The composition $U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $ is concave only if $U_{\mathrm{f,i}}() $ is concave and non-increasing; violating the non-decreasing definition of $U_{\mathrm{f,i}}() $.
 \end{itemize}
 
 \item
@@ -300,7 +307,7 @@ in which the term $ \mathbf{\tilde{h}_{\mathrm{m,f}}} \mathbf{\tilde{h}}_{\mathr
 \end{enumerate}
 
 \subsection{Potential Game for General Problem}
-Under the current system model, the game is not a Concave N-Person game. Nevertheless, the game may still admit a potential function which would allow normalized Nash equilibrium to be found by global optima of the potential function. With this in mind, we restrict $U_{\mathrm{f,i}}() $ to the set of convex functions. The potential function problem now becomes the minimization of a concave function.
+Under the current system model, the game is not a Concave N-Person game. Nevertheless, the game may still admit a potential function which would allow 
 
 TODO: 
 \begin{itemize}
@@ -309,6 +316,8 @@ TODO:
 \end{itemize}
 
 \section{Concave System Model}\label{conmodel}
+
+The general setup of this game  seen in the previous section prohibits the use of tools used to find NE efficiently in this context. 
 The following adaption of the general problem permits a unique Nash Equilibrium to be found via a single convex problem which may be distributed across players of the game.
 \subsection{Players: Femtocell Base Stations}
 
@@ -326,6 +335,14 @@ Femtocells are characterized by the following parameters
 	normalized information symbol vector of FC-BS $f$ such that $E[\|\mathbf{x}_{\mathrm{f}}
 	\|_2^2]=1$ and $E[\mathbf{x}_{\mathrm{f}}\mathbf{x}_{\mathrm{f}}^H]=\mathbf{I}_{K_f \times K_f}$ $\forall f \in \{1 ... F\}$.
 \\
+
+\item 
+$\mathbf{U}_f$ is the normalized, Moore-Penrose inverse to $\mathbf{H_\mathrm{f}}$.
+Such that
+\begin{gather*}
+\langle \mathbf{h_{f,j}}\mathbf{u_{f,i}} \rangle =0\  \; \forall j \in \{1... K_f\}\backslash i ,\; \forall i \in \{1 ... K_f\}
+\end{gather*}
+
 \item  
 	FC-BS $f$ allocates  transmission power using the diagonal, power allocation  	
 	matrix $\mathrm{diag}(\mathbf{p}_{\mathrm{f}})$ with $p_{\mathrm{fi}} \geq 0, \forall i \in \{1 ... K_f\}$
@@ -347,13 +364,17 @@ such that the transmitted
 	\mathbf{U_{\mathrm{f}}}^H 
 	)
 	  \leq P^{Total}_{f} 
-	  	\end{gather*}.
+	  	\end{gather*}
 
 % TODO(Simulate degradation with incomplete CSI solution?)
 
+
 \item 
-$\mathbf{U}_f$ is the normalized, Moore-Penrose inverse to $\mathbf{H_\mathrm{f}}$.
-(Check how this is introduced for general case)
+	Cost function $U_f() =
+	\sum_{\mathrm{i=1}}^{\mathrm{K_f}}
+    	U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $
+    	in which all $U_{\mathrm{f,i}}()$ are non-decreasing and concave in argument.
+
 \end{itemize}
 
 \subsection{Macro Cell Users}
@@ -408,7 +429,7 @@ Assuming negligible inter-cell interference, this reduces to
 \end{itemize}
 
 
-\subsection{Concave Optimization Problem of player $f$}
+\subsection{Optimization Problem of player $f$}
 
 
 	\begin{subequations}
@@ -428,7 +449,7 @@ Assuming negligible inter-cell interference, this reduces to
 	\end{subequations}
 
 
-\subsection{Verifying Concavity of Player Optimization Problem}
+\subsection{Concave N-Person game analysis of concave setup}
 
 Sufficient conditions for a concave problem are:
 
@@ -465,19 +486,19 @@ The constraints form a convex, closed and bounded set.
 
 \end{enumerate}
 
+This problem satisfies the conditions for the Concave N-Persion game and therefore a pure strategy Nash Equilibrium exists due to 
+\cite[Thm1]{rosen1964existence}.
 
-
-\subsection{Finding Nash Equilibrium}
-
-
-
+Next, the conditions for unqiueness of this NE are verified. As the utility function $U_{\mathrm{fi}}(p_{\mathrm{fi}})$ is concave in argument and independent of all $p_{\mathrm{fj}}$ the matrix $[G(b,r)+G^{T}(b,r)] $ will be diagonal with (strictly) negative values.
 \subsection{Potential Game for Concave Problem}
 
-\subsubsection{Setup as a Potential Game}
+\textbf{Potential Function:} The proposed potential function satisfying \eqref{potential_game_condition} is 
 
+\begin{gather*} \label{Potential_Function}
+\Psi(\mathbf{p}) = \sum_{f = 1}^{F} U_f(\mathbf{p_{\mathrm{f}}}) 
+\end{gather*}
 
-With this condition satisfied, the solution to the optimization problem 
-
+resulting in the single optimization problem
 	
 		\begin{subequations}
 	\label{optim}
@@ -491,20 +512,9 @@ With this condition satisfied, the solution to the optimization problem
 		\label{interference_const}\\
         & trace(\mathbf{s}_\mathrm{f}\mathbf{s}_\mathrm{f}^H)  \leq P^{Total}_{f}  \label{power_const}
         & \forall f \in \{1 ... F\}\\
-        & p_{\mathrm{f,i}} \geq 0 &  \forall i \in \{1 ...K_{\mathrm{f}}\} \forall f \in \{1 ... F\}\label{pos_power_const}
+        & p_{\mathrm{f,i}} \geq 0 &  \forall i \in \{1 ...K_{\mathrm{f}}\} \; \forall f \in \{1 ... F\}\label{pos_power_const}
 	\end{align}
 	\end{subequations}
-
-is a normalized Nash Equilibrium of the original problem.
-As shown above, this Nash Equilibrium exists and is unique. 
-\\
-\textbf{Potential Function:} The proposed potential function is 
-
-\begin{gather*} \label{Potential_Function}
-\Psi() = \sum_{f = 1}^{F} U_f() 
-\end{gather*}
-
-This is the primary motivation for enforcing $U_f$ as the zero-forcing precoder as this allows the game to satisfy \eqref{potential_game_condition}. 
 
 %\begin{theorem}\label{distributed}
 %\cite{ghosh2015normalized}
@@ -512,7 +522,7 @@ This is the primary motivation for enforcing $U_f$ as the zero-forcing precoder 
 %\end{theorem}
 
 \subsection{Distributed Solution to the Game}
-A desirable feature to \eqref{potential_game} is for methods for reaching the solution to be distributable. This may allow for minimal communication overhead between processes (in this case players and macro users).
+A distribtued solution to \eqref{potential_game} is desired. This may allow for minimal communication overhead between processes (in this case players and macro users).
 \subsubsection{Central Problem Resulting from Potential Game}
 As described in \cite[p.~8,9]{boyd2011distributed}, the dual ascent method can be used to find a distributed solution to this problem using the Lagrangian of \eqref{potential_game}. 
 \\
@@ -528,7 +538,7 @@ L(\mathbf{U,\lambda}) =
 \\
 + 
 \sum_{f=1}^F
-\lambda_{\mathrm{f}}^{'}(trace(\mathbf{s}_\mathrm{f}\mathbf{s}_\mathrm{f}^H)-P^{Total}_{f} )
+\chi_{\mathrm{f}}(trace(\mathbf{s}_\mathrm{f}\mathbf{s}_\mathrm{f}^H)-P^{Total}_{f} )
 +
 \sum_{f=1}^F
 \sum_{i=1}^{K_f}
@@ -555,11 +565,10 @@ U_f()
 +
 \sum_{\mathrm{m=1}}^M \lambda_{\mathrm{m}}
 (\mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{s}_{\mathrm{f}} 						
-	\mathbf{s_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} - I^{Threshold}		
-	_{\mathrm{m}} )
+	\mathbf{s_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} - \frac{I^{Threshold}_{\mathrm{m}}}{F})
 \\
 + 
-\lambda_{\mathrm{f}}^{'}(trace(\mathbf{s}_\mathrm{f}\mathbf{s}_\mathrm{f}^H)-P^{Total}_{f} )
+\chi_{\mathrm{f}}(trace(\mathbf{s}_\mathrm{f}\mathbf{s}_\mathrm{f}^H)-P^{Total}_{f} )
 +
 \sum_{i=1}^{K_f}
 \nu_{\mathrm{f,i}}(-p_{\mathrm{f,i}})\}
@@ -572,24 +581,16 @@ The following steps can then be iterated in order to reach an optimal solution.
 Individual players can solve $ g_f(\lambda,\nu) $ independently.
 \begin{itemize}
 \item Setting $\frac{\partial g_f(\lambda,\nu)}{\partial p_{\mathrm{f,i}}} = 0$ 
+
 \item 
-\begin{gather}
- \frac{\partial g_f(\lambda,\nu)}{\partial p_{\mathrm{f,i}}} =
-  \frac{-1}{1+\gamma_{\mathrm{f,i}}}(\frac{\|\mathbf{h^H_{\mathrm{f,i}}
-	u_{\mathrm{f,i}}}x_{\mathrm{fi}}\|^2_2}{\sigma^2})+
-\sum_{\mathrm{m=1}}^{\mathrm{M}}\lambda_{\mathrm{m}}\|[\mathbf{\tilde{h}}_{m,f}^T \mathbf{U_f}]_{\mathrm{i}}\|^2_2 +
-\lambda^{\prime}_{f} \|\mathbf{u}_{\mathrm{f,i}}\|^2_2
--\nu_{\mathrm{f,i}} = 0
-\end{gather}
-\item 
-Solving for $p_{\mathrm{f,i}}$ using \eqref{zf_snr_expanded}
+Solving for $p_{\mathrm{fi}}$ using \eqref{zf_snr_expanded} yields
 
 \begin{gather}
-p_{\mathrm{f,i}} =
-  \frac{-1}{1+\gamma_{\mathrm{f,i}}}(\frac{\| ...\|^2_2}{\sigma^2})+
-\sum_{\mathrm{m=1}}^{\mathrm{M}}+\lambda_{\mathrm{m}}\| ...\|^2_2 +
-\lambda^{\prime}_{f} \|\|^2_2
--\nu_{\mathrm{f,i}} = 0
+p_{\mathrm{fi}} = (\sum_{\mathrm{m=1}}^{\mathrm{M}}\lambda_{\mathrm{m}}\|\mathbf{\tilde{h}}_{m,f}^T \mathbf{U_f}_{\mathrm{i}}\|^2_2
++\chi_{f} \|\mathbf{u}_{\mathrm{f,i}}\|^2_2
+-\nu_{\mathrm{f,i}}
+ )^{-1}
+  - \sigma^2_n
 \end{gather}
 
 \end{itemize}
@@ -601,10 +602,33 @@ Using $g(\lambda,\nu) = \sum_{f=1}^{F}g_f(\lambda,\nu)$ and the calculus of subg
 \lambda_{\mathrm{m}}^{\mathrm{k}}
 +
 \alpha^{\mathrm{k}}*
-\partial g(\lambda,\nu)
+(
+\sum _{\mathrm{f=1}}^{\mathrm{F}}
+\sum _{\mathrm{i=1}}^{\mathrm{K_{\mathrm{f}}}}
+p_{\mathrm{fi}}
+\|\mathbf{\tilde{h}}_{\mathrm{mf}}^T \mathbf{u_{\mathrm{fi}}}\|^2_2 
+- I_{\mathrm{m}}
+)
 \end{gather}
 
-using to predefined $\alpha^{\mathrm{k}}$ which must satisfy certain sumability conditions.
+
+\begin{gather}
+\chi_{\mathrm{f}}^{\mathrm{k+1}} = 
+\chi_{\mathrm{f}}^{\mathrm{k}}
++
+\alpha^{\mathrm{k}}*
+(\sum_{\mathrm{i=1}}^{\mathrm{K_{\mathrm{f}}}} p_{\mathrm{fi}} - P_{\mathrm{f}}^{Total}) 
+\end{gather}
+
+\begin{gather}
+\nu_{\mathrm{fi}}^{\mathrm{k+1}} = 
+\nu_{\mathrm{fi}}^{\mathrm{k}}
++
+\alpha^{\mathrm{k}}*
+(-p_{\mathrm{fi}})
+\end{gather}
+
+using predefined $\alpha^{\mathrm{k}}$ which must satisfy certain sumability conditions.
 
 
 
@@ -612,11 +636,7 @@ using to predefined $\alpha^{\mathrm{k}}$ which must satisfy certain sumability 
 
 TODO 
 \begin{itemize}
-\item show proof convergence conditions of this algorithm
-\item check if the distributed solution depends on strict convexity (or is  the solution for these methods needs to be unique)-> Doesn't seem so
-\item see if 1st update is bounded (if not, a new method will be needed)
-\item begin looking at how to choose the update step-size in the second step
-\item after writing explicitly, verify that no information passing between Femtocells will be needed 
+\item Detail the required information passing between system components needed for such a solution
 \end{itemize}
 
 \chapter{Results}
