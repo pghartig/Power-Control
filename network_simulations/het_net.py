@@ -68,11 +68,14 @@ class Het_Network():
         return self.base_stations
 
     def allocate_power_step(self, num_iterations):
+        social_utility_vector = []
+        social_utility_vector.append(self.get_social_utility())
         for i in range(num_iterations):
             #   First step in dual ascent -> find dual function
             [player.solve_local_opimization() for player in self.base_stations]
             #   Second step of dual ascent -> update dual variables based on values from first step
             self.__update_dual_variables(i)
+            social_utility_vector.append(self.get_social_utility())
 
     def __update_dual_variables(self,itr_step):
         """
@@ -122,6 +125,12 @@ class Het_Network():
             locations.append(user.location)
         locations = np.asarray(locations)
         return locations
+
+    def get_social_utility(self):
+        total = 0
+        for base_station in self.base_stations:
+            total += base_station.get_utility()
+        return total
 
     def get_base_stations(self):
         return self.base_stations
@@ -187,7 +196,6 @@ class Femto_Base_Station():
             self.users.append(new_user)
         self.positivity_dual_variable = np.ones((len(self.users)))
 
-
     def setup_users(self):
         for user in self.users:
             user.setup_channels()
@@ -212,6 +220,12 @@ class Femto_Base_Station():
     def getID(self):
         return self.ID
 
+    def get_location(self):
+        return self.location
+
+    def get_user_info(self, ID):
+        return self.power_vector[ID], self.beam_forming_matrix[:, ID]
+
     def move_femto_users(self):
         for user in self.users:
             user.move()
@@ -219,13 +233,11 @@ class Femto_Base_Station():
     def setup_location(self):
         return np.array((np.random.randint(0,self.network.coverage_area[0]), np.random.randint(0,self.network.coverage_area[1])))
 
-    def get_user_sinr(self):
-        all_sinr = []
-        for ind, user in enumerate(self.users):
-            beam = self.beam_forming_matrix[:,ind]
-            channel = user.get_channel_for_base_station(self.ID)
-            all_sinr.append(cp.log(cp.abs(beam.H@channel*channel.conj().T@beam)))
-        return all_sinr
+    def get_utility(self):
+        utility = 0
+        for user in self.users:
+            utility += user.get_sinr()
+        return utility
 
     def solve_local_opimization(self):
         for ind, element in enumerate(self.power_vector):
@@ -248,10 +260,6 @@ class Femto_Base_Station():
         self.power_dual_variable += step*(np.sum(self.power_vector) - self.power_constaint)
         #Update whole vector
         self.positivity_dual_variable += step*(-self.power_vector)
-
-
-
-
 
 
 class User:
@@ -319,12 +327,16 @@ class Femto_User(User):
 
     def setup_channels(self):
         for base_station in self.network.base_stations:
-            self.downlink_channels[str(base_station.ID)] = np.random.randn(base_station.number_antennas)
+            distance_to_base_station = base_station.get_location()-self.location
+            sqrt_gain = 1/np.linalg.norm(distance_to_base_station)
+            self.downlink_channels[str(base_station.ID)] = np.random.randn(base_station.number_antennas)*sqrt_gain
 
     def update_power(self, power):
         self.power_from_base_station = power
         self.SINR = self.get_sinr()
 
     def get_sinr(self):
+        power, beamformer = self.parent.get_user_info(self.ID)
         channel = self.downlink_channels[str(self.parent.getID())]
-        self.SINR = channel/(self.noise_power+self.interference)
+        self.SINR = power*pow(np.linalg.norm(channel@beamformer),2)/(self.noise_power+self.interference)
+        return self.SINR
