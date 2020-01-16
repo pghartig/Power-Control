@@ -14,9 +14,13 @@ def test_dist_optimization():
 
     # Choose number of iterations to allow
     num_iterations = 100
-    steps = network.allocate_power_step(num_iterations)
+    utilities, duals = network.allocate_power_step(num_iterations)
     network.print_layout()
     plt.figure()
-    plt.plot(np.arange(num_iterations+1), steps)
+    plt.plot(np.arange(num_iterations+1), utilities)
+    plt.figure()
+    duals = np.asarray(duals)
+    for columns in range(duals.shape[1]):
+        plt.plot(duals[:, columns])
     plt.show()
 

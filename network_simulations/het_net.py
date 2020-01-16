@@ -69,16 +69,18 @@ class Het_Network():
 
     def allocate_power_step(self, num_iterations):
         social_utility_vector = []
+        average_duals = []
         social_utility_vector.append(self.get_social_utility())
         #   intitialize with correct duals given the starting allocation
         step_size = 1e-3
         for i in range(num_iterations):
+            average_duals.append(self.get_average_duals())
             #   First step in dual ascent -> find dual function
             [player.solve_local_opimization() for player in self.base_stations]
             #   Second step of dual ascent -> update dual variables based on values from first step
             self.__update_dual_variables(step_size, i)
             social_utility_vector.append(self.get_social_utility())
-        return social_utility_vector
+        return social_utility_vector, average_duals
 
     def __update_dual_variables(self, itr_step, itr_idx):
         """
@@ -88,7 +90,7 @@ class Het_Network():
         # First update the dual variables of the macro users
         [player.update_dual_variables(itr_step, itr_idx) for player in self.base_stations]
         [macro_user.update_dual_variables(itr_step, itr_idx) for macro_user in self.macro_users]
-        pass
+
         # Second update the dual variables for the other constraints (Note this order doesn't matter)
 
     def update_macro_cells(self):
@@ -136,6 +138,21 @@ class Het_Network():
 
     def get_base_stations(self):
         return self.base_stations
+
+    def get_average_duals(self):
+        """
+        a function to be used for tracking convergence of the power allocation
+        :return:
+        """
+        pow_dual = []
+        pos_dual = []
+        int_dual = []
+        for bs in self.base_stations:
+            pow_dual.append(bs.power_dual_variable)
+            pos_dual.append(np.average(bs.positivity_dual_variable))
+        for mcu in self.macro_users:
+            int_dual.append(mcu.dual_variable)
+        return np.average(pow_dual), np.average(pos_dual), np.average(int_dual)
 
     def print_layout(self):
         plt.figure()
