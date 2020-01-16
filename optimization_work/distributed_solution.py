@@ -1,14 +1,22 @@
 from network_simulations import het_net
 import cvxpy as cp
+import matplotlib.pyplot as plt
+import numpy as np
+
 """
 first setup the network according using the het_net class then consolidate all of the information from the network to solve the central optimization problem
 """
 
 def test_dist_optimization():
-    network = het_net.Het_Network(10, 10, 5, 10, 1,power_vector_setup=True)
+    num_users = 10
+    num_antenna = num_users + 5
+    network = het_net.Het_Network(5, 30, num_users, num_antenna, .1, power_vector_setup=True)
 
     # Choose number of iterations to allow
-    num_iterations = 10
-    network.allocate_power_step(num_iterations)
-
+    num_iterations = 100
+    steps = network.allocate_power_step(num_iterations)
     network.print_layout()
+    plt.figure()
+    plt.plot(np.arange(num_iterations+1), steps)
+    plt.show()
+
