@@ -4,7 +4,7 @@ import cvxpy as cp
 
 class Het_Network():
     def __init__(self, num_femto_cells, num_macro_users, max_users,
-                 max_antennas, interference_threshold, power_vector_setup=False):
+                 max_antennas, interference_threshold, power_limit, power_vector_setup=False):
         """
         TODO Enforce players have more antennas than users
         :param num_femto_cells:
@@ -17,7 +17,8 @@ class Het_Network():
         self.base_stations = []
         # these loops should probably be moved out of the constructor
         [self.base_stations.append(Femto_Base_Station(i, self, np.random.randint(1, max_users+1)
-                                                      , np.random.randint(1, max_antennas+1),power_vector_setup))
+                                                      , np.random.randint(1, max_antennas+1),power_vector_setup,
+                                                      power_limit=power_limit))
          for i in range(num_femto_cells)]
         self.macro_users = []
         [self.macro_users.append(Macro_User(i, self, interference_threshold)) for i in range(num_macro_users)]
@@ -159,7 +160,9 @@ class Het_Network():
         for mcu in self.macro_users:
             int_dual.append(mcu.dual_variable)
             interference.append(mcu.interference)
-        return np.average(pow_dual), np.average(pos_dual), np.average(int_dual), np.average(interference), np.average(ave_power)
+        # return np.average(pow_dual), np.average(pos_dual), np.average(int_dual), np.average(interference), np.average(ave_power)
+        # return np.average(interference), np.average(ave_power)
+        return np.average(pow_dual), np.average(int_dual)
 
     def print_layout(self):
         plt.figure()
@@ -172,9 +175,13 @@ class Het_Network():
         plt.scatter(mu_locations[:,0],mu_locations[:,1], marker='X', label="MCU")
         plt.legend(loc='upper left')
 
+    def change_power_limit(self, new_limit):
+        for bs in self.base_stations:
+            bs.power_constaint = new_limit
+
 
 class Femto_Base_Station():
-    def __init__(self, ID, network, num_femto_users, num_antenna, power_vector_setup, utility_function=np.sum):
+    def __init__(self, ID, network, num_femto_users, num_antenna, power_vector_setup, power_limit, utility_function=np.sum):
         self.ID = ID
         self.users = []
         # Ensure there are always more antennas than users
@@ -189,7 +196,7 @@ class Femto_Base_Station():
             self.beam_forming_matrix = np.zeros((self.number_antennas, num_femto_users))
             self.power_vector = np.ones((num_femto_users))
         self.connect_users(num_femto_users)
-        self.power_constaint = 1000
+        self.power_constaint = power_limit
         self.utility_function = utility_function
         self.H = None
         self.H_tilde = None
@@ -347,7 +354,7 @@ class Macro_User(User):
         User.__init__(self, ID, network)
         self.interference = 0
         self.interference_threshold = interference_threshold
-        self.dual_variable = 10
+        self.dual_variable = .1
         self.move()
 
 
@@ -408,7 +415,7 @@ class Femto_User(User):
         channel = self.downlink_channels[str(self.parent.getID())]
         self.SINR = power*pow(np.linalg.norm(channel@beamformer),2)/(self.noise_power+self.interference)
         # for testing just return the power
-        self.SINR = power
+        # self.SINR = power
         return self.SINR
 
     def move(self):
