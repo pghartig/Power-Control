@@ -82,6 +82,10 @@ class Het_Network():
             social_utility_vector.append(self.get_social_utility())
         return social_utility_vector, average_duals
 
+    def update_beam_formers(self):
+        for base_station in self.base_stations:
+            base_station.update_beamformer(optimize=True)
+
     def __update_dual_variables(self, itr_step, itr_idx):
         """
         Update all dual variables in the distributed optimization problem
@@ -106,7 +110,6 @@ class Het_Network():
         for base_station in self.base_stations:
             base_station.setup_users()
             base_station.update_beamformer()
-
 
     def move_femto_users(self):
         for cell in self.base_stations:
@@ -147,12 +150,16 @@ class Het_Network():
         pow_dual = []
         pos_dual = []
         int_dual = []
+        interference = []
+        ave_power = []
         for bs in self.base_stations:
             pow_dual.append(bs.power_dual_variable)
             pos_dual.append(np.average(bs.positivity_dual_variable))
+            ave_power.append(np.average(bs.power_vector))
         for mcu in self.macro_users:
             int_dual.append(mcu.dual_variable)
-        return np.average(pow_dual), np.average(pos_dual), np.average(int_dual)
+            interference.append(mcu.interference)
+        return np.average(pow_dual), np.average(pos_dual), np.average(int_dual), np.average(interference), np.average(ave_power)
 
     def print_layout(self):
         plt.figure()
@@ -195,17 +202,38 @@ class Femto_Base_Station():
         self.utility_function = self.utility_function(self.get_user_sinr())
         pass
 
-    def update_beamformer(self):
+    def update_beamformer(self, optimize = False):
         """
         For the power vector setup this function is used to update the zero-forcing pre-coder
         to the current down-link channel
         :return:
         """
         #   find zero-forcing matrix (should be a tall matrix in general)
-        self.beam_forming_matrix = np.linalg.pinv(self.H)
+        if optimize == True:
+            self.beam_forming_matrix = self.optimize_beam_former()
+            check = self.H@self.beam_forming_matrix
+        else:
+            self.beam_forming_matrix = np.linalg.pinv(self.H)
+
         #   normalize columns of the matrix
         for column in range(self.beam_forming_matrix.shape[1]):
-            self.beam_forming_matrix[:,column] /= np.linalg.norm(self.beam_forming_matrix[:,column])
+            self.beam_forming_matrix[:, column] /= np.linalg.norm(self.beam_forming_matrix[:,column])
+
+    def optimize_beam_former(self):
+        # Setup variables (beamformer)
+        x = cp.Variable(self.beam_forming_matrix.shape)
+        # Setup constraints (Zero-Forcing Constraint)
+        # constr = [cp.trace(cp.matmul(self.H@x, x.T@self.H.T)) == 0]
+        constr = [self.H@x == np.eye(self.H.shape[0])]
+        # Setup problem and solve
+        utility = []
+        utility += [cp.sum_squares(self.H_tilde[m,:]@x) for m in range(self.H_tilde.shape[0])]
+        prob = cp.Problem(cp.Minimize(cp.sum(utility)), constr)
+        # prob = cp.Problem(cp.Minimize(cp.trace(cp.matmul(self.H_tilde@x, x.T@self.H_tilde.T))), constr)
+        prob.solve()
+        # Return optimial beamforming matrix
+        beam_former = x.value
+        return beam_former
 
     def reconize_macro_user(self, users):
         for macro_user in users:
@@ -222,6 +250,7 @@ class Femto_Base_Station():
         for user in self.users:
             user.setup_channels()
         self.get_user_channel_matrices()
+        self.get_macro_channel_matrices()
 
     def get_user_channel_matrices(self):
         downlink = []
@@ -259,7 +288,7 @@ class Femto_Base_Station():
     def get_utility(self):
         utility = 0
         for user in self.users:
-            utility += user.get_sinr()
+            utility += np.log(1+user.get_sinr())
         return utility
 
     def solve_local_opimization(self):
@@ -378,6 +407,8 @@ class Femto_User(User):
         power, beamformer = self.parent.get_user_info(self.ID)
         channel = self.downlink_channels[str(self.parent.getID())]
         self.SINR = power*pow(np.linalg.norm(channel@beamformer),2)/(self.noise_power+self.interference)
+        # for testing just return the power
+        self.SINR = power
         return self.SINR
 
     def move(self):
