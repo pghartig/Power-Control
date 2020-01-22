@@ -83,9 +83,9 @@ class Het_Network():
             social_utility_vector.append(self.get_social_utility())
         return social_utility_vector, average_duals
 
-    def update_beam_formers(self):
+    def update_beam_formers(self, set=False):
         for base_station in self.base_stations:
-            base_station.update_beamformer(optimize=True)
+            base_station.update_beamformer(optimize=True, set=set)
 
     def __update_dual_variables(self, itr_step, itr_idx):
         """
@@ -160,9 +160,9 @@ class Het_Network():
         for mcu in self.macro_users:
             int_dual.append(mcu.dual_variable)
             interference.append(mcu.interference)
-        # return np.average(pow_dual), np.average(pos_dual), np.average(int_dual), np.average(interference), np.average(ave_power)
+        return np.average(pow_dual), np.average(pos_dual), np.average(int_dual), np.average(interference), np.average(ave_power)
         # return np.average(interference), np.average(ave_power)
-        return np.average(pow_dual), np.average(int_dual)
+        # return np.average(pow_dual), np.average(int_dual)
 
     def print_layout(self):
         plt.figure()
@@ -209,7 +209,7 @@ class Femto_Base_Station():
         self.utility_function = self.utility_function(self.get_user_sinr())
         pass
 
-    def update_beamformer(self, optimize = False):
+    def update_beamformer(self, optimize = False, set = False):
         """
         For the power vector setup this function is used to update the zero-forcing pre-coder
         to the current down-link channel
@@ -217,7 +217,7 @@ class Femto_Base_Station():
         """
         #   find zero-forcing matrix (should be a tall matrix in general)
         if optimize == True:
-            self.beam_forming_matrix = self.optimize_beam_former()
+            self.beam_forming_matrix = self.optimize_beam_former(set)
             check = self.H@self.beam_forming_matrix
         else:
             self.beam_forming_matrix = np.linalg.pinv(self.H)
@@ -226,15 +226,27 @@ class Femto_Base_Station():
         for column in range(self.beam_forming_matrix.shape[1]):
             self.beam_forming_matrix[:, column] /= np.linalg.norm(self.beam_forming_matrix[:,column])
 
-    def optimize_beam_former(self):
+    def optimize_beam_former(self, set = False):
         # Setup variables (beamformer)
         x = cp.Variable(self.beam_forming_matrix.shape)
+        if set == True:
+            # choose set that can be nulled given the remaining degrees of freedom.
+            dof = self.number_antennas - len(self.users)
+            correlations = np.linalg.norm(self.H_tilde@self.beam_forming_matrix, axis=1)
+            check = np.argsort(correlations)
+            macro_user_matrix = np.zeros((dof, self.number_antennas))
+            for i in range(dof):
+                arg = np.argmax(correlations)
+                correlations[arg] = 0
+                macro_user_matrix[i, :] = self.H_tilde[arg,:]
+        else:
+            macro_user_matrix = self.H_tilde
         # Setup constraints (Zero-Forcing Constraint)
         # constr = [cp.trace(cp.matmul(self.H@x, x.T@self.H.T)) == 0]
         constr = [self.H@x == np.eye(self.H.shape[0])]
         # Setup problem and solve
         utility = []
-        utility += [cp.sum_squares(self.H_tilde[m,:]@x) for m in range(self.H_tilde.shape[0])]
+        utility += [cp.sum_squares(macro_user_matrix[m,:]@x) for m in range(macro_user_matrix.shape[0])]
         prob = cp.Problem(cp.Minimize(cp.sum(utility)), constr)
         # prob = cp.Problem(cp.Minimize(cp.trace(cp.matmul(self.H_tilde@x, x.T@self.H_tilde.T))), constr)
         prob.solve()
