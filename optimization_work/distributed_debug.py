@@ -17,7 +17,7 @@ def test_dist_debug():
     for_comp.change_power_limit(1000)
     for_comp.update_beam_formers(set=True)
     # Choose number of iterations to allow
-    num_iterations = 200
+    num_iterations = 100
     utilities, duals = network.allocate_power_step(num_iterations)
     test_utilities, test_duals = for_comp.allocate_power_step(num_iterations)
     duals = np.asarray(duals)

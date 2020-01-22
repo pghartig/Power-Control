@@ -316,9 +316,9 @@ class Femto_Base_Station():
             user_i_channel = self.users[ind].get_channel_for_base_station(self.ID)
             for m_user in self.macro_users:
                 macro_user_channel = m_user.get_channel_for_base_station(self.ID)
-                test = pow(np.linalg.norm(user_i_channel*macro_user_channel),2)
-                c += m_user.get_dual_variable()*pow(np.linalg.norm(user_i_channel*macro_user_channel),2)
-            # check = pow(np.linalg.norm(user_i_channel),2)
+                test = pow(np.linalg.norm(user_i_channel*macro_user_channel), 2)
+                c += m_user.get_dual_variable()*pow(np.linalg.norm(user_i_channel*macro_user_channel), 2)
+            check = pow(np.linalg.norm(user_i_channel),2)
             c += self.power_dual_variable
             c -= self.positivity_dual_variable[ind]
             #   prohibit negative powers
@@ -335,9 +335,7 @@ class Femto_Base_Station():
         # self.positivity_dual_variable += pow(step,idx)*(-self.power_vector)
         self.positivity_dual_variable += step*(-self.power_vector)
         test = np.zeros(self.positivity_dual_variable.size)
-        self.positivity_dual_variable = np.max((np.zeros(self.positivity_dual_variable.size),self.positivity_dual_variable),axis=0)
-
-        pass
+        self.positivity_dual_variable = np.max((np.zeros(self.positivity_dual_variable.size), self.positivity_dual_variable), axis=0)
 
     def get_user_locations(self):
         locations = []
