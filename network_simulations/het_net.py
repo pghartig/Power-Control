@@ -68,12 +68,13 @@ class Het_Network():
     def get_femto_cells(self):
         return self.base_stations
 
-    def allocate_power_step(self, num_iterations):
+    def allocate_power_step(self, num_iterations, step_size):
         social_utility_vector = []
         average_duals = []
+        feasibility = []
         social_utility_vector.append(self.get_social_utility())
         #   intitialize with correct duals given the starting allocation
-        step_size = 1e-3
+        self.__update_dual_variables(step_size,0)
         for i in range(num_iterations):
             average_duals.append(self.get_average_duals())
             #   First step in dual ascent -> find dual function
@@ -81,7 +82,17 @@ class Het_Network():
             #   Second step of dual ascent -> update dual variables based on values from first step
             self.__update_dual_variables(step_size, i)
             social_utility_vector.append(self.get_social_utility())
-        return social_utility_vector, average_duals
+            feasibility.append(self.verify_feasibility())
+        return social_utility_vector, average_duals, self.verify_feasibility()
+
+    def verify_feasibility(self):
+        for bs in self.base_stations:
+            if np.sum(bs.power_vector) >= bs.power_constaint or np.any(bs.power_vector < 0):
+                return False
+        for mcu in self.macro_users:
+            if mcu.interference >= mcu.interference_threshold:
+                return False
+        return True
 
     def update_beam_formers(self, set=False):
         for base_station in self.base_stations:
@@ -152,15 +163,15 @@ class Het_Network():
         pos_dual = []
         int_dual = []
         interference = []
-        ave_power = []
+        sum_power = []
         for bs in self.base_stations:
             pow_dual.append(bs.power_dual_variable)
             pos_dual.append(np.average(bs.positivity_dual_variable))
-            ave_power.append(np.average(bs.power_vector))
+            sum_power.append(np.sum(bs.power_vector))
         for mcu in self.macro_users:
             int_dual.append(mcu.dual_variable)
             interference.append(mcu.interference)
-        return np.average(pow_dual), np.average(pos_dual), np.average(int_dual), np.average(interference), np.average(ave_power)
+        return np.average(pow_dual), np.average(pos_dual), np.average(int_dual), np.average(interference), np.average(sum_power)
         # return np.average(interference), np.average(ave_power)
         # return np.average(pow_dual), np.average(int_dual)
 
@@ -194,15 +205,16 @@ class Femto_Base_Station():
             self.beam_forming_matrix = cp.Variable((self.number_antennas, num_femto_users), complex=True)
         else:
             self.beam_forming_matrix = np.zeros((self.number_antennas, num_femto_users))
-            self.power_vector = np.ones((num_femto_users))
+            self.power_vector = np.ones((num_femto_users))*(power_limit/(2*num_femto_users))
+        self.sigma_square = 1e-3
         self.connect_users(num_femto_users)
         self.power_constaint = power_limit
         self.utility_function = utility_function
         self.H = None
         self.H_tilde = None
         self.power_vector_setup = power_vector_setup
-        self.sigma_square = 1e-6
-        self.power_dual_variable = 10
+        self.power_dual_variable = np.random.randn()
+        # self.power_dual_variable = 10
 
     #TODO type this parameter as macro user
     def setup_utility(self):
@@ -261,9 +273,10 @@ class Femto_Base_Station():
 
     def connect_users(self, num_femto_users):
         for ind in range(num_femto_users):
-            new_user = Femto_User(ind, self.network, self)
+            new_user = Femto_User(ind, self.network, self, sigma_square=self.sigma_square)
             self.users.append(new_user)
-        self.positivity_dual_variable = np.ones((len(self.users)))*.1
+        # self.positivity_dual_variable = np.ones((len(self.users)))*.1
+        self.positivity_dual_variable = np.random.randn(len(self.users))
 
     def setup_users(self):
         for user in self.users:
@@ -330,12 +343,12 @@ class Femto_Base_Station():
         check = step*(np.sum(self.power_vector) - self.power_constaint)
         # self.power_dual_variable += pow(step,idx)*(np.sum(self.power_vector) - self.power_constaint)
         self.power_dual_variable += step*(np.sum(self.power_vector) - self.power_constaint)
-        self.power_dual_variable = np.max((0,self.power_dual_variable))
+        # self.power_dual_variable = np.max((0,self.power_dual_variable))
+
         #Update whole vector
         # self.positivity_dual_variable += pow(step,idx)*(-self.power_vector)
         self.positivity_dual_variable += step*(-self.power_vector)
-        test = np.zeros(self.positivity_dual_variable.size)
-        self.positivity_dual_variable = np.max((np.zeros(self.positivity_dual_variable.size), self.positivity_dual_variable), axis=0)
+        # self.positivity_dual_variable = np.max((np.zeros(self.positivity_dual_variable.size), self.positivity_dual_variable), axis=0)
 
     def get_user_locations(self):
         locations = []
@@ -364,7 +377,8 @@ class Macro_User(User):
         User.__init__(self, ID, network)
         self.interference = 0
         self.interference_threshold = interference_threshold
-        self.dual_variable = .1
+        self.dual_variable = np.random.randn()
+        # self.dual_variable = .1
         self.move()
 
 
@@ -387,7 +401,7 @@ class Macro_User(User):
                 total+= power*pow(np.linalg.norm(channel@beamformer),2)
         # self.dual_variable += pow(step,idx)*(total - self.interference_threshold)
         self.dual_variable += step*(total - self.interference_threshold)
-        self.dual_variable = np.max((0, self.dual_variable))
+        # self.dual_variable = np.max((0, self.dual_variable))
         self.interference = total
 
     def get_dual_variable(self):
@@ -395,7 +409,7 @@ class Macro_User(User):
 
 
 class Femto_User(User):
-    def __init__(self, ID, network, parent, sigma_square=1):
+    def __init__(self, ID, network, parent, sigma_square=1e-3):
         """
         For now assume that the femto users are only single antenna
         :param ID:
@@ -423,9 +437,7 @@ class Femto_User(User):
     def get_sinr(self):
         power, beamformer = self.parent.get_user_info(self.ID)
         channel = self.downlink_channels[str(self.parent.getID())]
-        self.SINR = power*pow(np.linalg.norm(channel@beamformer),2)/(self.noise_power+self.interference)
-        # for testing just return the power
-        # self.SINR = power
+        self.SINR = power*pow(np.linalg.norm(channel@beamformer), 2)/(self.noise_power+self.interference)
         return self.SINR
 
     def move(self):

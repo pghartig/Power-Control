@@ -407,7 +407,7 @@ with AWGN $\sim \mathcal{N}(0,\sigma^2_n)$
 \\
 
 Assuming negligible inter-cell interference, this reduces to
-	\begin{equation*}
+	\begin{equation*} \label{user_sinr}
 	\gamma_{\mathrm{f,i}} = \frac{p_{\mathrm{fi}}\|\mathbf{h^H_{\mathrm{f,i}}
 	u_{\mathrm{f,i}}}x_{\mathrm{fi}}\|^2}
 	{\sigma^2_{noise} 
@@ -583,7 +583,7 @@ Individual players can solve $ g_f(\lambda,\nu) $ independently.
 \item Setting $\frac{\partial g_f(\lambda,\nu)}{\partial p_{\mathrm{f,i}}} = 0$ 
 
 \item 
-Solving for $p_{\mathrm{fi}}$ using \eqref{zf_snr_expanded} yields
+Solving for $p_{\mathrm{fi}}$ using \eqref{user_sinr} yields
 
 \begin{gather}
 p_{\mathrm{fi}} = (\sum_{\mathrm{m=1}}^{\mathrm{M}}\lambda_{\mathrm{m}}\|\mathbf{\tilde{h}}_{m,f}^T \mathbf{U_f}_{\mathrm{i}}\|^2_2
