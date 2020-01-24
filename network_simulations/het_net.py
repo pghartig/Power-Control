@@ -1,10 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import cvxpy as cp
+import time
 
 class Het_Network():
     def __init__(self, num_femto_cells, num_macro_users, max_users,
-                 max_antennas, interference_threshold, power_limit, power_vector_setup=False):
+                 max_antennas, interference_threshold, power_limit, power_vector_setup=False, random=True):
         """
         TODO Enforce players have more antennas than users
         :param num_femto_cells:
@@ -16,9 +17,11 @@ class Het_Network():
         self.coverage_area = (50, 50)
         self.base_stations = []
         # these loops should probably be moved out of the constructor
-        [self.base_stations.append(Femto_Base_Station(i, self, np.random.randint(1, max_users+1)
-                                                      , np.random.randint(1, max_antennas+1),power_vector_setup,
-                                                      power_limit=power_limit))
+        if random ==False:
+            [self.base_stations.append(Femto_Base_Station(i, self, max_users,max_antennas, power_vector_setup, power_limit=power_limit)) for i in range(num_femto_cells)]
+        else:
+            [self.base_stations.append(Femto_Base_Station(i, self, np.random.randint(1, max_users+1)
+                                                          , np.random.randint(1, max_antennas+1),power_vector_setup, power_limit=power_limit))
          for i in range(num_femto_cells)]
         self.macro_users = []
         [self.macro_users.append(Macro_User(i, self, interference_threshold)) for i in range(num_macro_users)]
@@ -82,12 +85,17 @@ class Het_Network():
             #   Second step of dual ascent -> update dual variables based on values from first step
             self.__update_dual_variables(step_size, i)
             social_utility_vector.append(self.get_social_utility())
-            feasibility.append(self.verify_feasibility())
+            # feasibility.append(self.verify_feasibility())
         return social_utility_vector, average_duals, self.verify_feasibility()
 
     def verify_feasibility(self):
         for bs in self.base_stations:
-            if np.sum(bs.power_vector) >= bs.power_constaint or np.any(bs.power_vector < 0):
+            check1 = np.any(bs.power_vector < 0)
+            check2 = np.sum(bs.power_vector)-(.01*bs.power_constaint) >= bs.power_constaint
+
+            # Note that as the dual ascent will generall not be feasible according to the original constraints
+            # as the dual is always a lower bound, the should be a tolerance on fulfilling the constaints in the result
+            if np.sum(bs.power_vector)-(.05*bs.power_constaint) >= bs.power_constaint or np.any(bs.power_vector < 0):
                 return False
         for mcu in self.macro_users:
             if mcu.interference >= mcu.interference_threshold:
@@ -185,6 +193,8 @@ class Het_Network():
         mu_locations = self.get_macro_locations()
         plt.scatter(mu_locations[:,0],mu_locations[:,1], marker='X', label="MCU")
         plt.legend(loc='upper left')
+        time_path = "Output/system" + f"{time.time()}" + "curves.png"
+        plt.savefig(time_path, format="png")
 
     def change_power_limit(self, new_limit):
         for bs in self.base_stations:
@@ -196,7 +206,7 @@ class Femto_Base_Station():
         self.ID = ID
         self.users = []
         # Ensure there are always more antennas than users
-        self.number_antennas = num_antenna+num_femto_users
+        self.number_antennas = num_antenna
         self.macro_users = []
         self.network = network
         self.location = self.setup_location()
@@ -343,12 +353,12 @@ class Femto_Base_Station():
         check = step*(np.sum(self.power_vector) - self.power_constaint)
         # self.power_dual_variable += pow(step,idx)*(np.sum(self.power_vector) - self.power_constaint)
         self.power_dual_variable += step*(np.sum(self.power_vector) - self.power_constaint)
-        # self.power_dual_variable = np.max((0,self.power_dual_variable))
+        self.power_dual_variable = np.max((0,self.power_dual_variable))
 
         #Update whole vector
         # self.positivity_dual_variable += pow(step,idx)*(-self.power_vector)
         self.positivity_dual_variable += step*(-self.power_vector)
-        # self.positivity_dual_variable = np.max((np.zeros(self.positivity_dual_variable.size), self.positivity_dual_variable), axis=0)
+        self.positivity_dual_variable = np.max((np.zeros(self.positivity_dual_variable.size), self.positivity_dual_variable), axis=0)
 
     def get_user_locations(self):
         locations = []
@@ -401,7 +411,7 @@ class Macro_User(User):
                 total+= power*pow(np.linalg.norm(channel@beamformer),2)
         # self.dual_variable += pow(step,idx)*(total - self.interference_threshold)
         self.dual_variable += step*(total - self.interference_threshold)
-        # self.dual_variable = np.max((0, self.dual_variable))
+        self.dual_variable = np.max((0, self.dual_variable))
         self.interference = total
 
     def get_dual_variable(self):

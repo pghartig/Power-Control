@@ -3,47 +3,66 @@ import cvxpy as cp
 import matplotlib.pyplot as plt
 import numpy as np
 import copy
+import time
 
 """
 first setup the network according using the het_net class then consolidate all of the information from the network to solve the central optimization problem
 """
 
 def test_dist_debug():
-    num_users = 10
-    num_antenna = num_users + 10
+    num_users = 2
+    num_antenna = 3
     step_size = 1e-2
-    network = het_net.Het_Network(5, 40, num_users, num_antenna, 1, 10, power_vector_setup=True)
+    network = het_net.Het_Network(5, 40, num_users, num_antenna, 10, 1, power_vector_setup=True, random=False)
     # network.update_beam_formers()
-    for_comp = copy.deepcopy(network)
-    # for_comp.change_power_limit(10)
-    # for_comp.update_beam_formers(set=True)
-    for_comp.update_beam_formers()
+    min_corr = copy.deepcopy(network)
+    # min_corr.change_power_limit(10)
+    min_corr.update_beam_formers()
+    set_corr = copy.deepcopy(network)
+    set_corr.update_beam_formers(set=True)
     # Choose number of iterations to allow
-    num_iterations = 200
+    num_iterations = 300
     utilities, duals, feasibility = network.allocate_power_step(num_iterations, step_size)
-    test_utilities, test_duals, test_feasibility = for_comp.allocate_power_step(num_iterations, step_size)
+    min_corr_utilities, min_corr_duals, min_corr_feasibility = min_corr.allocate_power_step(num_iterations, step_size)
+    set_utilities, set_duals, set_feasibility = set_corr.allocate_power_step(num_iterations, step_size)
     duals = np.asarray(duals)
-    test_duals = np.asarray(test_duals)
+    min_corr_duals = np.asarray(min_corr_duals)
+    set_duals = np.asarray(set_duals)
 
     network.print_layout()
 
     length = int(duals.shape[1]/2)+1
 
-    print(feasibility, test_feasibility)
+    print(feasibility, "\n")
+    print(min_corr_feasibility, "\n")
+    print(set_feasibility)
 
-    plt.figure()
+
+    plt.figure(2)
+    plt.plot(np.arange(num_iterations + 1), utilities, label="moore-penrose")
+    plt.plot(np.arange(num_iterations + 1), min_corr_utilities, label="minimized correlation")
+    plt.plot(np.arange(num_iterations + 1), set_utilities, label="minimized correlation set")
+    plt.legend(loc="lower left")
+    plt.title(label="social_utility")
+    time_path = "Output/utility_"+f"{time.time()}"+"curves.png"
+    plt.savefig(time_path, format="png")
+
+    plt.figure(3)
     plt.subplot(length,2,1)
-    plt.plot(np.arange(num_iterations + 1), utilities, label="base")
-    plt.plot(np.arange(num_iterations + 1), test_utilities, label="comparison")
+    plt.plot(np.arange(num_iterations + 1), utilities, label="moore-penrose")
+    plt.plot(np.arange(num_iterations + 1), min_corr_utilities, label="minimized correlation")
+    plt.plot(np.arange(num_iterations + 1), set_utilities, label="minimized correlation set")
     plt.legend(loc="lower left")
     plt.title(label="social_utility")
 
-    labels = ['pow_dual','pos_dual','int_dual','interference','ave_power']
-    for columns in range(test_duals.shape[1]):
+    labels = ['pow_dual', 'pos_dual', 'int_dual', 'interference', 'ave_power']
+    for columns in range(duals.shape[1]):
         plt.subplot(length, 2, columns+2)
-        plt.plot(duals[:, columns], label="base")
-        plt.plot(test_duals[:, columns], label="test")
+        plt.plot(duals[:, columns], label="moore-penrose")
+        plt.plot(min_corr_duals[:, columns], label="minimized correlation")
+        plt.plot(set_duals[:, columns], label="minimized correlation set")
         plt.title(labels[columns])
         plt.legend(loc="lower left")
     plt.show()
-
+    time_path = "Output/convergence_"+f"{time.time()}"+"curves.png"
+    plt.savefig(time_path, format="png")
