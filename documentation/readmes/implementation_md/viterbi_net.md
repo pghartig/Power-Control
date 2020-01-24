@@ -1,0 +1,1 @@
+# ViterbiNet equalization
