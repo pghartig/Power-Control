@@ -4,8 +4,8 @@
 
 1.  Zero-Forcing Setup
   * System Parameters: 
-  ![Results](figures/results.jpg)
-    ![Convergence of Solution](figures/convergence.jpg)
+  ![Results](figures/results.png)
+    ![Convergence of Solution](figures/convergence.png)
 
 
 2.  General Setup
