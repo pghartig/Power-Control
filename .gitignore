@@ -401,4 +401,4 @@ TSWLatexianTemp*
 
 
 #my whitelisting
-!documentation/readmes/figures
+!documentation/readmes/figures/*

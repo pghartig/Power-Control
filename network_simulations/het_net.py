@@ -192,7 +192,7 @@ class Het_Network():
         plt.scatter(bs_locations[:,0],bs_locations[:,1], marker='H', label="BS")
         mu_locations = self.get_macro_locations()
         plt.scatter(mu_locations[:,0],mu_locations[:,1], marker='X', label="MCU")
-        plt.legend(loc='upper left')
+        plt.legend(loc='lower left')
         time_path = "Output/system" + f"{time.time()}" + "curves.png"
         plt.savefig(time_path, format="png")
 

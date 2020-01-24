@@ -11,7 +11,7 @@ first setup the network according using the het_net class then consolidate all o
 
 def test_dist_debug():
     num_users = 2
-    num_antenna = 3
+    num_antenna = 5
     step_size = 1e-2
     network = het_net.Het_Network(5, 40, num_users, num_antenna, 10, 1, power_vector_setup=True, random=False)
     # network.update_beam_formers()
@@ -62,7 +62,7 @@ def test_dist_debug():
         plt.plot(min_corr_duals[:, columns], label="minimized correlation")
         plt.plot(set_duals[:, columns], label="minimized correlation set")
         plt.title(labels[columns])
-        plt.legend(loc="lower left")
-    plt.show()
-    time_path = "Output/convergence_"+f"{time.time()}"+"curves.png"
+    time_path = "Output/convergence_" + f"{time.time()}" + "curves.png"
     plt.savefig(time_path, format="png")
+    plt.show()
+
