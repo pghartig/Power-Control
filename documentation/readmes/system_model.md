@@ -5,4 +5,4 @@ While the allocation strategies in this work are derived to apply to as general 
 ## Illustration
 ![Heterogeneous Network](figures/het_net.jpg)
 
-![Heterogeneous Network](figures/simulation_figure.png)
+![Heterogeneous Network](figures/system_figure.png)

@@ -44,6 +44,8 @@ def test_dist_debug():
     plt.plot(np.arange(num_iterations + 1), set_utilities, label="minimized correlation set")
     plt.legend(loc="lower left")
     plt.title(label="social_utility")
+    plt.ylabel("Social Utility (User SNR)")
+    plt.xlabel("Iteration")
     time_path = "Output/utility_"+f"{time.time()}"+"curves.png"
     plt.savefig(time_path, format="png")
 
