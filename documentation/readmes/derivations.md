@@ -1,0 +1,3 @@
+The full derivations of the allocation strategies implemented here can be seen in ...
+
+Simulations using these strategies of these can be seen in the [implementations page](/documentation/readmes/implementations.md)
