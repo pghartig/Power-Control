@@ -398,3 +398,7 @@ TSWLatexianTemp*
 
 # Makeindex log files
 *.lpz
+
+
+#my whitelisting
+!documentation/readmes/figures
