@@ -7,4 +7,4 @@ Welcome! The goal of this work is to derive and implement resource allocation st
 
 3.  [Implementation and results of allocation strategies](/documentation/readmes/implementations.md)
 
-4.  [Implementation and results of allocation strategies](/documentation/readmes/results.md)
+4.  [Simulation Results](/documentation/readmes/results.md)
