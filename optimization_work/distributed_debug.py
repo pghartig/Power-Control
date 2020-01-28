@@ -10,8 +10,8 @@ first setup the network according using the het_net class then consolidate all o
 """
 
 def test_dist_debug():
-    num_users = 2
-    num_antenna = 5
+    num_users = 5
+    num_antenna = 6
     step_size = 1e-2
     power_limit = 5
     network = het_net.Het_Network(5, 40, num_users, num_antenna, 10, power_limit, power_vector_setup=True, random=False)

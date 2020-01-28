@@ -266,7 +266,8 @@ class Femto_Base_Station():
         #   find zero-forcing matrix (should be a tall matrix in general)
         if optimize == True:
             self.beam_forming_matrix = self.optimize_beam_former(set)
-            check = self.H@self.beam_forming_matrix
+            # check = self.H@self.beam_forming_matrix
+            # pass
         else:
             self.beam_forming_matrix = np.linalg.pinv(self.H)
 
