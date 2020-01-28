@@ -13,13 +13,13 @@ def test_power_compare():
     num_users = 1
     num_antenna = 1
     step_size = 1e-2
-    userPowerList = [1, 2, 3, 10]
+    userPowerList = [1, 10, 30]
     previousNumberUsers = userPowerList[0]
     num_iterations = 200
     numMacroUsers = 100
     interferenceThreshold = 10
     userPower = userPowerList[0]
-    network = het_net.Het_Network(5, numMacroUsers, num_users, num_antenna,
+    network = het_net.Het_Network(20, numMacroUsers, num_users, num_antenna,
                                   interferenceThreshold=interferenceThreshold, power_limit=userPower,
                                   power_vector_setup=True,
                                   random=False)

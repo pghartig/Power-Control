@@ -6,7 +6,7 @@
 
 ![Increasing FCBS](figures/results.png)
 
-Details: 5 users / basestation, 6 antenna / basestation, 40 macro users (Original use)
+Details: 5 users / basestation, 10 antenna / basestation, 40 macro users
 
 ![Convergence](figures/convergence.png)
 
@@ -15,7 +15,7 @@ Details: 5 users / basestation, 6 antenna / basestation, 40 macro users (Origina
 
 ![Increasing FCBS](figures/increasing_fcbs.png)
 
-Details: 2 users / basestation, 4 antenna / basestation, 20 macro users (Original use)
+Details: 2 users / basestation, 4 antenna / basestation, 20 macro users 
 
 
 
@@ -23,7 +23,12 @@ Details: 2 users / basestation, 4 antenna / basestation, 20 macro users (Origina
 
 ![Increasing Users Power](figures/increasing_power.png)
 
-Details: 2 users / basestation, 5 antenna / basestation, 40 macro users (Original use)
+
+### increasing_power with constraint
+
+![Increasing Users Power](figures/increasing_power_constraint.png)
+
+
 
 ### increasing_macro_users
 ![Heterogeneous Network](figures/increasing_macro_users.png)
