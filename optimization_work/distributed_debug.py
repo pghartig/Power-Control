@@ -13,7 +13,8 @@ def test_dist_debug():
     num_users = 2
     num_antenna = 5
     step_size = 1e-2
-    network = het_net.Het_Network(5, 40, num_users, num_antenna, 10, 1, power_vector_setup=True, random=False)
+    power_limit = 5
+    network = het_net.Het_Network(5, 40, num_users, num_antenna, 10, power_limit, power_vector_setup=True, random=False)
     # network.update_beam_formers()
     min_corr = copy.deepcopy(network)
     # min_corr.change_power_limit(10)
@@ -21,7 +22,7 @@ def test_dist_debug():
     set_corr = copy.deepcopy(network)
     set_corr.update_beam_formers(set=True)
     # Choose number of iterations to allow
-    num_iterations = 300
+    num_iterations = 200
     utilities, duals, feasibility = network.allocate_power_step(num_iterations, step_size)
     min_corr_utilities, min_corr_duals, min_corr_feasibility = min_corr.allocate_power_step(num_iterations, step_size)
     set_utilities, set_duals, set_feasibility = set_corr.allocate_power_step(num_iterations, step_size)

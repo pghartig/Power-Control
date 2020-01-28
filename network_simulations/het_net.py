@@ -5,7 +5,7 @@ import time
 
 class Het_Network():
     def __init__(self, num_femto_cells, num_macro_users, max_users,
-                 max_antennas, interference_threshold, power_limit, power_vector_setup=False, random=True):
+                 max_antennas, interferenceThreshold, power_limit, power_vector_setup=False, random=True):
         """
         TODO Enforce players have more antennas than users
         :param num_femto_cells:
@@ -24,7 +24,7 @@ class Het_Network():
                                                           , np.random.randint(1, max_antennas+1),power_vector_setup, power_limit=power_limit))
          for i in range(num_femto_cells)]
         self.macro_users = []
-        [self.macro_users.append(Macro_User(i, self, interference_threshold)) for i in range(num_macro_users)]
+        [self.macro_users.append(Macro_User(i, self, interferenceThreshold)) for i in range(num_macro_users)]
         self.update_macro_cells()
         self.setup_base_stations()
 
@@ -155,9 +155,13 @@ class Het_Network():
 
     def get_social_utility(self):
         total = 0
+        utilities = []
         for base_station in self.base_stations:
-            total += base_station.get_utility()
+            utility = base_station.get_utility()
+            total += utility
+            utilities.append(utility)
         return total
+        # return np.average(utilities)
 
     def get_base_stations(self):
         return self.base_stations
@@ -199,6 +203,28 @@ class Het_Network():
     def change_power_limit(self, new_limit):
         for bs in self.base_stations:
             bs.power_constaint = new_limit
+
+    def change_interference_constraint(self, interferenceThreshold):
+        for mu in self.macro_users:
+            mu.interference_threshold = interferenceThreshold
+
+    def add_macro_users(self, numberNewUsers, interferenceThreshold,):
+        if numberNewUsers >0 :
+            [self.macro_users.append(Macro_User(i, self, interferenceThreshold)) for i in range(numberNewUsers)]
+            self.update_macro_cells()
+            self.setup_base_stations()
+
+    def addFemtoBaseStation(self, num_femto_cells, max_users, max_antennas, powerVectorSetup = True, powerLimit=1,  random=True):
+        if num_femto_cells >0 :
+            if random ==False:
+                [self.base_stations.append(Femto_Base_Station(i, self, max_users, max_antennas, powerVectorSetup, power_limit=powerLimit)) for i in range(num_femto_cells)]
+            else:
+                [self.base_stations.append(Femto_Base_Station(i, self, np.random.randint(1, max_users+1)
+                                                              , np.random.randint(1, max_antennas+1),powerVectorSetup, power_limit=powerLimit))
+             for i in range(num_femto_cells)]
+            #   reinitialize all channel information
+            self.update_macro_cells()
+            self.setup_base_stations()
 
 
 class Femto_Base_Station():
