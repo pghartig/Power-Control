@@ -6,7 +6,7 @@
 
 ![Increasing FCBS](figures/results.png)
 
-Details: 2 users / basestation, 4 antenna / basestation, 20 macro users (Original use)
+Details: 5 users / basestation, 6 antenna / basestation, 40 macro users (Original use)
 
 ![Convergence](figures/convergence.png)
 

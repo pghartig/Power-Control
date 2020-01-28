@@ -11,10 +11,10 @@ first setup the network according using the het_net class then consolidate all o
 
 def test_dist_debug():
     num_users = 5
-    num_antenna = 6
+    num_antenna = 20
     step_size = 1e-2
     power_limit = 5
-    network = het_net.Het_Network(5, 40, num_users, num_antenna, 10, power_limit, power_vector_setup=True, random=False)
+    network = het_net.Het_Network(5, 50, num_users, num_antenna, 10, power_limit, power_vector_setup=True, random=False)
     # network.update_beam_formers()
     min_corr = copy.deepcopy(network)
     # min_corr.change_power_limit(10)
