@@ -4,6 +4,7 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage{float}
 \input defs.tex
 \bibliographystyle{alpha}
 \graphicspath{ {./figures/} }
@@ -599,30 +600,38 @@ The Heterogeneous Network is simulated by randomly placing $F $ and M Macro Cell
 \subsection{Simulation Results}
 Using the algorithm in \ref{algo1} convergence to a Nash Equilibrium is observed over a variety of scenarios to observe the convergence towards a NE in the network. 
 \subsubsection{Simulation Results for Concave Setup}
- Here different transmission power constraints are observed. As seen in figure \ref{fig:power} when users are given sufficient power to violate the interference constraints of the macro users, the convergence is slower.
+Figure \ref{fig:power} depicts convergence to Nash Equilibrium for different 
+transmission power constraints. When users are given sufficient power to violate the interference constraints of the macro users, the convergence is slowed and less stable.
 \begin{figure}[h!]
 	  \caption{Increasing FC-BS Power}
 	\includegraphics[width=\textwidth,height = 7cm]{figures/power_active}
 	  \label{fig:power}
 \end{figure}
 
- Here different FC-BS densities are observed. As seen in figure \ref{fig:power} when users are given sufficient power to violate the interference constraints of the macro users, the convergence is slower.
-\begin{figure}[h!]
+Figure \ref{fig:inc_fc} depicts convergence to Nash Equilibrium for different FC-BS densities in the network. As the number of FC-BS is increase in a constant area with constant Macro Users, the average FC-BS utility decreases. 
+ 
+\begin{figure}[H]
 	  \caption{Increasing FC-BS Density}
-	  	\includegraphics[width=\textwidth,height = 7cm]{figures/increasing_macro_users}
+	  	\includegraphics[width=\textwidth,height = 7cm]{figures/increasing_fcbs}
 	  \label{fig:inc_fc}
 \end{figure}
 
-Show  convergence for increasing interference tolerance at MCU (show when game takes place)
-\begin{figure}[h!]
-	\includegraphics[width=\textwidth,height = 7cm]{figures/increasing_macro_users}
-	  \caption{Simluation Setup}
+
+Figure \ref{fig:dec_tol} depicts convergence to Nash Equilibrium for decreasing interference tolerance of the Macro Cell Users in the network. 
+
+\begin{figure}[H]
+	  \caption{Decreasing Interference Tolerance }
+	\includegraphics[width=\textwidth,height = 7cm]{figures/increasing_fcbs}
+		  \label{fig:dec_tol}
 \end{figure}
 
+Figure \ref{fig:beamformers} depicts convergence to Nash Equilibrium for different Zero-Forcing beamformers chosen according to (Explanation). 
+
 Compare different beamformer choices and their convergence
-\begin{figure}[h!]
-	\includegraphics[width=\textwidth,height = 7cm]{figures/increasing_macro_users}
-	  \caption{Simluation Setup}
+\begin{figure}[H]
+	  \caption{Base Station Beamformer Comparison}
+	  	\includegraphics[width=\textwidth,height = 7cm]{figures/increasing_fcbs}
+	  \label{fig:beamformers}
 \end{figure}
 
 \chapter{Conclusion}

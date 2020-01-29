@@ -17,9 +17,9 @@ def test_femto_compare():
     numFemtoUserList = [10, 15, 20]
     previousNumberUsers = numFemtoUserList[0]
     numMacroUsers = 20
-    num_iterations = 100
-    interferenceThreshold = 10
-    powerLimit = 1
+    num_iterations = 200
+    interferenceThreshold = 1
+    powerLimit = 15
     network = het_net.Het_Network(previousNumberUsers, numMacroUsers, num_users, num_antenna,
                                   interferenceThreshold=interferenceThreshold, power_limit=powerLimit,
                                   power_vector_setup=True,
@@ -28,7 +28,7 @@ def test_femto_compare():
     fig_main = plt.figure()
     util_plt = fig_main.add_subplot(2, 1, 1)
     util_plt.set_title("Power Convergence")
-    util_plt.set_ylabel("Social Utility (System Capacity)")
+    util_plt.set_ylabel("Average BS Utility (System Capacity)")
     util_plt.set_xlabel("Iteration")
     extra_plt = fig_main.add_subplot(2, 1, 2)
     extra_plt.set_title("Interference Constraint Slack")
