@@ -14,7 +14,7 @@ class Het_Network():
         :param max_antennas:
         :param interference_threshold:
         """
-        self.coverage_area = (50, 50)
+        self.coverage_area = (25, 25)
         self.base_stations = []
         # these loops should probably be moved out of the constructor
         if random ==False:
@@ -75,6 +75,7 @@ class Het_Network():
         social_utility_vector = []
         average_duals = []
         feasibility = []
+        interferenceSlack = []
         social_utility_vector.append(self.get_social_utility())
         #   intitialize with correct duals given the starting allocation
         self.__update_dual_variables(step_size,0)
@@ -86,7 +87,8 @@ class Het_Network():
             self.__update_dual_variables(step_size, i)
             social_utility_vector.append(self.get_social_utility())
             # feasibility.append(self.verify_feasibility())
-        return social_utility_vector, average_duals, self.verify_feasibility()
+            interferenceSlack.append(np.average(self.trackConstraints()))
+        return social_utility_vector, average_duals, self.verify_feasibility(), interferenceSlack
 
     def verify_feasibility(self):
         for bs in self.base_stations:
@@ -187,6 +189,13 @@ class Het_Network():
         # return np.average(interference), np.average(ave_power)
         # return np.average(pow_dual), np.average(int_dual)
 
+    def trackConstraints(self):
+        interferenceSlack = []
+        for mu in self.macro_users:
+            interferenceSlack.append(mu.interference_threshold-mu.interference)
+        return interferenceSlack
+
+
     def print_layout(self):
         plt.figure()
         bs_locations = self.get_station_locations()
@@ -241,7 +250,7 @@ class Femto_Base_Station():
             self.beam_forming_matrix = cp.Variable((self.number_antennas, num_femto_users), complex=True)
         else:
             self.beam_forming_matrix = np.zeros((self.number_antennas, num_femto_users))
-            self.power_vector = np.ones((num_femto_users))*(power_limit/(2*num_femto_users))
+            self.power_vector = np.ones((num_femto_users))*(power_limit/(10*num_femto_users))
         self.sigma_square = 1e-3
         self.connect_users(num_femto_users)
         self.power_constaint = power_limit
@@ -373,6 +382,8 @@ class Femto_Base_Station():
             c -= self.positivity_dual_variable[ind]
             #   prohibit negative powers
             updated_power = np.max((1/c - self.sigma_square, 0))
+            # updated_power = 1/c - self.sigma_square
+
             self.power_vector[ind] = updated_power
 
     def update_dual_variables(self, step, idx):
@@ -414,7 +425,7 @@ class Macro_User(User):
         User.__init__(self, ID, network)
         self.interference = 0
         self.interference_threshold = interference_threshold
-        self.dual_variable = np.random.randn()
+        self.dual_variable = np.abs(np.random.randn())
         # self.dual_variable = .1
         self.move()
 
