@@ -10,10 +10,10 @@ first setup the network according using the het_net class then consolidate all o
 """
 
 def test_femto_compare():
+    #Make sure to switch to average utility in this case to make a fair comparison
     num_users = 2
-    num_femto = 5
     num_antenna = 4
-    step_size = 1e-3
+    step_size = 1e-2
     numFemtoUserList = [10, 15, 20]
     previousNumberUsers = numFemtoUserList[0]
     numMacroUsers = 20
@@ -24,29 +24,39 @@ def test_femto_compare():
                                   interferenceThreshold=interferenceThreshold, power_limit=powerLimit,
                                   power_vector_setup=True,
                                   random=False)
-    plt.figure(2)
+
+    fig_main = plt.figure()
+    util_plt = fig_main.add_subplot(2, 1, 1)
+    util_plt.set_title("Power Convergence")
+    util_plt.set_ylabel("Social Utility (System Capacity)")
+    util_plt.set_xlabel("Iteration")
+    extra_plt = fig_main.add_subplot(2, 1, 2)
+    extra_plt.set_title("Interference Constraint Slack")
+    extra_plt.set_ylabel("Average Constraint Slack ")
+    extra_plt.set_xlabel("Iteration")
     currNetwork = copy.deepcopy(network)
+    check = []
+
     for numFemtoUsers in numFemtoUserList:
         currNetwork = copy.deepcopy(currNetwork)
         currNetwork.addFemtoBaseStation(numFemtoUsers - previousNumberUsers,  num_users, num_antenna,
                                         powerVectorSetup=True, powerLimit=powerLimit, random=False)
         workingCopy = copy.deepcopy(currNetwork)
-        workingCopy.update_beam_formers()
-        utilities, duals, feasibility = workingCopy.allocate_power_step(num_iterations, step_size)
+        # workingCopy.update_beam_formers()
+        utilities, duals, feasibility, constraints = workingCopy.allocate_power_step(num_iterations, step_size)
         # duals = np.asarray(duals)
         previousNumberUsers = numFemtoUsers
-        plt.plot(np.arange(num_iterations + 1), utilities, label=f"{numFemtoUsers}")
+        util_plt.plot(np.arange(num_iterations + 1), utilities, label=f"{numFemtoUsers}")
+        extra_plt.plot(np.arange(num_iterations), constraints, label=f"{numFemtoUsers}")
         print(feasibility, "\n")
+        check.append(np.asarray(utilities))
 
 
-    plt.legend(loc="lower left")
-    plt.title(label="social_utility")
-    plt.ylabel("Social Utility (User SNR)")
-    plt.xlabel("Iteration")
+    check = np.asarray(check)
+    util_plt.legend(loc="lower left")
     time_path = "Output/utility_"+f"{time.time()}"+"curves.png"
     plt.savefig(time_path, format="png")
 
-    # network.print_layout()
+    network.print_layout()
 
     plt.show()
-

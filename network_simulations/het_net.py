@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.lines as mlines
 import numpy as np
 import cvxpy as cp
 import time
@@ -162,8 +163,8 @@ class Het_Network():
             utility = base_station.get_utility()
             total += utility
             utilities.append(utility)
-        return total
-        # return np.average(utilities)
+        # return total
+        return np.average(utilities)
 
     def get_base_stations(self):
         return self.base_stations
@@ -198,17 +199,25 @@ class Het_Network():
 
     def print_layout(self):
         # plt.figure()
-        fig, ax = plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
+        fig, ax = plt.subplots(figsize=(5, 5), subplot_kw=dict(aspect="equal"))
         bs_locations = self.get_station_locations()
         for ind, station in enumerate(self.base_stations):
             fcu_locations = station.get_user_locations()
-            fig.scatter(fcu_locations[:,0],fcu_locations[:,1], marker='^', label="Femto User")
-        fig.scatter(bs_locations[:,0],bs_locations[:,1], marker='H', label="Femto Base-Station")
+            plt.scatter(fcu_locations[:,0],fcu_locations[:,1], c=f"C{ind}", marker='^')
+            plt.scatter(bs_locations[ind, 0], bs_locations[ind, 1],  c=f"C{ind}", marker='H')
+
         mu_locations = self.get_macro_locations()
-        fig.scatter(mu_locations[:,0],mu_locations[:,1], marker='X', label="Macro User")
-        # plt.legend(loc='lower left')
+        plt.scatter(mu_locations[:,0],mu_locations[:,1], marker='X')
         time_path = "Output/system" + f"{time.time()}" + "curves.png"
-        ax.legend(("Femto User", "Femto Base-Station", "Macro User"), ('X', 'H', '^'))
+        blue_star = mlines.Line2D([], [], color='black', marker='^', linestyle='None',
+                                 markersize=10, label="Femto User")
+        red_square = mlines.Line2D([], [], color='black', marker='H', linestyle='None',
+                                   markersize=10, label="Femto Base-Station")
+        purple_triangle = mlines.Line2D([], [], color='black', marker='X', linestyle='None',
+                                        markersize=10, label="Macro User")
+        ax.legend(loc='lower left')
+        fig.legend(handles=[blue_star, red_square, purple_triangle])
+        # ax.legend(labels = ("Femto User", "Femto Base-Station", "Macro User"),handles= ('X', 'H', '^'))
         fig.savefig(time_path, format="png")
         # plt.savefig(time_path, format="png")
 
