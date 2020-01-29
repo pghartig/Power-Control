@@ -3,9 +3,10 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
+\usepackage{graphicx}
 \input defs.tex
 \bibliographystyle{alpha}
-
+\graphicspath{ {./figures/} }
 
 \title{Game Theoretic Solutions to Power Control in MIMO Communications Systems}
 \author{Peter Hartig}
@@ -130,7 +131,7 @@ details numerical comparisons of the two proposed methods for identifying Nash E
 \subsection{Players: Femtocell Base Stations}
 
 
-Each players of the game, Individual Femtocell base stations $f \in \{1 ... F\}$ (FC-BS), is characterized by:
+Each player of the game, a Femtocell base station $f \in \{1 ... F\}$ (FC-BS), is characterized by:
 \begin{itemize}
 \item 
 $T_f$ antennas with which to transmit to $K_f$ femtocell users (it is assumed that $T_f \geq K_f$).
@@ -149,19 +150,19 @@ $T_f$ antennas with which to transmit to $K_f$ femtocell users (it is assumed th
 	Cost function $U_f() =
 	\sum_{\mathrm{i=1}}^{\mathrm{K_f}}
     	 U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $
-    	in which all $U_{\mathrm{f,i}}()$ are non-decreasing in argument. (No assumption about concavity yet)
+    	in which all $U_{\mathrm{f,i}}()$ are non-decreasing in argument. (No assumption about concavity is made at this point)
 
 \item 
-	Knowledge of the downlink channel matrix $\mathbf{H_\mathrm{f}} \in \mathbb{C}_{K_f \times T_f} $ to its $K_f$ users.
+	Knowledge of the downlink channel matrix $\mathbf{H_\mathrm{f}} \in \mathbb{C}_{K_f \times T_f} $ to the $K_f$ users.
 % TODO(Simulate degradation with incomplete CSI solution?)
 \\
 \item
 	 FC-BSs are assumed to be spaced far apart in distance such that FC-BS $f$ 
-	 causes no interference to the users of any other FC-BS.
+	 causes no interference to the users of any other FC-BS. As a result, $U_f()$ is indepenent of all other FC-BSs.
 \end{itemize}
 
 \subsection{Macrocell Users}
-Macrocell users $m \in \{1 ... M\}$ introduce constraints into this game. These users are characterized by:
+Macrocell users $m \in \{1 ... M\}$ introduce constraints into the game. These users are characterized by:
 
 \begin{itemize}
 \item 
@@ -213,7 +214,7 @@ Assuming negligible inter-cell interference, this reduces to
 
 \subsection{General Optimization Problem}
 
-Each player $f$ attempts to maximize utility function $U_f()$ while satisfying the interference constraints imposed by the macro cell users.
+Each player $f$ attempts to maximize utility function $U_f()$ while satisfying the interference constraints imposed by the macro cell users and a transmission power constraint. 
 \par
 
 
@@ -235,30 +236,13 @@ Each player $f$ attempts to maximize utility function $U_f()$ while satisfying t
 	\end{align}
 	\end{subequations}
 	
-Note that in order to ensure the game admits a potential function, $\mathbf{U}_f$ is restricted to the set of zero-forcing matrices by constraint \eqref{zf_const_gen}.	
+In order to ensure the resulting game admits a potential function, $\mathbf{U}_{\mathrm{f}}$ is restricted to the set of zero-forcing matrices by constraint \eqref{zf_const_gen}.	
 	
 \subsection{Concave N-Person game analysis of general setup}
-
-Sufficient conditions for a concave problem are:
+The convexity of the resulting problem is analyzed in order to fulfill the conditions of a Concave N-Person game. 
 
 \begin{enumerate}
-\item The utility function is concave in its argument.
-\begin{itemize}
-\item 
-Due to constraint \eqref{zf_const_gen}, $\gamma_{\mathrm{f,i}}$ takes the form
-	\begin{equation}\label{zf_snr}
-	\gamma_{\mathrm{f,i}} = \frac{\|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}\|^2}
-	{\sigma^2_{noise}  
-	}
-	= 
-	\frac{\mathbf{u^H_{\mathrm{f,i}}h_{\mathrm{f,i}}h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}}
-	{\sigma^2_{noise}  
-	}
-	\end{equation}
-	As $\mathbf{h}_{\mathrm{f,i}}\mathbf{h}^H_{\mathrm{f,i}}$ is positive semi-definite, $\gamma_{\mathrm{f,i}}$ is convex in ${\mathbf{u}_{\mathrm{f,i}}}$. 
-\item
-The composition $U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $ is concave only if $U_{\mathrm{f,i}}() $ is concave and non-increasing; violating the non-decreasing definition of $U_{\mathrm{f,i}}() $.
-\end{itemize}
+
 
 \item
 The constraints form a convex, closed and bounded set. 
@@ -295,7 +279,6 @@ in which the term $ \mathbf{\tilde{h}_{\mathrm{m,f}}} \mathbf{\tilde{h}}_{\mathr
 	in which $\mathbf{I}$ is positive definite and 			
 	therefore the constraint is strictly convex for the same 		
 	reason as \eqref{interference_const_gen}.
-\end{itemize}
 
 \item 
 	Constaint \eqref{zf_const_gen} is an affine constraint. 
@@ -303,41 +286,50 @@ in which the term $ \mathbf{\tilde{h}_{\mathrm{m,f}}} \mathbf{\tilde{h}}_{\mathr
 		\langle \mathbf{h_{\mathrm{f,j}}}\mathbf{u_{\mathrm{f,i}}} \rangle =0
 		\end{gather*}
 %Note that affine constaints to not have to satisfy Slater's condition
+\end{itemize}
+
+
+\item Concavity of the utility function
+\begin{itemize}
+\item 
+Due to constraint \eqref{zf_const_gen}, $\gamma_{\mathrm{f,i}}$ takes the form
+	\begin{equation}\label{zf_snr}
+	\gamma_{\mathrm{f,i}} = \frac{\|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}\|^2}
+	{\sigma^2_{noise}  
+	}
+	= 
+	\frac{\mathbf{u^H_{\mathrm{f,i}}h_{\mathrm{f,i}}h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}}
+	{\sigma^2_{noise}  
+	}
+	\end{equation}
+	As $\mathbf{h}_{\mathrm{f,i}}\mathbf{h}^H_{\mathrm{f,i}}$ is positive semi-definite, $\gamma_{\mathrm{f,i}}$ is convex in ${\mathbf{u}_{\mathrm{f,i}}}$. 
+\item
+The composition $U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $ is concave only if $U_{\mathrm{f,i}}() $ is concave and non-increasing; violating the non-decreasing definition of $U_{\mathrm{f,i}}() $.
+\end{itemize}
 
 \end{enumerate}
 
 \subsection{Potential Game for General Problem}
-Under the current system model, the game is not a Concave N-Person game. Nevertheless, the game may still admit a potential function which would allow 
+Under the current system model, the game is not a Concave N-Person game. Nevertheless, the game may still admit a potential function whose global optima will correspond to a Normalized Nash Equilibrium.
 
-TODO: 
-\begin{itemize}
-\item Need to prove that pure strategy NE would exist in this setting.
-\item Explain why even through a potential game can be formed, it may not be useful/feasible to find NE. 
-\end{itemize}
 
 \section{Concave System Model}\label{conmodel}
 
-The general setup of this game  seen in the previous section prohibits the use of tools used to find NE efficiently in this context. 
+The general setup of this game seen in the previous section prohibits the use of tools to identify NE efficiently in this context. 
 The following adaption of the general problem permits a unique Nash Equilibrium to be found via a single convex problem which may be distributed across players of the game.
+
 \subsection{Players: Femtocell Base Stations}
-
-
-Individual Femtocell base stations (FC-BS) are the players of this game.
-\\
-Femtocells are characterized by the following parameters
+Femtocells are adapted from the general setup by the following:
 \begin{itemize}
 \item 
-	FC-BSs with multiple antennas ($T_f >=1$) can beamform their transmission using the precoding 	
+	FC-BSs with multiple antennas ($T_f \geq 1$) can beamform their transmission using the precoding 	
 	matrix $\mathbf{U}_{\mathrm{f}} \in \mathbb{C}_{T_f \times K_f}$ .
 	The columns of $\mathbf{U}_{\mathrm{f}}$ are normalized such that 
 	 $\|\mathbf{u}_{\mathrm{fi}}\|^2 =1 \;\forall i \in \{1 ... K_f\}$.
-	 $\mathbf{x_{\mathrm{f}}}$ is the 		
-	normalized information symbol vector of FC-BS $f$ such that $E[\|\mathbf{x}_{\mathrm{f}}
-	\|_2^2]=1$ and $E[\mathbf{x}_{\mathrm{f}}\mathbf{x}_{\mathrm{f}}^H]=\mathbf{I}_{K_f \times K_f}$ $\forall f \in \{1 ... F\}$.
 \\
 
 \item 
-$\mathbf{U}_f$ is the normalized, Moore-Penrose inverse to $\mathbf{H_\mathrm{f}}$.
+$\mathbf{U}_f$ is selected as an inverse to $\mathbf{H_\mathrm{f}}$.
 Such that
 \begin{gather*}
 \langle \mathbf{h_{f,j}}\mathbf{u_{f,i}} \rangle =0\  \; \forall j \in \{1... K_f\}\backslash i ,\; \forall i \in \{1 ... K_f\}
@@ -356,13 +348,7 @@ such that the transmitted
 	FC-BS $f$ has power constraint:
 	\begin{gather*}
 	trace(E[\mathbf{s}_\mathrm{f}\mathbf{s}_\mathrm{f}^H]) =
-	 trace(\mathbf{U_{\mathrm{f}}} 
-	\mathrm{diag}(\mathbf{p}_{\mathrm{f}}^{\frac{1}{2}})
-	E[\mathbf{x_{\mathrm{f}}}
-	\mathbf{x_{\mathrm{f}}^H}]
-	\mathrm{diag}(\mathbf{p}_{\mathrm{f}}^{\frac{1}{2}})
-	\mathbf{U_{\mathrm{f}}}^H 
-	)
+	\sum_{\mathrm{i=1}}^{\mathrm{K_{\mathrm{f}}}} p_{\mathrm{fi}}
 	  \leq P^{Total}_{f} 
 	  	\end{gather*}
 
@@ -373,7 +359,7 @@ such that the transmitted
 	Cost function $U_f() =
 	\sum_{\mathrm{i=1}}^{\mathrm{K_f}}
     	U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $
-    	in which all $U_{\mathrm{f,i}}()$ are non-decreasing and concave in argument.
+    	in which all $U_{\mathrm{f,i}}()$ are non-decreasing and \emph{concave} in argument.
 
 \end{itemize}
 
@@ -381,53 +367,7 @@ such that the transmitted
 Same as the general setup.
 
 \subsection{Femtocell Users}
-\begin{itemize}
-
-
-%\item TODO Decide if there should be minimum rate constraints for Femtocell users in case (Look back at later in case some users are beam-formed out of the transmission). Check if this constraint will disrupt solution.
-%\\
-
-\item User $i$ of FC-BS $f$ has SINR:
-
-	\begin{equation*}
-	\gamma_{\mathrm{f,i}} = 
-	\frac{p_{\mathrm{fi}}\|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}x_{\mathrm{fi}}\|^2}
-	{\sigma^2_{noise}   +
-	\underbrace{
-	\sum_{\mathrm{\tilde{f}=1,\tilde{f} \neq f}}^{\mathrm{F}}
-	\sum_{\mathrm{\tilde{k}\neq i}}^{\mathrm{K_f}}
-	  p_{\mathrm{f\tilde{k}}}\|\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}x_{\mathrm{f\tilde{k}}}\|^2}_
-	  {\mathrm{Inter-cell}}+ \underbrace{
-	\sum_{\mathrm{\tilde{k}\neq i}}^{\mathrm{K_f}}
-	  p_{\mathrm{f\tilde{k}}}\|\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}x_{\mathrm{f\tilde{k}}}\|^2}
-	 _{\mathrm{Intra-cell}}}
-	  \; \mathrm{i \in \{1 ... K_f\}}\end{equation*}
-\\
-with AWGN $\sim \mathcal{N}(0,\sigma^2_n)$
-\\
-
-Assuming negligible inter-cell interference, this reduces to
-	\begin{equation*} \label{user_sinr}
-	\gamma_{\mathrm{f,i}} = \frac{p_{\mathrm{fi}}\|\mathbf{h^H_{\mathrm{f,i}}
-	u_{\mathrm{f,i}}}x_{\mathrm{fi}}\|^2}
-	{\sigma^2_{noise} 
-	 + \sum_{\mathrm{\tilde{k}\neq i}}^{\mathrm{K_f}}
-	  p_{\mathrm{f\tilde{k}}}\|\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}x_{\mathrm{f\tilde{k}}}\|^2}
-	  \; \mathrm{i \in \{1 ... K_f\}}
-	\end{equation*}
-\\
-
-%This further simplifies assuming that users use a zero-forcing beam-former
-%
-%\begin{equation}\label{zf_snr}
-%\gamma_{\mathrm{f,i}} = \frac{|\mathbf{h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}|^2}
-%{\sigma^2_{noise}  
-%}
-%\end{equation}
-%\\
-
-\end{itemize}
-
+Same as the general setup.
 
 \subsection{Optimization Problem of player $f$}
 
@@ -440,21 +380,26 @@ Assuming negligible inter-cell interference, this reduces to
     	U_{\mathrm{f,i}}(p_{\mathrm{f,i}}) \label{player_opt_c} \\
 	    \text{subject to} \; &
 	  \sum^F_{f=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{s}_{\mathrm{f}} 						
-	\mathbf{s_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} \leq I^{Threshold}		
+	\mathbf{s_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} 
+	=
+	\sum_{\mathrm{f=1}}^{\mathrm{F}}	\sum_{\mathrm{i=1}}^{\mathrm{K_f}}
+	p_{\mathrm{fi}}\|\tilde{h}_{\mathrm{mf}}^T u_{\mathrm{fi}}\|^2_2
+	\leq I^{Threshold}		
 	_{\mathrm{m}} & m \in \{1 ...M\} 
 		\label{interference_const_c}\\
-        & trace(\mathbf{s}_\mathrm{f}\mathbf{s}_\mathrm{f}^H)  \leq P^{Total}_{f}  \label{power_const_c}\\
+        & trace(\mathbf{s}_\mathrm{f}\mathbf{s}_\mathrm{f}^H) =
+        	\sum_{\mathrm{i=1}}^{\mathrm{K_{\mathrm{f}}}} p_{\mathrm{fi}}
+	   \leq P^{Total}_{f}  \label{power_const_c}\\
         & p_{\mathrm{f,i}} \geq 0 &  i \in \{1 ...K_{\mathrm{f}}\} \label{pos_power_const_c}
 	\end{align}
 	\end{subequations}
 
-
+Note that because $U_{\mathrm{f}}$ is pre-selected as an inverse to  $\mathbf{H_\mathrm{f}}$, constraint \eqref{zf_const_gen} has been removed.
 \subsection{Concave N-Person game analysis of concave setup}
 
 Sufficient conditions for a concave problem are:
 
 \begin{enumerate}
-\item The utility function is assumed concave in its argument $p_{\mathrm{f,i}}$.
 
 \item
 The constraints form a convex, closed and bounded set. 
@@ -462,16 +407,14 @@ The constraints form a convex, closed and bounded set.
 \begin{itemize}
 
 \item
-	Constaint \eqref{interference_const_c} contains $M$ affine constraints on $diag(\mathbf{p_{\mathrm{f}}})$ and 
-	can be rewritten as 
+	Constaint \eqref{interference_const_c} contains $M$ affine constraints on $diag(\mathbf{p_{\mathrm{f}}})$.
 
 \begin{gather*}
 	  \sum^F_{f=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{s}_{\mathrm{f}} 						
-	\mathbf{s_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} = 
-	\sum^F_{f=1} trace(\mathbf{\tilde{h}}_{\mathrm{m,f}}^T U_{\mathrm{f}}diag(\mathbf{p_{\mathrm{f}}})^{\frac{1}{2}}\mathbf{x_{\mathrm{f}}}
-	 \mathbf{x_{\mathrm{f}}}^H  diag(\mathbf{p_{\mathrm{f}}})^{\frac{1}{2}} U_{\mathrm{f}}^H
-	 \mathbf{\tilde{h}}_{\mathrm{m,f}}^*
-	)	
+	\mathbf{s_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} 
+	=
+	\sum_{\mathrm{f=1}}^{\mathrm{F}}	\sum_{\mathrm{i=1}}^{\mathrm{K_f}}
+	p_{\mathrm{fi}}\|\tilde{h}_{\mathrm{mf}}^T u_{\mathrm{fi}}\|
 	\leq I^{Threshold}_{\mathrm{m}} 
 \end{gather*}
 
@@ -484,12 +427,15 @@ The constraints form a convex, closed and bounded set.
 
 %Note that affine constaints to not have to satisfy Slater's condition
 
+\item The utility function is assumed concave in its argument $p_{\mathrm{f,i}}$.
+
 \end{enumerate}
 
 This problem satisfies the conditions for the Concave N-Persion game and therefore a pure strategy Nash Equilibrium exists due to 
 \cite[Thm1]{rosen1964existence}.
 
-Next, the conditions for unqiueness of this NE are verified. As the utility function $U_{\mathrm{fi}}(p_{\mathrm{fi}})$ is concave in argument and independent of all $p_{\mathrm{fj}}$ the matrix $[G(b,r)+G^{T}(b,r)] $ will be diagonal with (strictly) negative values.
+Next, the conditions for unqiueness of this NE are verified. As the utility function $U_{\mathrm{fi}}(p_{\mathrm{fi}})$ is (strictly?) concave, (differentiable?), and independent of all $p_{\mathrm{fj}}$ the matrix $[G(b,r)+G^{T}(b,r)] $ will be diagonal with values on the diagonal $<0$. As $[G(b,r)+G^{T}(b,r)] $ is negative definite the Normalized Nash Equilibrium are unique \cite[Thm4]{rosen1964existence}.
+
 \subsection{Potential Game for Concave Problem}
 
 \textbf{Potential Function:} The proposed potential function satisfying \eqref{potential_game_condition} is 
@@ -498,7 +444,7 @@ Next, the conditions for unqiueness of this NE are verified. As the utility func
 \Psi(\mathbf{p}) = \sum_{f = 1}^{F} U_f(\mathbf{p_{\mathrm{f}}}) 
 \end{gather*}
 
-resulting in the single optimization problem
+resulting in the single optimization problem in which $\mathbf{p}= [\mathbf{p_{\mathrm{1}}},\mathbf{p_{\mathrm{2}}}...\mathbf{p_{\mathrm{F}}}]$
 	
 		\begin{subequations}
 	\label{optim}
@@ -522,9 +468,9 @@ resulting in the single optimization problem
 %\end{theorem}
 
 \subsection{Distributed Solution to the Game}
-A distribtued solution to \eqref{potential_game} is desired. This may allow for minimal communication overhead between processes (in this case players and macro users).
+A distribtued solution to \eqref{potential_game} is now proposed  minimize communication overhead between processes in the optimization (in this case players and macro users).
 \subsubsection{Central Problem Resulting from Potential Game}
-As described in \cite[p.~8,9]{boyd2011distributed}, the dual ascent method can be used to find a distributed solution to this problem using the Lagrangian of \eqref{potential_game}. 
+As distributed implementation of dual ascent \cite[p.~8,9]{boyd2011distributed} is proposed to solve the potential game. 
 \\
 \begin{multline}
 L(\mathbf{U,\lambda}) = 
@@ -556,7 +502,7 @@ g(\lambda,\nu) = \underset{\lambda}{\mathrm{argmax}}\;\underset{\mathbf{U}}{\mat
 
 
 
-This dual function can then be decomposed into F component functions
+This dual function can be decomposed into $F$ component functions
 \begin{multline}
 g_f(\lambda,\nu) = \underset{\mathbf{p_f}}{\mathrm{argmin}}
 \{
@@ -578,12 +524,12 @@ U_f()
 The following steps can then be iterated in order to reach an optimal solution. 
 \begin{enumerate}
 \item 
-Individual players can solve $ g_f(\lambda,\nu) $ independently.
+Individual players (FC-BSs) can solve $ g_f(\lambda,\nu) $ independently.
 \begin{itemize}
 \item Setting $\frac{\partial g_f(\lambda,\nu)}{\partial p_{\mathrm{f,i}}} = 0$ 
 
 \item 
-Solving for $p_{\mathrm{fi}}$ using \eqref{user_sinr} yields
+Solving for $p_{\mathrm{fi}}$ using \eqref{zf_snr} yields
 
 \begin{gather}
 p_{\mathrm{fi}} = (\sum_{\mathrm{m=1}}^{\mathrm{M}}\lambda_{\mathrm{m}}\|\mathbf{\tilde{h}}_{m,f}^T \mathbf{U_f}_{\mathrm{i}}\|^2_2
@@ -595,7 +541,7 @@ p_{\mathrm{fi}} = (\sum_{\mathrm{m=1}}^{\mathrm{M}}\lambda_{\mathrm{m}}\|\mathbf
 
 \end{itemize}
 \item 
-Using $g(\lambda,\nu) = \sum_{f=1}^{F}g_f(\lambda,\nu)$ and the calculus of subgradients $\partial g(\lambda,\nu) = \sum_{f=1}^{F} \partial g_f(\lambda,\nu)$, the dual variables can updated by 
+Using $g(\lambda,\nu) = \sum_{f=1}^{F}g_f(\lambda,\nu)$ and the calculus of subgradients $\partial g(\lambda,\nu) = \sum_{f=1}^{F} \partial g_f(\lambda,\nu)$, the dual variables can updated using:
 
 \begin{gather}
 \lambda_{\mathrm{m}}^{\mathrm{k+1}} = 
@@ -603,22 +549,24 @@ Using $g(\lambda,\nu) = \sum_{f=1}^{F}g_f(\lambda,\nu)$ and the calculus of subg
 +
 \alpha^{\mathrm{k}}*
 (
+\underbrace{
 \sum _{\mathrm{f=1}}^{\mathrm{F}}
 \sum _{\mathrm{i=1}}^{\mathrm{K_{\mathrm{f}}}}
 p_{\mathrm{fi}}
-\|\mathbf{\tilde{h}}_{\mathrm{mf}}^T \mathbf{u_{\mathrm{fi}}}\|^2_2 
+\|\mathbf{\tilde{h}}_{\mathrm{mf}}^T \mathbf{u_{\mathrm{fi}}}\|^2_2}_{Interference}
 - I_{\mathrm{m}}
 )
 \end{gather}
-
+performed at the macro cell users,
 
 \begin{gather}
 \chi_{\mathrm{f}}^{\mathrm{k+1}} = 
 \chi_{\mathrm{f}}^{\mathrm{k}}
 +
 \alpha^{\mathrm{k}}*
-(\sum_{\mathrm{i=1}}^{\mathrm{K_{\mathrm{f}}}} p_{\mathrm{fi}} - P_{\mathrm{f}}^{Total}) 
+(\underbrace{\sum_{\mathrm{i=1}}^{\mathrm{K_{\mathrm{f}}}} p_{\mathrm{fi}}}_{Used Power} - P_{\mathrm{f}}^{Total}) 
 \end{gather}
+performed at individual FC-BSs, and 
 
 \begin{gather}
 \nu_{\mathrm{fi}}^{\mathrm{k+1}} = 
@@ -627,19 +575,29 @@ p_{\mathrm{fi}}
 \alpha^{\mathrm{k}}*
 (-p_{\mathrm{fi}})
 \end{gather}
+also performed at individual FC-BSs.
 
-using predefined $\alpha^{\mathrm{k}}$ which must satisfy certain sumability conditions.
+
+ $\alpha^{\mathrm{k}}$ is predefined and must satisfy  $\sum_{\mathrm{k=1}}^{\infty} \alpha^{\mathrm{k}}$ (cite).
 
 
 
 \end{enumerate} 
+Notice that these steps only require the information detailed in the problem description. 
 
-TODO 
-\begin{itemize}
-\item Detail the required information passing between system components needed for such a solution
-\end{itemize}
+\chapter{Simulation and Results}
+\subsection{Simulation System Description}
+The Heterogeneous Network is simulated by randomly placing $F $ and M Macro Cell Users within a predefined area. Each FC-BSs is assigned $K_{\mathrm{f}}$ unique Femto Users.
+\begin{figure}[h!]
+	\includegraphics[width=\textwidth,height = 7cm]{figures/system_figure}
+	  \caption{Simluation Setup}
+\end{figure}
 
-\chapter{Results}
+\subsection{Simulation Results}
+\subsubsection{Simulation Results for Concave Setup}
+	\includegraphics[width=\textwidth,height = 7cm]{figures/increasing_macro_users}
+
+
 
 \chapter{Conclusion}
 

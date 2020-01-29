@@ -48,7 +48,7 @@ def test_power_compare():
     time_path = "Output/utility_"+f"{time.time()}"+"curves.png"
     plt.savefig(time_path, format="png")
 
-    # network.print_layout()
+    network.print_layout()
 
     plt.show()
 

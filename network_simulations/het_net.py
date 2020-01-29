@@ -197,17 +197,21 @@ class Het_Network():
 
 
     def print_layout(self):
-        plt.figure()
+        # plt.figure()
+        fig, ax = plt.subplots(figsize=(6, 3), subplot_kw=dict(aspect="equal"))
         bs_locations = self.get_station_locations()
         for ind, station in enumerate(self.base_stations):
             fcu_locations = station.get_user_locations()
-            plt.scatter(fcu_locations[:,0],fcu_locations[:,1], marker='^', label="FCU")
-        plt.scatter(bs_locations[:,0],bs_locations[:,1], marker='H', label="BS")
+            fig.scatter(fcu_locations[:,0],fcu_locations[:,1], marker='^', label="Femto User")
+        fig.scatter(bs_locations[:,0],bs_locations[:,1], marker='H', label="Femto Base-Station")
         mu_locations = self.get_macro_locations()
-        plt.scatter(mu_locations[:,0],mu_locations[:,1], marker='X', label="MCU")
-        plt.legend(loc='lower left')
+        fig.scatter(mu_locations[:,0],mu_locations[:,1], marker='X', label="Macro User")
+        # plt.legend(loc='lower left')
         time_path = "Output/system" + f"{time.time()}" + "curves.png"
-        plt.savefig(time_path, format="png")
+        ax.legend(("Femto User", "Femto Base-Station", "Macro User"), ('X', 'H', '^'))
+        fig.savefig(time_path, format="png")
+        # plt.savefig(time_path, format="png")
+
 
     def change_power_limit(self, new_limit):
         for bs in self.base_stations:
