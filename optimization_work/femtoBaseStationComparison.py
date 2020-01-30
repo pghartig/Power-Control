@@ -17,7 +17,7 @@ def test_femto_compare():
     numFemtoUserList = [10, 15, 20]
     previousNumberUsers = numFemtoUserList[0]
     numMacroUsers = 20
-    num_iterations = 200
+    num_iterations = 100
     interferenceThreshold = 1
     powerLimit = 15
     network = het_net.Het_Network(previousNumberUsers, numMacroUsers, num_users, num_antenna,
