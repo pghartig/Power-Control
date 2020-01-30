@@ -455,7 +455,7 @@ class Macro_User(User):
         distance_to_base_station = interferer.get_location() - self.location + interferer.coverage_size*.001
         sqrt_gain = 1 / np.linalg.norm(distance_to_base_station)
         channel = np.random.randn(interferer.number_antennas) * sqrt_gain
-        if channel == math.inf or channel == - math.inf:
+        if np.any(channel == math.inf) or np.any(channel == - math.inf):
             raise Exception("infinite channel???")
         self.downlink_channels[str(interferer.ID)] = channel*sqrt_gain
 
@@ -505,7 +505,7 @@ class Femto_User(User):
             distance_to_base_station = base_station.get_location()-self.location+  base_station.coverage_size*.001
             sqrt_gain = 1/np.linalg.norm(distance_to_base_station)
             channel = np.random.randn(base_station.number_antennas)*sqrt_gain
-            if channel == math.inf or channel == - math.inf:
+            if np.any(channel == math.inf) or np.any(channel == - math.inf):
                 raise Exception("infinite channel???")
             self.downlink_channels[str(base_station.ID)] = channel*sqrt_gain
 

@@ -10,14 +10,14 @@ first setup the network according using the het_net class then consolidate all o
 """
 
 def test_power_compare():
-    num_users = 1
-    num_antenna = 1
+    num_users = 5
+    num_antenna = 6
     step_size = 1e-2
-    userPowerList = [1, 10, 15]
+    userPowerList = [1, 10, 15, 25]
     previousNumberUsers = userPowerList[0]
-    num_iterations = 100
+    num_iterations = 500
     numMacroUsers = 20
-    interferenceThreshold = 5
+    interferenceThreshold = 1
     userPower = userPowerList[0]
     network = het_net.Het_Network(10, numMacroUsers, num_users, num_antenna,
                                   interferenceThreshold=interferenceThreshold, power_limit=userPower,
@@ -49,7 +49,7 @@ def test_power_compare():
     time_path = "Output/utility_"+f"{time.time()}"+"curves.png"
     plt.savefig(time_path, format="png")
 
-    # network.print_layout()
+    network.print_layout()
 
     plt.show()
     pass

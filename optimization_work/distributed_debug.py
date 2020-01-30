@@ -10,8 +10,8 @@ first setup the network according using the het_net class then consolidate all o
 """
 
 def test_dist_debug():
-    num_users = 1
-    num_antenna = 1
+    num_users = 5
+    num_antenna = 8
     step_size = 1e-2
     power_limit = 10
     interferenceConstraint = 5
@@ -25,9 +25,9 @@ def test_dist_debug():
     set_corr.update_beam_formers(set=True)
     # Choose number of iterations to allow
     num_iterations = 200
-    utilities, duals, feasibility = network.allocate_power_step(num_iterations, step_size)
-    min_corr_utilities, min_corr_duals, min_corr_feasibility = min_corr.allocate_power_step(num_iterations, step_size)
-    set_utilities, set_duals, set_feasibility = set_corr.allocate_power_step(num_iterations, step_size)
+    utilities, duals, feasibility , intf = network.allocate_power_step(num_iterations, step_size)
+    min_corr_utilities, min_corr_duals, min_corr_feasibility, intf = min_corr.allocate_power_step(num_iterations, step_size)
+    set_utilities, set_duals, set_feasibility, intf = set_corr.allocate_power_step(num_iterations, step_size)
     duals = np.asarray(duals)
     min_corr_duals = np.asarray(min_corr_duals)
     set_duals = np.asarray(set_duals)
