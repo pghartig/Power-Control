@@ -306,6 +306,11 @@ Due to constraint \eqref{zf_const_gen}, $\gamma_{\mathrm{f,i}}$ takes the form
 	As $\mathbf{h}_{\mathrm{f,i}}\mathbf{h}^H_{\mathrm{f,i}}$ is positive semi-definite, $\gamma_{\mathrm{f,i}}$ is convex in ${\mathbf{u}_{\mathrm{f,i}}}$. 
 \item
 The composition $U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $ is concave only if $U_{\mathrm{f,i}}() $ is concave and non-increasing; violating the non-decreasing definition of $U_{\mathrm{f,i}}() $.
+If $U_{\mathrm{f,i}}() $ is a general non-decreasing function, the resulting
+ function to \emph{maximize} is quasiconvex \cite[p.~102]{BoV:04}. In the case
+  that $U_{\mathrm{f,i}}() $ is  non-decreasing and convex, the resulting
+   function to \emph{maximize} is convex and therefore, concave programming can
+    potentially be used to find an optima. 
 \end{itemize}
 
 \end{enumerate}
@@ -547,7 +552,7 @@ p_{\mathrm{fi}} = (\sum_{\mathrm{m=1}}^{\mathrm{M}}\lambda_{\mathrm{m}}\|\mathbf
 Using $g(\lambda,\nu) = \sum_{f=1}^{F}g_f(\lambda,\nu)$ and the calculus of subgradients $\partial g(\lambda,\nu) = \sum_{f=1}^{F} \partial g_f(\lambda,\nu)$, the dual variables can updated using:
 
 \begin{gather}
-\lambda_{\mathrm{m}}^{\mathrm{k+1}} = 
+\lambda_{\mathrm{m}}^{\mathrm{k+1}} = (
 \lambda_{\mathrm{m}}^{\mathrm{k}}
 +
 \alpha^{\mathrm{k}}*
@@ -558,29 +563,29 @@ Using $g(\lambda,\nu) = \sum_{f=1}^{F}g_f(\lambda,\nu)$ and the calculus of subg
 p_{\mathrm{fi}}
 \|\mathbf{\tilde{h}}_{\mathrm{mf}}^T \mathbf{u_{\mathrm{fi}}}\|^2_2}_{Interference}
 - I_{\mathrm{m}}
-)
+))^+
 \end{gather}
 performed at the macro cell users,
 
 \begin{gather}
-\chi_{\mathrm{f}}^{\mathrm{k+1}} = 
+\chi_{\mathrm{f}}^{\mathrm{k+1}} = (
 \chi_{\mathrm{f}}^{\mathrm{k}}
 +
 \alpha^{\mathrm{k}}*
-(\underbrace{\sum_{\mathrm{i=1}}^{\mathrm{K_{\mathrm{f}}}} p_{\mathrm{fi}}}_{Used Power} - P_{\mathrm{f}}^{Total}) 
+(\underbrace{\sum_{\mathrm{i=1}}^{\mathrm{K_{\mathrm{f}}}} p_{\mathrm{fi}}}_{Used Power} - P_{\mathrm{f}}^{Total}) )^+
 \end{gather}
 performed at individual FC-BSs, and 
 
 \begin{gather}
-\nu_{\mathrm{fi}}^{\mathrm{k+1}} = 
+\nu_{\mathrm{fi}}^{\mathrm{k+1}} = (
 \nu_{\mathrm{fi}}^{\mathrm{k}}
 +
 \alpha^{\mathrm{k}}*
-(-p_{\mathrm{fi}})
+(-p_{\mathrm{fi}}))^+
 \end{gather}
 also performed at individual FC-BSs.
-
-
+As each of dual variable in this update is an inequality constraint, the implementation of this algorithm directly enforces non-negativity using 
+$(arg)^+$.
 Step size $\alpha^{\mathrm{k}}$ is predefined and constant.
  % must satisfy  $\sum_{\mathrm{k=1}}^{\infty} \alpha^{\mathrm{k}}$ (cite).
 
@@ -591,7 +596,9 @@ Notice that these updates only require the information detailed in the problem d
 
 \chapter{Simulation and Results}
 \subsection{Simulation System Description}
-The Heterogeneous Network is simulated by randomly placing $F $ and M Macro Cell Users within a predefined area. Each FC-BS is assigned $K_{\mathrm{f}}$ unique Femto Users. 
+The Heterogeneous Network is simulated by randomly placing $F $ and M Macro Cell Users within a predefined area. Each FC-BS is assigned $K_{\mathrm{f}}$ unique Femto Users. All channels between FC-BS and users (both Femtro and Macro) are simulated using rayleigh fading and attenuation coefficient $d^{- \beta}$ with $\beta =2$ and $d$ as the distance between user and base-station.
+FC-BS $f$ initializes power to user $i$ as $p_{\mathrm{fi}} = \frac{P^{P_{\mathrm{f}}^{Total}}}{K_{\mathrm{f}}} $ such that the corresponding power constraint is not violated. 
+Dual variables are intitialized 
 \begin{figure}[h!]
 	\includegraphics[width=\textwidth,height = 10cm]{figures/system_figure}
 	  \caption{Simluation Setup}

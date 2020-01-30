@@ -13,11 +13,11 @@ def test_power_compare():
     num_users = 1
     num_antenna = 1
     step_size = 1e-2
-    userPowerList = [1, 10, 15, 25]
+    userPowerList = [1, 10, 15]
     previousNumberUsers = userPowerList[0]
-    num_iterations = 500
-    numMacroUsers = 50
-    interferenceThreshold = 1
+    num_iterations = 100
+    numMacroUsers = 20
+    interferenceThreshold = 5
     userPower = userPowerList[0]
     network = het_net.Het_Network(10, numMacroUsers, num_users, num_antenna,
                                   interferenceThreshold=interferenceThreshold, power_limit=userPower,
@@ -40,7 +40,6 @@ def test_power_compare():
         currNetwork.change_power_limit(powerLimit)
         workingCopy = copy.deepcopy(currNetwork)
         utilities, duals, feasibility, constraints = workingCopy.allocate_power_step(num_iterations, step_size)
-        previousNumberUsers = powerLimit
         util_plt.plot(np.arange(num_iterations + 1), utilities, label=f"{powerLimit}")
         extra_plt.plot(np.arange(num_iterations), constraints, label=f"{powerLimit}")
         print(feasibility, "\n")
@@ -50,7 +49,8 @@ def test_power_compare():
     time_path = "Output/utility_"+f"{time.time()}"+"curves.png"
     plt.savefig(time_path, format="png")
 
-    network.print_layout()
+    # network.print_layout()
 
     plt.show()
+    pass
 
