@@ -77,6 +77,7 @@ class Het_Network():
         average_duals = []
         feasibility = []
         interferenceSlack = []
+        powerSlack = []
         social_utility_vector.append(self.get_social_utility())
         #   intitialize with correct duals given the starting allocation
         step_size = step_size
@@ -88,9 +89,10 @@ class Het_Network():
             self.__update_dual_variables(step_size, i)
             social_utility_vector.append(self.get_social_utility())
             # feasibility.append(self.verify_feasibility())
-            interferenceSlack.append(np.average(self.trackConstraints()))
+            interferenceSlack.append(np.min(self.trackIntConstraints()))
+            powerSlack.append(np.min(self.trackPowConstraints()))
             # step_size /= 2
-        return social_utility_vector, average_duals, self.verify_feasibility(), interferenceSlack
+        return social_utility_vector, average_duals, self.verify_feasibility(), [interferenceSlack,powerSlack]
 
     def verify_feasibility(self):
         for bs in self.base_stations:
@@ -191,12 +193,18 @@ class Het_Network():
         # return np.average(interference), np.average(ave_power)
         # return np.average(pow_dual), np.average(int_dual)
 
-    def trackConstraints(self):
+    def trackIntConstraints(self):
         interferenceSlack = []
         for mu in self.macro_users:
             interferenceSlack.append(mu.interference_threshold-mu.interference)
         return interferenceSlack
 
+
+    def trackPowConstraints(self):
+        powerSlack = []
+        for bs in self.base_stations:
+            powerSlack.append(bs.power_constaint - np.sum(bs.power_vector))
+        return powerSlack
 
     def print_layout(self):
         # plt.figure()
