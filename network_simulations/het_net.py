@@ -79,6 +79,7 @@ class Het_Network():
         interferenceSlack = []
         social_utility_vector.append(self.get_social_utility())
         #   intitialize with correct duals given the starting allocation
+        step_size = step_size
         for i in range(num_iterations):
             average_duals.append(self.get_average_duals())
             #   First step in dual ascent -> find dual function
@@ -88,6 +89,7 @@ class Het_Network():
             social_utility_vector.append(self.get_social_utility())
             # feasibility.append(self.verify_feasibility())
             interferenceSlack.append(np.average(self.trackConstraints()))
+            # step_size /= 2
         return social_utility_vector, average_duals, self.verify_feasibility(), interferenceSlack
 
     def verify_feasibility(self):
@@ -220,10 +222,13 @@ class Het_Network():
         fig.savefig(time_path, format="png")
         # plt.savefig(time_path, format="png")
 
-
     def change_power_limit(self, new_limit):
         for bs in self.base_stations:
             bs.power_constaint = new_limit
+
+    def change_number_antenna(self, num_antenna):
+        for bs in self.base_stations:
+            bs.change_num_antenna(num_antenna)
 
     def change_interference_constraint(self, interferenceThreshold):
         for mu in self.macro_users:
@@ -262,7 +267,7 @@ class Femto_Base_Station():
             self.beam_forming_matrix = cp.Variable((self.number_antennas, num_femto_users), complex=True)
         else:
             self.beam_forming_matrix = np.zeros((self.number_antennas, num_femto_users))
-            self.power_vector = np.ones((num_femto_users))*(power_limit/(10*num_femto_users))
+            self.power_vector = np.ones((num_femto_users))*(power_limit/(num_femto_users))
         self.sigma_square = 1e-3
         self.connect_users(num_femto_users)
         self.power_constaint = power_limit
@@ -299,7 +304,7 @@ class Femto_Base_Station():
         for column in range(self.beam_forming_matrix.shape[1]):
             self.beam_forming_matrix[:, column] /= np.linalg.norm(self.beam_forming_matrix[:,column])
 
-    def optimize_beam_former(self, set = False):
+    def optimize_beam_former(self, set=False):
         # Setup variables (beamformer)
         x = cp.Variable(self.beam_forming_matrix.shape)
         if set == True:
@@ -320,6 +325,8 @@ class Femto_Base_Station():
         # Setup problem and solve
         utility = []
         utility += [cp.sum_squares(macro_user_matrix[m,:]@x) for m in range(macro_user_matrix.shape[0])]
+        # test adding regularization term to increase user correlation
+        utility += [cp.norm2(self.H[i,:]@x) for i in range(self.H.shape[0])]
         prob = cp.Problem(cp.Minimize(cp.sum(utility)), constr)
         # prob = cp.Problem(cp.Minimize(cp.trace(cp.matmul(self.H_tilde@x, x.T@self.H_tilde.T))), constr)
         prob.solve()
@@ -424,6 +431,16 @@ class Femto_Base_Station():
             locations.append(user.location)
         return np.asarray(locations)
 
+    def change_num_antenna(self, num_antenna, optimize=False):
+        if num_antenna >= len(self.users):
+            self.number_antennas = num_antenna
+            self.setup_users()
+            self.reconize_macro_user()
+            self.update_beamformer(optimize=optimize)
+
+        else:
+            raise Exception("cannot have more users than antenna")
+
 
 class User:
     def __init__(self, ID, network):
@@ -435,6 +452,10 @@ class User:
 
     def get_channel_for_base_station(self, base_station_index):
         return self.downlink_channels.get(str(base_station_index))
+
+    def add_base_station_antenna(self, num_antennas):
+        for ind, item in enumerate(self.uplink_channels):
+            self.downlink_channels[str(ind)] = 1
 
     def move(self):
         self.location = (np.random.randint(self.network.coverage_area[0]), np.random.randint(self.network.coverage_area[1]))

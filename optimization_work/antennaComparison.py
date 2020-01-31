@@ -9,18 +9,17 @@ import time
 first setup the network according using the het_net class then consolidate all of the information from the network to solve the central optimization problem
 """
 
-def test_power_compare():
+def test_antenna_compare():
     num_users = 5
-    num_antenna = 10
-    step_size = 1e-3
-    userPowerList = [100, 500, 1000]
-    # userPowerList = [5, 10, 30]
-    previousNumberUsers = userPowerList[0]
-    num_iterations = 2000
-    numMacroUsers = 1
+    step_size = 1e-2
+    numAntennaList = [10, 30, 50]
+    previousNumberAntenna = numAntennaList[0]
+    num_antenna = previousNumberAntenna
+    num_iterations = 500
+    numMacroUsers = 10
     interferenceThreshold = 10
-    userPower = userPowerList[0]
-    network = het_net.Het_Network(5, numMacroUsers, num_users, num_antenna,
+    userPower = 100
+    network = het_net.Het_Network(10, numMacroUsers, num_users, num_antenna,
                                   interferenceThreshold=interferenceThreshold, power_limit=userPower,
                                   power_vector_setup=True,
                                   random=False)
@@ -34,15 +33,17 @@ def test_power_compare():
     extra_plt.set_title("Interference Constraint Slack")
     extra_plt.set_ylabel("Average Constraint Slack ")
     extra_plt.set_xlabel("Iteration")
-    currNetwork = copy.deepcopy(network)
     check = []
-    for powerLimit in userPowerList:
-        currNetwork = copy.deepcopy(currNetwork)
-        currNetwork.change_power_limit(powerLimit)
-        workingCopy = copy.deepcopy(currNetwork)
+    for numAntenna in numAntennaList:
+        workingCopy = het_net.Het_Network(10, numMacroUsers, num_users, numAntenna,
+                                      interferenceThreshold=interferenceThreshold, power_limit=userPower,
+                                      power_vector_setup=True,
+                                      random=False)
+
+        workingCopy.update_beam_formers()
         utilities, duals, feasibility, constraints = workingCopy.allocate_power_step(num_iterations, step_size)
-        util_plt.plot(np.arange(num_iterations + 1), utilities, label=f"{powerLimit}")
-        extra_plt.plot(np.arange(num_iterations), constraints, label=f"{powerLimit}")
+        util_plt.plot(np.arange(num_iterations + 1), utilities, label=f"{numAntenna}")
+        extra_plt.plot(np.arange(num_iterations), constraints, label=f"{numAntenna}")
         print(feasibility, "\n")
         check.append(np.asarray(utilities))
 
@@ -50,7 +51,7 @@ def test_power_compare():
     time_path = "Output/utility_"+f"{time.time()}"+"curves.png"
     plt.savefig(time_path, format="png")
 
-    # network.print_layout()
+    network.print_layout()
 
     plt.show()
     pass
