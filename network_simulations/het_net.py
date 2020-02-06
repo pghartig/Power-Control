@@ -334,7 +334,7 @@ class Femto_Base_Station():
         utility = []
         utility += [cp.sum_squares(macro_user_matrix[m,:]@x) for m in range(macro_user_matrix.shape[0])]
         # test adding regularization term to increase user correlation
-        utility += [cp.norm2(self.H[i,:]@x) for i in range(self.H.shape[0])]
+        # utility += [cp.norm2(self.H[i,:]@x) for i in range(self.H.shape[0])]
         prob = cp.Problem(cp.Minimize(cp.sum(utility)), constr)
         # prob = cp.Problem(cp.Minimize(cp.trace(cp.matmul(self.H_tilde@x, x.T@self.H_tilde.T))), constr)
         prob.solve()
