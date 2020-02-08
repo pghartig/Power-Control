@@ -28,7 +28,7 @@
 Modern communication systems often incorporate numerous, uncoordinated users competing for a limited resource.
 In this work, a game theoretic approach considers a wireless communications network with uncoordinated  macrocell and femtocell users. The goal of this approach is to find Nash Equilibrium in which femtocell base stations optimize their utility while ensuring macrocell user interference is below a given threshold. 
 Previous work has shown solutions for systems in which the femtocell base stations transmit over a SISO channel; therefore the MIMO case is investigated here. 
-One of the primary goals of this work is to achieve Nash Equilibrium via distributed solutions which minimize system overhead. As seen in the following, the most general setup of this game does not permit such solutions and therefore a refined problem is purposed. Numerical results to the derived solution are then discussed. 
+One of the primary goals of this work is to achieve Nash Equilibrium (NE) via distributed solutions which minimize system overhead. As seen in the following, the most general setup of this game does not permit such solutions and therefore a refined problem is proposed. Numerical results to the derived solution are then discussed. 
 
 
 \section{Relevant Tools/Theory}
@@ -40,14 +40,16 @@ It is useful to first review relevant tools for solving such games. Together, th
 
 \begin{itemize}
 \item
-\textbf{Definition:} A game in which the individual player optimization problems are concave and the strategy set resulting from problem constraints (potentially player coupled) is convex.
+\textbf{Definition:} A game in which individual players maximize a concave utility function and the strategy set resulting from problem constraints (potentially player coupled) is convex. 
 \item 
 \textbf{Existence of Nash Equilibrium:} Pure Strategy NE exist for Concave N-Person  games \cite[Thm1]{rosen1964existence}. 
 \item
 \textbf{Uniqueness of Nash Equilibrium:} To prove uniqueness of NE for Concave N-Person  games, the "Normalized Nash Equilibrium" is introduced.
-First a weighted sum of the player utility functions is taken.
+First, take a weighted sum of the player utility functions $U_{\mathrm{f}}(b)$.
 \begin{equation}
-\sigma(u,r)  = \Sigma_{\mathrm{f=1}}^{\mathrm{F}} r_{\mathrm{f}}U_{\mathrm{f}}(), \; 
+\sigma(\mathbf{u},\mathbf{r})  = \Sigma_{\mathrm{f=1}}^{\mathrm{F}} r_{\mathrm{f}}U_{\mathrm{f}}(b),\; \mathbf{r}=(r_{\text{1}}... r_{\text{F}})
+,\; \mathbf{u}=(u_{\text{1}}... u_{\text{F}})
+, \; 
 r_{\mathrm{f}} \geq 0
 \end{equation}
  The function $G(b,r) $ is defined as the Jacobian of $g(b,r) $, with 
@@ -68,31 +70,33 @@ Negative Definiteness of the matrix $[G(b,r)+G^{T}(b,r)] $ is a sufficient condi
 
 
 \end{itemize}
-\item The Potential Function: a centralization of a game into a single optimization problem.
+\item The Potential Function: representing the game using a single, central optimization problem.
 \begin{itemize}
 \item
-\textbf{Definition:} A function
-$ \Psi()$ which satisfies:
+\textbf{Definition:}  a function
+$ \Psi(b_{\text{f}})$ which satisfies:
 \begin{equation}\label{potential_game_condition}
-\frac{\partial \Psi(x)}{\partial x}
+\frac{\partial \Psi(b_{\text{f}})}{\partial b_{\text{f}}}
  =
- \frac{\partial U_(x)}{\partial x}
-\end{equation} In words, $ \Psi()$ is a function whose gradient with respect to the strategy $x$ of any player, is equal to gradient of that players utility function  with respect to their strategy.
+ \frac{\partial U_(b_{\text{f}})}{\partial b_{\text{f}}}
+\end{equation} 
+for a game with player utility functions $U_(b_{\text{f}})$.
+In words, $ \Psi(b_{\text{f}})$ is a function whose gradient with respect to the strategy $b_{\text{f}}$ of a player, is equal to the gradient of that player's utility function with respect to strategy $b_{\text{f}}$.
 \item \textbf{Result:} Global optima to the potential function of a game are Nash Equilibrium.
-\item \textbf{Convex Case:} If a Concave N-Person game game admits a potential function, the potential function will be concave allowing for use of convex optimization tools to find a NE. 
+\item \textbf{Convex Case:} If a Concave N-Person game admits a potential function, the potential function will be concave allowing for use of convex optimization tools to find a NE. 
 \item \textbf{Additional Note:}  $ \Psi() $ is unique (A constant term can be added etc.)
 \end{itemize}
 
 
 
-\item Distributed Optimization: Allowing for multiple processes to simultaneously solve a central optimzation problem. 
+\item Distributed Optimization: algorithms which solve a central optimization problem with multiple processes in parallel. 
 \begin{itemize}
-\item \textbf{Steps in Distribution:} Distributed solutions minimize the system overhead required in sharing
+\item \textbf{Steps in Distribution:} 
 \begin{itemize}
 \item Begin with a central optimization problem (In this case obtained using a Potential Function to the game).
-\item For the dual problem to the central problem
+\item Determine the dual problem to the central, primal problem.
 \item Evaluate if problem can be separated into sub-problems each with independent optimization variables.
-\item Perform an ascent of the dual problem by iterating between solving for the dual function of the sub-problems and then broadcasting these solutions to perform the gradient step of the dual problem.
+\item Perform an ascent of the dual problem by iterating between solving the dual function of the sub-problems, then broadcasting these solutions to perform the gradient step of the dual problem.
 \item In the case of strong duality to the problem, the dual ascent will converge to the optimal (In this case a Nash Equilibrium).
 
 \end{itemize} 
@@ -112,7 +116,7 @@ Look at how the tools described above will be used in the work.
 \item 
 \ref{genmodel}: Introduces the system model for the most general setup of the game.
 \item 
-\ref{genproblem}: Analyze the gereral setup to see why further refinements are useful in arriving at a distributed solution. 
+\ref{genproblem}: Analyze the general setup to see why further refinements are useful in arriving at a distributed solution. 
 \item
 \ref{conmodel}: Introduce refinements to the system model 
 \item 
@@ -149,7 +153,7 @@ $T_f$ antennas with which to transmit to $K_f$ femtocell users (it is assumed th
     	in which all $U_{\mathrm{f,i}}()$ are non-decreasing (No assumption about concavity is made at this point).
 
 \item 
-	Knowledge of the downlink channel matrix $\mathbf{H_\mathrm{f}} \in \mathbb{C}_{K_f \times T_f} $ to the $K_f$ femto users.
+	Knowledge of the downlink channel matrix $\mathbf{H_\mathrm{f}} \in \mathbb{C}_{K_f \times T_f} $ to the $K_f$ FC-BS users.
 % TODO(Simulate degradation with incomplete CSI solution?)
 \\
 \item
@@ -227,8 +231,8 @@ Each player $f$ attempts to maximize utility function $U_f()$ while satisfying t
 	\mathbf{U_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} \leq I^{Threshold}		
 	_{\mathrm{m}} & m \in \{1 ...M\} 
 		\label{interference_const_gen}\\
-        & trace(\mathbf{U_f^H}\mathbf{U_f}) \leq P^{Total}_{f} \label{power_const_gen}\\
-        & \langle \mathbf{h_{f,j}}\mathbf{u_{f,i}} \rangle =0\ & \; \forall j \in \{1... K_f\}\backslash i ,\; \forall i \in \{1 ... K_f\} \label{zf_const_gen}
+        & trace(\mathbf{U}_{\text{f}}^H\mathbf{U}_{\text{f}}) \leq P^{Total}_{\text{f}} \label{power_const_gen}\\
+        & \langle \mathbf{h_{\text{f,j}}}\mathbf{u_{\text{f,i}}} \rangle =0\ & \; \forall j \in \{1... K_f\}\backslash i ,\; \forall i \in \{1 ... K_f\} \label{zf_const_gen}
 	\end{align}
 	\end{subequations}
 	
@@ -301,8 +305,7 @@ Due to the zero-forcing constraint \eqref{zf_const_gen}, $\gamma_{\mathrm{f,i}}$
 	As $\mathbf{h}_{\mathrm{f,i}}\mathbf{h}^H_{\mathrm{f,i}}$ is positive semi-definite, $\gamma_{\mathrm{f,i}}$ is convex in ${\mathbf{u}_{\mathrm{f,i}}}$. 
 \item
 The composition $U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $ is concave only if $U_{\mathrm{f,i}}() $ is concave and non-increasing; violating the non-decreasing definition of $U_{\mathrm{f,i}}() $.
-If $U_{\mathrm{f,i}}() $ is a general, non-decreasing function, the result is a quasiconvex \cite[p.~102]{BoV:04} function which \emph{maximize}. In the case
-  that $U_{\mathrm{f,i}}() $ is  non-decreasing and convex, the resulting
+If $U_{\mathrm{f,i}}() $ is a general, non-decreasing function, the result is quasiconvex \cite[p.~102]{BoV:04}. If $U_{\mathrm{f,i}}() $ is  non-decreasing and convex, the resulting
    function is convex and therefore, concave programming can be used to find a \emph{maximum}. 
 \end{itemize}
 
@@ -314,13 +317,13 @@ Under the current system model, the game is not a Concave N-Person game. Neverth
 
 \section{Concave System Model}\label{conmodel}
 
-The general setup of this game seen in the previous section prohibits the use of tools we wish to use in reaching a NE for the game.
+The general setup of this game seen in the previous section prohibits the use of tools we wish to use in reaching a NE of the game.
 The following refinement of the system model permits a unique Nash Equilibrium to be found via a single convex problem which may be distributed across players of the game.
 \par
 Rather than jointly optimizing the power allocation over the set of possible zero-forcing beamformers as in the general setup, the zero-forcing beamformer is pre-selected independently \emph{before} the allocation of power. 
 
 \subsection{Players: Femtocell Base Stations}
-Femtocells are adapted from the general setup by the following:
+Femtocells are adapted from the general setup to the refined setup:
 \begin{itemize}
 \item 
 	FC-BSs with multiple antennas ($T_f \geq 1$) can beamform their transmission using the precoding 	
@@ -330,7 +333,7 @@ Femtocells are adapted from the general setup by the following:
 \\
 
 \item 
-$\mathbf{U}_f$ is selected as an inverse to $\mathbf{H_\mathrm{f}}$.
+$\mathbf{U}_f$ is selected as a pseudo-inverse to $\mathbf{H_\mathrm{f}}$.
 Such that
 \begin{gather*}
 \langle \mathbf{h_{f,j}}\mathbf{u_{f,i}} \rangle =0\  \; \forall j \in \{1... K_f\}\backslash i ,\; \forall i \in \{1 ... K_f\}
@@ -346,7 +349,7 @@ such that the transmitted
 	\mathbf{x_{\mathrm{f}}}$.
 \\
 \item 
-	FC-BS $f$ has power constraint:
+	FC-BS $f$ enforces power constraint:
 	\begin{gather*}
 	trace(E[\mathbf{s}_\mathrm{f}\mathbf{s}_\mathrm{f}^H]) =
 	\sum_{\mathrm{i=1}}^{\mathrm{K_{\mathrm{f}}}} p_{\mathrm{fi}}
@@ -387,18 +390,18 @@ No change from general setup.
 	\mathbf{s_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} 
 	=
 	\sum_{\mathrm{f=1}}^{\mathrm{F}}	\sum_{\mathrm{i=1}}^{\mathrm{K_f}}
-	p_{\mathrm{fi}}\|\tilde{h}_{\mathrm{mf}}^T u_{\mathrm{fi}}\|^2_2
+	p_{\mathrm{f,i}}\|\tilde{h}_{\mathrm{m,f}}^T u_{\mathrm{f,i}}\|^2_2
 	\leq I^{Threshold}		
 	_{\mathrm{m}} & m \in \{1 ...M\} 
 		\label{interference_const_c}\\
         & trace(\mathbf{s}_\mathrm{f}\mathbf{s}_\mathrm{f}^H) =
-        	\sum_{\mathrm{i=1}}^{\mathrm{K_{\mathrm{f}}}} p_{\mathrm{fi}}
+        	\sum_{\mathrm{i=1}}^{\mathrm{K_{\mathrm{f}}}} p_{\mathrm{f,i}}
 	   \leq P^{Total}_{f}  \label{power_const_c}\\
         & p_{\mathrm{f,i}} \geq 0 &  i \in \{1 ...K_{\mathrm{f}}\} \label{pos_power_const_c}
 	\end{align}
 	\end{subequations}
 
-Note that because $U_{\mathrm{f}}$ is pre-selected as an inverse to  $\mathbf{H_\mathrm{f}}$, constraint \eqref{zf_const_gen} has been removed.
+Note that because $\mathbf{U}_{\mathrm{f}}$ is pre-selected as a pseudo-inverse to  $\mathbf{H_\mathrm{f}}$, constraint \eqref{zf_const_gen} has been removed.
 \subsection{Concave N-Person game analysis of concave setup}
 
 Sufficient conditions for a concave problem are:
@@ -418,12 +421,12 @@ The constraints form a convex, closed and bounded set.
 	\mathbf{s_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} 
 	=
 	\sum_{\mathrm{f=1}}^{\mathrm{F}}	\sum_{\mathrm{i=1}}^{\mathrm{K_f}}
-	p_{\mathrm{fi}}\|\tilde{h}_{\mathrm{mf}}^T u_{\mathrm{fi}}\|
+	p_{\mathrm{fi}}\|\tilde{h}_{\mathrm{mf}}^T u_{\mathrm{f,i}}\|
 	\leq I^{Threshold}_{\mathrm{m}} 
 \end{gather*}
 
 \item \
-	Constraint \eqref{power_const_c} is  afine in $diag(\mathbf{p_{\mathrm{f}}})$.
+	Constraint \eqref{power_const_c} is  affine in $diag(\mathbf{p_{\mathrm{f}}})$.
 	
 \item \
 	Constraint \eqref{pos_power_const_c} is affine in $diag(\mathbf{p_{\mathrm{f}}})$.
@@ -445,7 +448,7 @@ As the utility function $U_{\mathrm{fi}}(p_{\mathrm{fi}})$ is strictly concave, 
 \textbf{Potential Function:} The proposed potential function satisfying \eqref{potential_game_condition} is 
 
 \begin{gather*} \label{Potential_Function}
-\Psi(\mathbf{p}) = \sum_{f = 1}^{F} U_f(\mathbf{p_{\mathrm{f}}}) 
+\Psi(\mathbf{\gamma}) = \sum_{f = 1}^{F} U_f(\mathbf{\gamma_{\mathrm{f}}}) 
 \end{gather*}
 
 resulting in the single optimization problem 
@@ -454,7 +457,7 @@ resulting in the single optimization problem
 	\label{optim}
 	\begin{align}
 	    \underset{\mathbf{p}}{\text{minimize}}
-	    & \; \Psi(\mathbf{p}) \label{potential_game} \\
+	    & \; \Psi(\mathbf{\gamma}) \label{potential_game} \\
 	    \text{subject to} \; &
 	  \sum^F_{f=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{s}_{\mathrm{f}} 						
 	\mathbf{s_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} \leq I^{Threshold}		
@@ -465,7 +468,7 @@ resulting in the single optimization problem
         & p_{\mathrm{f,i}} \geq 0 &  \forall i \in \{1 ...K_{\mathrm{f}}\} \; \forall f \in \{1 ... F\}\label{pos_power_const}
 	\end{align}
 	\end{subequations}
-	with $\mathbf{p}= [\mathbf{p_{\mathrm{1}}},\mathbf{p_{\mathrm{2}}}...\mathbf{p_{\mathrm{F}}}]$
+	with $\mathbf{\gamma}= [\mathbf{\gamma_{\mathrm{1}}},\mathbf{\gamma_{\mathrm{2}}}...\mathbf{\gamma_{\mathrm{F}}}]$
 
 %\begin{theorem}\label{distributed}
 %\cite{ghosh2015normalized}
@@ -475,7 +478,7 @@ resulting in the single optimization problem
 \subsection{Distributed Solution to the Game}
 A distribtued solution to \eqref{potential_game} is now proposed.
 \subsubsection{Central Problem Resulting from Potential Game}
-The lagrangian to the potential function is formed from which the dual problem with be posed. 
+The Lagrangian to the potential function is derived to formulate the dual problem. 
 \begin{multline}
 L(\mathbf{U,\lambda}) = 
 \;
@@ -525,7 +528,7 @@ U_f()
 \end{multline}
 \\
 
-The problem can now be solved using a distributed dual ascent reach the NE of the potential game. 
+The problem can now be solved using a distributed dual ascent to reach the NE of the potential game. 
 \subsubsection{Distributed Algorithm 1}\label{algo1}
 
 \begin{enumerate}
