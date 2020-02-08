@@ -92,7 +92,7 @@ class Het_Network():
             interferenceSlack.append(np.min(self.trackIntConstraints()))
             powerSlack.append(np.min(self.trackPowConstraints()))
             # step_size /= 2
-        return social_utility_vector, average_duals, self.verify_feasibility(), [interferenceSlack,powerSlack]
+        return social_utility_vector, average_duals, self.verify_feasibility(), [interferenceSlack, powerSlack]
 
     def verify_feasibility(self):
         for bs in self.base_stations:
@@ -275,7 +275,9 @@ class Femto_Base_Station():
             self.beam_forming_matrix = cp.Variable((self.number_antennas, num_femto_users), complex=True)
         else:
             self.beam_forming_matrix = np.zeros((self.number_antennas, num_femto_users))
-            self.power_vector = np.ones((num_femto_users))*(power_limit/(num_femto_users))
+            # self.power_vector = np.ones((num_femto_users))*(power_limit/(num_femto_users))
+            self.power_vector = np.zeros((num_femto_users))*(power_limit/(num_femto_users))
+
         self.sigma_square = 1e-3
         self.connect_users(num_femto_users)
         self.power_constaint = power_limit
