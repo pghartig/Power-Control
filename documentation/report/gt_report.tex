@@ -514,7 +514,7 @@ This dual function can be decomposed into $F$ component functions
 g_f(\lambda,\nu) = \underset{\mathbf{p_f}}{\mathrm{argmin}}
 \{
 \;
-U_f() 
+U_f(\gamma_{\text{f}}) 
 +
 \sum_{\mathrm{m=1}}^M \lambda_{\mathrm{m}}
 (\mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{s}_{\mathrm{f}} 						
@@ -593,8 +593,10 @@ Step size $\alpha^{\mathrm{k}}$ is predefined and constant.
 
 
 \end{enumerate} 
-These local updates require only the information detailed in the problem description and no additional overhead on the system. 
+These local updates require require that additional information is passed through the system. In particular this requires that Macro Cell Users monitor their incoming interference and then broadcast the updated dual variable $\lambda_{\text{m}}$ with which FC-BSs update the power allocation. 
 Note also that the dual ascent algorithm uses the dual and thus cannot guarantee a feasible solution to the primal problem originally posed. (Discuss constraint tolerance used here? )
+
+
 \chapter{Simulation and Results}\label{numerical}
 \subsection{Simulation System Description}
 The Heterogeneous Network is simulated by randomly placing $F $ and M Macro Cell Users within a predefined area. Each FC-BS is assigned $K_{\mathrm{f}}$ unique Femto Users. All channels between FC-BS and users (both Femtro and Macro) are simulated using rayleigh fading and attenuation coefficient $d^{- \beta}$ with $\beta =2$ and $d$ as the distance between user and base-station.
