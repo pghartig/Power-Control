@@ -12,15 +12,15 @@ first setup the network according using the het_net class then consolidate all o
 def test_power_compare():
     num_users = 1
     num_antenna = 1
-    step_size = 1e-5
+    step_size = 1e-1
     userPowerList = [10, 50, 300]
     # userPowerList = [5, 10, 30]
     previousNumberUsers = userPowerList[0]
-    num_iterations = 1000
-    numMacroUsers = 5
-    interferenceThreshold = 1
+    num_iterations = 5000
+    numMacroUsers = 3
+    interferenceThreshold = .01
     userPower = userPowerList[0]
-    network = het_net.Het_Network(5, numMacroUsers, num_users, num_antenna,
+    network = het_net.Het_Network(3, numMacroUsers, num_users, num_antenna,
                                   interferenceThreshold=interferenceThreshold, power_limit=userPower,
                                   power_vector_setup=True,
                                   random=False)
@@ -45,9 +45,10 @@ def test_power_compare():
         currNetwork.change_power_limit(powerLimit)
         workingCopy = copy.deepcopy(currNetwork)
         utilities, duals, feasibility, constraints = workingCopy.allocate_power_step(num_iterations, step_size)
+        duals = np.asarray(duals)
         util_plt.plot(np.arange(num_iterations + 1), utilities, label=f"{powerLimit}")
-        extra_plt.plot(np.arange(num_iterations), constraints[0], label=f"min interference {powerLimit}")
-        extra_plt1.plot(np.arange(num_iterations), constraints[1], label=f"min power {powerLimit}")
+        extra_plt.plot(np.arange(num_iterations+1), duals[:, 2], label=f"min interference {powerLimit}")
+        extra_plt1.plot(np.arange(num_iterations + 1), duals[:, 0], label=f"max interference dual {powerLimit}")
 
         # extra_plt.plot(np.arange(num_iterations), constraints[1], label=f"min power {powerLimit}")
 
