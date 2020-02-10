@@ -365,6 +365,15 @@ such that the transmitted
     	U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $
     	in which all $U_{\mathrm{f,i}}()$ are non-decreasing and
     	\emph{strictly concave}.
+\item The SINR of the Femto Cell users is now
+\begin{equation}\label{zf_snr}
+	\gamma_{\mathrm{f,i}} = 	\frac{\mathbf{u^H_{\mathrm{f,i}}h_{\mathrm{f,i}}h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}}
+	{\sigma^2_{noise}  
+	}=\frac{\sum_{\mathrm{i=i}}^{\mathrm{K_{f}}}
+ p_{\mathrm{fi}}\|h_{\mathrm{f,i}}u_{\mathrm{f,i}}\|^2}
+	{\sigma^2_{noise}  
+	}
+	\end{equation}
 
 \end{itemize}
 
@@ -402,6 +411,7 @@ No change from general setup.
 	\end{subequations}
 
 Note that because $\mathbf{U}_{\mathrm{f}}$ is pre-selected as a pseudo-inverse to  $\mathbf{H_\mathrm{f}}$, constraint \eqref{zf_const_gen} has been removed.
+
 \subsection{Concave N-Person game analysis of concave setup}
 
 Sufficient conditions for a concave problem are:
