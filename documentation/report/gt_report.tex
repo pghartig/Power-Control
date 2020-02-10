@@ -482,7 +482,7 @@ The Lagrangian to the potential function is derived to formulate the dual proble
 \begin{multline}
 L(\mathbf{U,\lambda}) = 
 \;
-\sum_{f=1}^F U_f() 
+\sum_{f=1}^F U_f(\gamma_{\text{f}}) 
 +
 \sum_{\mathrm{m=1}}^M \lambda_{\mathrm{m}}
 (	  \sum^F_{f=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{s}_{\mathrm{f}} 						
@@ -530,6 +530,7 @@ U_f(\gamma_{\text{f}})
 
 The problem can now be solved using a distributed dual ascent to reach the NE of the potential game. 
 \subsubsection{Distributed Algorithm 1}\label{algo1}
+In the following algorithms and simulation results $U_{\text{f}}(\gamma_{\text{f}}) = log(1+\gamma_{\text{f}})$.
 
 \begin{enumerate}
 \item 
@@ -539,7 +540,7 @@ Individual players (FC-BSs) can solve $ g_f(\lambda,\nu) $ independently.
 and solving for $p_{\mathrm{fi}}$ using \eqref{zf_snr} yields
 
 \begin{gather}
-p_{\mathrm{fi}} = (\sum_{\mathrm{m=1}}^{\mathrm{M}}\lambda_{\mathrm{m}}\|\mathbf{\tilde{h}}_{m,f}^T \mathbf{U_f}_{\mathrm{i}}\|^2_2
+p_{\mathrm{fi}} = (\sum_{\mathrm{m=1}}^{\mathrm{M}}\lambda_{\mathrm{m}}\|\mathbf{\tilde{h}}_{m,f}^T \mathbf{u}_{\mathrm{f,i}}\|^2_2
 +\chi_{f} \|\mathbf{u}_{\mathrm{f,i}}\|^2_2
 -\nu_{\mathrm{f,i}}
  )^{-1}

@@ -6,7 +6,7 @@ import time
 import math
 class Het_Network():
     def __init__(self, num_femto_cells, num_macro_users, max_users,
-                 max_antennas, interferenceThreshold, power_limit, power_vector_setup=False, random=True):
+                 max_antennas, interferenceThreshold, int_dual, pow_dual, pos_dual, power_limit, power_vector_setup=False, random=True):
         """
         TODO Enforce players have more antennas than users
         :param num_femto_cells:
@@ -19,13 +19,14 @@ class Het_Network():
         self.base_stations = []
         # these loops should probably be moved out of the constructor
         if random ==False:
-            [self.base_stations.append(Femto_Base_Station(i, self, max_users,max_antennas, power_vector_setup, power_limit=power_limit)) for i in range(num_femto_cells)]
+            [self.base_stations.append(Femto_Base_Station(i, self, max_users, max_antennas, power_vector_setup,
+                                                          pow_dual, pos_dual, power_limit)) for i in range(num_femto_cells)]
         else:
             [self.base_stations.append(Femto_Base_Station(i, self, np.random.randint(1, max_users+1)
                                                           , np.random.randint(1, max_antennas+1),power_vector_setup, power_limit=power_limit))
          for i in range(num_femto_cells)]
         self.macro_users = []
-        [self.macro_users.append(Macro_User(i, self, interferenceThreshold)) for i in range(num_macro_users)]
+        [self.macro_users.append(Macro_User(i, self, interferenceThreshold, int_dual)) for i in range(num_macro_users)]
         self.update_macro_cells()
         self.setup_base_stations()
 
@@ -45,11 +46,11 @@ class Het_Network():
             ret[str(station.ID)] = station_l
         return ret
 
-    def get_power_constaints(self):
-        constaints = dict()
+    def get_power_constraints(self):
+        constraints = dict()
         for station in self.base_stations:
-            constaints[str(station.ID)] = station.power_constaint
-        return constaints
+            constraints[str(station.ID)] = station.power_constraint
+        return constraints
 
     def get_beam_formers(self):
         beam_formers = []
@@ -99,12 +100,7 @@ class Het_Network():
 
     def verify_feasibility(self):
         for bs in self.base_stations:
-            check1 = np.any(bs.power_vector < 0)
-            check2 = np.sum(bs.power_vector)-(.01*bs.power_constaint) >= bs.power_constaint
-
-            # Note that as the dual ascent will generall not be feasible according to the original constraints
-            # as the dual is always a lower bound, the should be a tolerance on fulfilling the constaints in the result
-            if np.sum(bs.power_vector)-(.05*bs.power_constaint) >= bs.power_constaint or np.any(bs.power_vector < 0):
+            if np.sum(bs.power_vector)-(.05*bs.power_constraint) >= bs.power_constraint or np.any(bs.power_vector < 0):
                 return False
         for mcu in self.macro_users:
             if mcu.interference >= mcu.interference_threshold:
@@ -192,7 +188,7 @@ class Het_Network():
         for mcu in self.macro_users:
             int_dual.append(mcu.dual_variable)
             interference.append(mcu.interference)
-        return np.average(pow_dual), np.average(pos_dual), np.max(int_dual), np.max(interference), np.average(sum_power)
+        return np.average(pow_dual), np.average(pos_dual), np.min(int_dual), np.max(interference), np.average(sum_power)
         # return np.average(interference), np.average(ave_power)
         # return np.average(pow_dual), np.average(int_dual)
 
@@ -208,7 +204,7 @@ class Het_Network():
     def trackPowConstraints(self):
         powerSlack = []
         for bs in self.base_stations:
-            powerSlack.append(bs.power_constaint - np.sum(bs.power_vector))
+            powerSlack.append(bs.power_constraint - np.sum(bs.power_vector))
         return powerSlack
 
     def print_layout(self):
@@ -237,7 +233,7 @@ class Het_Network():
 
     def change_power_limit(self, new_limit):
         for bs in self.base_stations:
-            bs.power_constaint = new_limit
+            bs.power_constraint = new_limit
 
     def change_number_antenna(self, num_antenna):
         for bs in self.base_stations:
@@ -267,7 +263,8 @@ class Het_Network():
 
 
 class Femto_Base_Station():
-    def __init__(self, ID, network, num_femto_users, num_antenna, power_vector_setup, power_limit, utility_function=np.sum):
+    def __init__(self, ID, network, num_femto_users, num_antenna, power_vector_setup,
+                 pow_dual, pos_dual, power_limit, utility_function=np.sum):
         self.ID = ID
         self.users = []
         # Ensure there are always more antennas than users
@@ -284,14 +281,13 @@ class Femto_Base_Station():
             self.power_vector = np.zeros((num_femto_users))*(power_limit/(num_femto_users))
 
         self.sigma_square = 1e-3
-        self.connect_users(num_femto_users)
-        self.power_constaint = power_limit
+        self.connect_users(num_femto_users, pos_dual)
+        self.power_constraint = power_limit
         self.utility_function = utility_function
         self.H = None
         self.H_tilde = None
         self.power_vector_setup = power_vector_setup
-        # self.power_dual_variable = self.power_constaint*.1
-        self.power_dual_variable = 10
+        self.power_dual_variable = pow_dual
 
     #TODO type this parameter as macro user
     def setup_utility(self):
@@ -353,12 +349,11 @@ class Femto_Base_Station():
             self.macro_users.append(macro_user)
             macro_user.add_interferer(self)
 
-    def connect_users(self, num_femto_users):
+    def connect_users(self, num_femto_users, pos_dual):
         for ind in range(num_femto_users):
             new_user = Femto_User(ind, self.network, self, sigma_square=self.sigma_square)
             self.users.append(new_user)
-        self.positivity_dual_variable = np.ones((len(self.users)))*1e-8
-        # self.positivity_dual_variable = np.zeros((len(self.users)))
+        self.positivity_dual_variable = np.ones((len(self.users)))*pos_dual
 
     def setup_users(self):
         for user in self.users:
@@ -412,10 +407,10 @@ class Femto_Base_Station():
             for m_user in self.macro_users:
                 macro_user_channel = m_user.get_channel_for_base_station(self.ID)
                 c += m_user.get_dual_variable()*pow(np.linalg.norm(user_i_channel*macro_user_channel), 2)
-            c += self.power_dual_variable
+            # c += self.power_dual_variable
             # c -= self.positivity_dual_variable[ind]
             #   prohibit negative powers
-            updated_power = np.max((1/c - self.sigma_square, 0))
+            updated_power = np.max((1/(c+.1) - self.sigma_square, 0))
             # updated_power = 1/c - self.sigma_square
             if math.isnan(updated_power):
                 raise Exception("problem with inversion")
@@ -423,9 +418,7 @@ class Femto_Base_Station():
 
     def update_dual_variables(self, step, idx):
         #update scalar here
-        check = step*(np.sum(self.power_vector) - self.power_constaint)
-        # self.power_dual_variable += pow(step,idx)*(np.sum(self.power_vector) - self.power_constaint)
-        self.power_dual_variable += step*(np.sum(self.power_vector) - self.power_constaint)
+        self.power_dual_variable += step*(np.sum(self.power_vector) - self.power_constraint)
         self.power_dual_variable = np.max((0,self.power_dual_variable))
         if math.isnan(self.power_dual_variable):
             raise Exception("problem with inversion")
@@ -475,11 +468,11 @@ class User:
 
 
 class Macro_User(User):
-    def __init__(self, ID, network,interference_threshold):
+    def __init__(self, ID, network,interference_threshold, dual):
         User.__init__(self, ID, network)
         self.interference = 0
         self.interference_threshold = interference_threshold
-        self.dual_variable = 10
+        self.dual_variable = dual
         self.move()
 
 
