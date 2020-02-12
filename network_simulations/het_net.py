@@ -73,7 +73,7 @@ class Het_Network():
     def get_femto_cells(self):
         return self.base_stations
 
-    def allocate_power_step(self, num_iterations, step_size):
+    def allocate_power_step(self, num_iterations, step_size_pow, step_size_int):
         social_utility_vector = []
         average_duals = []
         feasibility = []
@@ -81,13 +81,12 @@ class Het_Network():
         powerSlack = []
         social_utility_vector.append(self.get_social_utility())
         #   intitialize with correct duals given the starting allocation
-        step_size = step_size
         for i in range(num_iterations):
             average_duals.append(self.get_average_duals())
             #   First step in dual ascent -> find dual function
             [player.solve_local_opimization() for player in self.base_stations]
             #   Second step of dual ascent -> update dual variables based on values from first step
-            self.__update_dual_variables(step_size, i)
+            self.__update_dual_variables(step_size_pow, step_size_int, i)
             social_utility_vector.append(self.get_social_utility())
             # feasibility.append(self.verify_feasibility())
             interferenceSlack.append(np.min(self.trackIntConstraints()))
@@ -111,14 +110,14 @@ class Het_Network():
         for base_station in self.base_stations:
             base_station.update_beamformer(optimize=True, set=set)
 
-    def __update_dual_variables(self, itr_step, itr_idx):
+    def __update_dual_variables(self, step_size_pow, step_size_int, itr_idx):
         """
         Update all dual variables in the distributed optimization problem
         :return:
         """
         # First update the dual variables of the macro users
-        [player.update_dual_variables(itr_step, itr_idx) for player in self.base_stations]
-        [macro_user.update_dual_variables(itr_step, itr_idx) for macro_user in self.macro_users]
+        [player.update_dual_variables(step_size_pow, itr_idx) for player in self.base_stations]
+        [macro_user.update_dual_variables(step_size_int, itr_idx) for macro_user in self.macro_users]
 
         # Second update the dual variables for the other constraints (Note this order doesn't matter)
 
@@ -188,7 +187,7 @@ class Het_Network():
         for mcu in self.macro_users:
             int_dual.append(mcu.dual_variable)
             interference.append(mcu.interference)
-        return np.average(pow_dual), np.average(pos_dual), np.min(int_dual), np.max(interference), np.average(sum_power)
+        return np.average(pow_dual), np.average(pos_dual), np.max(int_dual), np.max(interference), np.average(sum_power)
         # return np.average(interference), np.average(ave_power)
         # return np.average(pow_dual), np.average(int_dual)
 
@@ -407,10 +406,10 @@ class Femto_Base_Station():
             for m_user in self.macro_users:
                 macro_user_channel = m_user.get_channel_for_base_station(self.ID)
                 c += m_user.get_dual_variable()*pow(np.linalg.norm(user_i_channel*macro_user_channel), 2)
-            # c += self.power_dual_variable
-            # c -= self.positivity_dual_variable[ind]
+            c += self.power_dual_variable
+            c -= self.positivity_dual_variable[ind]
             #   prohibit negative powers
-            updated_power = np.max((1/(c+.1) - self.sigma_square, 0))
+            updated_power = np.max((1/(c) - self.sigma_square, 0))
             # updated_power = 1/c - self.sigma_square
             if math.isnan(updated_power):
                 raise Exception("problem with inversion")
