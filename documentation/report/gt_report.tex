@@ -337,7 +337,7 @@ $\mathbf{U}_f$ is selected as a pseudo-inverse to $\mathbf{H_\mathrm{f}}$.
 Such that
 \begin{gather*}
 \langle \mathbf{h_{f,j}}\mathbf{u_{f,i}} \rangle =0\  \; \forall j \in \{1... K_f\}\backslash i ,\; \forall i \in \{1 ... K_f\}
-\end{gather*}
+\end{gather*}. Later, choices for $\mathbf{U}_f$ will be considered for when there are additional degrees of freedom in the system (i.e when $T_{\text{f}}> K_{\text{f}}$.)
 
 \item  
 	FC-BS $f$ allocates  transmission power using the diagonal, power allocation  	
@@ -606,6 +606,43 @@ Step size $\alpha^{\mathrm{k}}$ is predefined and constant.
 \end{enumerate} 
 These local updates require require that additional information is passed through the system. In particular this requires that Macro Cell Users monitor their incoming interference and then broadcast the updated dual variable $\lambda_{\text{m}}$ with which FC-BSs update the power allocation. 
 Note also that the dual ascent algorithm uses the dual and thus cannot guarantee a feasible solution to the primal problem originally posed. (Discuss constraint tolerance used here? )
+
+\subsection{Beamformer Optimization for Convex Setup}
+When additional degrees of freedom are available in choosing $\mathbf{U}_{\mathrm{f}}$ after satisfying the zero-forcing constraint (i.e. $T_{\text{f}}> K_{\text{f}}$ ), these degrees of freedom may be utilized to optimize an objective function of the FC-BS choosing the beamformer. 
+The first objective function is that which minimizes the noise enhancement and corresponds to the Moore-Penrose pseudoinverse (CITE). 
+    \begin{equation}
+    \begin{array}{ll}
+    \underset{\mathbf{U}_{\mathrm{f}} }{\text{argmin}}   & tr(\sigma_n\mathbf{U_{\mathrm{f}}}  \mathbf{U_{\mathrm{f}}}^H)
+    \\
+    \mbox{subject to} & \mathbf{H}_{\mathrm{f}}^T  \mathbf{U_{\mathrm{f}}} = \mathbf{I}
+    \end{array}
+    \label{e-opt-prob}
+    \end{equation}
+
+Next, we consider the objective function which would minimize the correlation of the chosen beamformer with the known macro cell user channels.
+
+    \begin{equation}
+    \begin{array}{ll}
+    \underset{\mathbf{U}_{\mathrm{f}} }{\text{argmin}}   & \sum^F_{f=1} \|\mathbf{\tilde{H}}_{\mathrm{f}}^T  \mathbf{U_{\mathrm{f}}}\|^2
+    \\
+    \mbox{subject to} & \mathbf{H}_{\mathrm{f}}^T  \mathbf{U_{\mathrm{f}}} = \mathbf{I}
+    \end{array}
+    \label{e-opt-prob}
+    \end{equation}
+This is problem convex in $\mathbf{U}_{\mathrm{f}}$ and can be found easily at individual FC-BSs (See if Largrangian yields analytic solution?).
+We also consider the a problem in which FC-BS minimize correlation with macro cell users while also maximize correlation with channels of its own users. 
+    \begin{equation}
+    \begin{array}{ll}
+    \underset{\mathbf{U}_{\mathrm{f}} }{\text{argmin}}   & \alpha\sum^F_{f=1} \|\mathbf{\tilde{H}}_{\mathrm{f}}^T  \mathbf{U_{\mathrm{f}}}\|^2
+    -
+    (1-\alpha)\sum^F_{f=1} \|\mathbf{H}_{\mathrm{f}}^T  \mathbf{U_{\mathrm{f}}}\|^2, \; 0\leq \alpha \leq 1
+    \\
+    \mbox{subject to} & \mathbf{H}_{\mathrm{f}}^T  \mathbf{U_{\mathrm{f}}} = \mathbf{I}
+    \end{array}
+    \label{e-opt-prob}
+    \end{equation}
+    This problem is not convex in $\mathbf{U}_{\mathrm{f}}$ thus we need to employ additional optimization techniques to find such $\mathbf{U}_{\mathrm{f}}$.
+Note objective function of Moore-Penrose
 
 
 \chapter{Simulation and Results}\label{numerical}
