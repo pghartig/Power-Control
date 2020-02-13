@@ -10,7 +10,7 @@ first setup the network according using the het_net class then consolidate all o
 """
 
 def testCSIQuality():
-    noisePowers = [0, 1e-2]
+    noisePowers = [0, 10]
     numMacroUsers = 5
     pow_dual = 1
     int_dual = 10
@@ -24,7 +24,7 @@ def testCSIQuality():
     # userPowerList = [5, 10, 30]
     num_iterations = 10000
     numBaseStations = 5
-    interferenceThreshold = 1
+    interferenceThreshold = .1
     userPower = 100
     network = het_net.Het_Network(numBaseStations, numMacroUsers, num_users, num_antenna, interferenceThreshold, int_dual, pow_dual, pos_dual,
                                    userPower,
@@ -44,13 +44,12 @@ def testCSIQuality():
     extra_plt1.set_title("Min Power Constraint Slack")
     extra_plt1.set_ylabel("Average Constraint Slack ")
     extra_plt1.set_xlabel("Iteration")
-    currNetwork = copy.deepcopy(network)
     for noisePower in noisePowers:
-        currNetwork = copy.deepcopy(currNetwork)
+        currNetwork = copy.deepcopy(network)
         currNetwork.update_beam_formers(imperfectCsiNoisePower=noisePower)
         utilities, duals, feasibility, constraints = currNetwork.allocate_power_step(num_iterations, step_size_pow, step_size_int)
         util_plt.plot(np.arange(num_iterations + 1), utilities, label=f"{noisePower}")
-        extra_plt.plot(np.arange(num_iterations), constraints[0],'-' ,label=f"interference slack {noisePower}")
+        extra_plt.plot(np.arange(num_iterations), constraints[0],'-',label=f"interference slack {noisePower}")
         extra_plt.plot(np.arange(num_iterations), constraints[1],'-', label=f"interference slack {noisePower}")
         extra_plt1.plot(np.arange(num_iterations), constraints[2], label=f"power slack {noisePower}")
         extra_plt1.plot(np.arange(num_iterations), constraints[3], label=f"power slack {noisePower}")

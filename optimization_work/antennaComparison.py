@@ -24,7 +24,7 @@ def test_antenna_compare():
     num_iterations = 5000
     numBaseStations = 5
     interferenceThreshold = 1
-    userPower = 100
+    userPower = 200
     fig_main = plt.figure()
     util_plt = fig_main.add_subplot(1, 3, 1)
     util_plt.set_title("Power Convergence")
