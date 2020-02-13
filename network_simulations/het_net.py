@@ -77,8 +77,10 @@ class Het_Network():
         social_utility_vector = []
         average_duals = []
         feasibility = []
-        interferenceSlack = []
-        powerSlack = []
+        interferenceSlackMin = []
+        interferenceSlackMax = []
+        powerSlackMin = []
+        powerSlackMax = []
         social_utility_vector.append(self.get_social_utility())
         #   intitialize with correct duals given the starting allocation
         for i in range(num_iterations):
@@ -89,13 +91,15 @@ class Het_Network():
             self.__update_dual_variables(step_size_pow, step_size_int, i)
             social_utility_vector.append(self.get_social_utility())
             # feasibility.append(self.verify_feasibility())
-            interferenceSlack.append(np.min(self.trackIntConstraints()))
-            powerSlack.append(np.min(self.trackPowConstraints()))
+            interferenceSlackMin.append(np.min(self.trackIntConstraints()))
+            interferenceSlackMax.append(np.max(self.trackIntConstraints()))
+            powerSlackMin.append(np.min(self.trackPowConstraints()))
+            powerSlackMax.append(np.max(self.trackPowConstraints()))
             # step_size /= 2
         #End with resolving power to ensure feasibility
         average_duals.append(self.get_average_duals())
         [player.solve_local_opimization() for player in self.base_stations]
-        return social_utility_vector, average_duals, self.verify_feasibility(), [interferenceSlack, powerSlack]
+        return social_utility_vector, average_duals, self.verify_feasibility(), [interferenceSlackMin, interferenceSlackMax, powerSlackMin, powerSlackMax]
 
     def verify_feasibility(self):
         for bs in self.base_stations:
@@ -106,9 +110,9 @@ class Het_Network():
                 return False
         return True
 
-    def update_beam_formers(self, set=False):
+    def update_beam_formers(self, set=False, imperfectCsiNoisePower=0):
         for base_station in self.base_stations:
-            base_station.update_beamformer(optimize=True, set=set)
+            base_station.update_beamformer(optimize=True, set=set, imperfectCsiNoisePower=imperfectCsiNoisePower)
 
     def __update_dual_variables(self, step_size_pow, step_size_int, itr_idx):
         """
@@ -242,9 +246,9 @@ class Het_Network():
         for mu in self.macro_users:
             mu.interference_threshold = interferenceThreshold
 
-    def add_macro_users(self, numberNewUsers, interferenceThreshold,):
+    def add_macro_users(self, numberNewUsers, interferenceThreshold, int_dual):
         if numberNewUsers >0 :
-            [self.macro_users.append(Macro_User(i, self, interferenceThreshold)) for i in range(numberNewUsers)]
+            [self.macro_users.append(Macro_User(i, self, interferenceThreshold, int_dual)) for i in range(numberNewUsers)]
             self.update_macro_cells()
             self.setup_base_stations()
 
@@ -276,8 +280,8 @@ class Femto_Base_Station():
             self.beam_forming_matrix = cp.Variable((self.number_antennas, num_femto_users), complex=True)
         else:
             self.beam_forming_matrix = np.zeros((self.number_antennas, num_femto_users))
-            # self.power_vector = np.ones((num_femto_users))*(power_limit/(num_femto_users))
-            self.power_vector = np.zeros((num_femto_users))*(power_limit/(num_femto_users))
+            self.power_vector = np.ones((num_femto_users))*(power_limit/(num_femto_users))
+            # self.power_vector = np.zeros((num_femto_users))*(power_limit/(num_femto_users))
 
         self.sigma_square = 1e-3
         self.connect_users(num_femto_users, pos_dual)
@@ -293,7 +297,7 @@ class Femto_Base_Station():
         self.utility_function = self.utility_function(self.get_user_sinr())
         pass
 
-    def update_beamformer(self, optimize = False, set = False):
+    def update_beamformer(self, optimize = False, set = False, imperfectCsiNoisePower = 0 ):
         """
         For the power vector setup this function is used to update the zero-forcing pre-coder
         to the current down-link channel
@@ -302,10 +306,11 @@ class Femto_Base_Station():
         #   find zero-forcing matrix (should be a tall matrix in general)
         if optimize == True:
             self.beam_forming_matrix = self.optimize_beam_former(set)
+            self.beam_forming_matrix += np.random.standard_normal(self.beam_forming_matrix.shape)*np.sqrt(imperfectCsiNoisePower)
             # check = self.H@self.beam_forming_matrix
             # pass
         else:
-            self.beam_forming_matrix = np.linalg.pinv(self.H)
+            self.beam_forming_matrix = np.linalg.pinv(self.H + np.random.standard_normal(self.H.shape)*np.sqrt(imperfectCsiNoisePower))
             if np.any(np.isnan(self.beam_forming_matrix)):
                 raise Exception("problem with inversion")
 

@@ -508,13 +508,13 @@ L(\mathbf{U,\lambda}) =
 \nu_{\mathrm{f,i}}(-p_{\mathrm{f,i}})
 \end{multline}
 
-The corresponding dual function and dual problem are  
+The corresponding dual function is
 \begin{gather*}
 g(\lambda,\nu) = \underset{\mathbf{p}}{\mathrm{argmin}}\;L(\mathbf{U,\lambda})
 \end{gather*}
-and 
+and the resulting dual problem is
 \begin{gather*}
-g(\lambda,\nu) = \underset{\lambda}{\mathrm{argmax}}\;\underset{\mathbf{p}}{\mathrm{argmin}}\;L(\mathbf{U,\lambda})
+\underset{\lambda}{\mathrm{argmax}}\;\underset{\mathbf{p}}{\mathrm{argmin}}\;L(\mathbf{U,\lambda}) = \underset{\lambda}{\mathrm{argmax}}\;g(\lambda,\nu)
 \end{gather*}
 
 This dual function can be decomposed into $F$ component functions
@@ -647,10 +647,12 @@ Note objective function of Moore-Penrose
 
 \chapter{Simulation and Results}\label{numerical}
 \subsection{Simulation System Description}
-The Heterogeneous Network is simulated by randomly placing $F $ FC-BSs and $M$ Macro Cell Users within a predefined area. Each FC-BS is assigned $K_{\mathrm{f}}$ unique Femto Users. All channels between FC-BS and users (both Femtro and Macro) are simulated using rayleigh fading and attenuation coefficient $d^{- \beta}$ with $\beta =2$ and $d$ as the distance between user and base-station.
+The Heterogeneous Network is simulated by randomly placing $F$ FC-BSs and $M$ Macro Cell Users within a predefined area. Each FC-BS is assigned $K_{\mathrm{f}}$ unique Femto Users. All channels between FC-BS and users (both Femtro and Macro) are simulated using rayleigh fading and attenuation coefficient $d^{- \beta}$ with $\beta =2$ and $d$ as the distance between user and base-station.
 FC-BS $f$ initializes power to user $i$ as $p_{\mathrm{fi}} = \frac{P^{P_{\mathrm{f}}^{Total}}}{K_{\mathrm{f}}} $ such that the corresponding power constraint is not violated. 
 Dual variables are initialized using  
-
+\par
+For the case in which the utility function is differentiable w.r.t all of the optimization parameters, this can effectively be seen as a coordinate ascent (does this allow for any sort of asynchronous updating?). As a result, the $\alpha^{k}$ used to ascend the dual do not need to be the same for the three updates (CITE).
+TODO show dual problem is differentiable.
 
 
 \subsection{Simulation Results}
@@ -663,8 +665,13 @@ Using the algorithm in \ref{algo1}, convergence to a Nash Equilibrium is observe
 \end{figure}
 
 \begin{figure}[H]
-	\includegraphics[width=\textwidth,height = 10cm]{figures/single_antenna}
+	\includegraphics[width= 15cm,height = 10cm]{figures/single_power}
 	  \caption{Single Antenna Game Simulation with different base station power constraints}
+\end{figure}
+
+\begin{figure}[H]
+	\includegraphics[width= 15cm,height = 10cm]{figures/single_macro}
+	  \caption{Single Antenna Game Simulation with different numbers of macro cell users}
 \end{figure}
 
 \begin{figure}[H]
@@ -673,34 +680,25 @@ Using the algorithm in \ref{algo1}, convergence to a Nash Equilibrium is observe
 	  }
 \end{figure}
 
-\begin{figure}[H]
-	\includegraphics[width=\textwidth,height = 10cm]{figures/multiple_antenna}
-	  \caption{Multiple Antenna Game Simulation. with different base station power constraints}
-\end{figure}
-
 
 \begin{figure}[H]
 	  	\includegraphics[width=\textwidth,height = 7cm]{figures/increasing_antenna}
-	  		  \caption{Convergence different numbers of antennas at FC-BSs with the number of femto cell users and macro cell users constant.}
+	  		  \caption{Convergence for different numbers of antennas at FC-BSs. Number of femto cell users and macro cell users constant. Each BS has 10 users.}
 	  \label{fig:}
 \end{figure}
 
-\begin{figure}[H]
-	  	\includegraphics[width=\textwidth,height = 7cm]{figures/increasing_antenna_game}
-	  		  \caption{Convergence different numbers of antennas at FC-BSs with the number of femto cell users and macro cell users constant. FC-BSs are given excess transmission power.}
-	  \label{fig:inc_ant}
-\end{figure}
 
 \begin{figure}[H]
 	  	\includegraphics[width=\textwidth,height = 7cm]{figures/increasing_antenna_game_beamformer}
-	  		  \caption{Same as Figure \ref{fig:inc_ant} but now the beamformer is chosen as the Zero-Forcing beamformer which minimizes correlation to macro cell users }
+	  		  \caption{Different choices for the zero-forcing beamformer $\mathbf{U}_{\text{f}}$}
 	  \label{fig:inc_fc}
 \end{figure}
 
+The concave setup of the FC-BS utility function is contingent upon knowledge of the channel state information $\mathbf{H}_{\text{f}}$. We now evaluate the effect of imperfect estimate of $\mathbf{H}_{\text{f}}$ on the solution. Imperfect CSi is simulated by adding additive white gaussian noise to the entries in $\mathbf{H}_{\text{f}}$. Need to check if this is even reasonable to simulate because might no longer be a game. 
 
 \begin{figure}[H]
-	  	\includegraphics[width=\textwidth,height = 7cm]{figures/interference_debug}
-	  		  \caption{Figure to analyze slack in macro cell user interference constraints over different transmission power constraints at FC-BSs}
+	  	\includegraphics[width=\textwidth,height = 7cm]{figures/increasing_antenna_game_beamformer}
+	  		  \caption{Impact of imperfect estimate of $\mathbf{H}_{\text{f}}$ at FC-BS $f$}
 	  \label{fig:inc_fc}
 \end{figure}
 
