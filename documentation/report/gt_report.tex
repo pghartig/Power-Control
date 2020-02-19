@@ -14,34 +14,35 @@
 
 \begin{document}
 \maketitle
-
-%\begin{abstract}
-%This work investigate resource allocation strategies for such systems and in particular, those strategies minimizing system overhead. 
-%\end{abstract}
+\begin{abstract}
+This work investigates resource allocation strategies for a communication system with uncoordinated users and MIMO capabilities at base stations. Following a similar, game theoretic approach as the work in \cite{ghosh2015normalized}, it is shown (TODO) that the general problem does not admit a distributed solution to achieving Nash Equilibrium. Refinements of the general problem are then made to permit the use of convex optimization tools to solve for a distributed solution that achieves Nash Equilibrium. These results are verified and further analyzed in simulations. We also investigate the use of the beam-forming capability at base stations in order to increase the achievable utility achieved by players in the game. 
+\end{abstract}
 %
 %\newpage
 \tableofcontents
-\newpage
+
 
 \chapter{Introduction}
 \section{Introduction}
 Modern communication systems often incorporate numerous, uncoordinated users competing for a limited resource.
 In this work, a game theoretic approach considers a wireless communications network with uncoordinated  macrocell users and femtocell base stations. The goal of this approach is to find Nash Equilibrium in which femtocell base stations optimize their utility while ensuring macrocell users experience interference below some threshold. 
 Previous work has shown solutions for systems in which femtocell base stations transmit over a single input, single output (SISO) channel; therefore the multiple input, multiple ouput (MIMO) case is investigated here. 
-One of the primary goals of this work is to achieve Nash Equilibrium (NE) via distributed solutions which minimize system overhead. As seen in the following, the most general setup of this game does not permit such solutions and therefore a refined problem is proposed. Numerical results to the derived solution are then discussed. 
+\par
+This work focuses on achieving Nash Equilibrium (NE) using distributed solutions. In the communications context, distribution of the optimization problem can reduce that amount of information that needs to be passed between different users of the communication network. 
+
 
 \section{Notation}
 The following notation is used throughout the remainder. 
 $E[x]$ is the expected value of a random variable $x$.
-Vectors are denoted by bold font, lower-case ($\mathbf{x}$) and are assumed column vector.
+Vectors are denoted by bold font, lower-case ($\mathbf{x}$) and are assumed to be column vectors.
 Matrices are denoted by bold font and capital letters ($\mathbf{X}$).
 
 
 \section{Relevant Tools/Theory}
-It is useful to first review relevant tools for solving such games. Together, these tools provide a series of steps to follow in solving for Nash Equilibrium via distributed solutions. 
+It is useful to first review relevant game theoretic tools. Together, these tools provide a series of steps to follow in solving for Nash Equilibrium via distributed solutions. 
 
 \begin{enumerate}
-\item The Concave N-Person game: a framework for proving existence and uniqueness of NE.
+\item The Concave N-Person game: A framework for proving existence and uniqueness of NE.
 
 \begin{itemize}
 \item
@@ -97,19 +98,24 @@ In words, $ \Psi(b_{\text{f}})$ is a function whose gradient with respect to the
 
 
 
-\item Distributed Optimization: algorithms which solve a central optimization problem using multiple processes in parallel. 
+\item Distributed Optimization: solving a central optimization problem using multiple processes in parallel.
+In particular, the Dual Ascent method (CITE?), described below, will be used. 
+
+\textbf{Distributed Dual Ascent:} 
 \begin{itemize}
-\item \textbf{Steps in Distribution :} 
-\begin{itemize}
-\item Begin with a central optimization problem (In this case obtained using a Potential Function to the game).
+\item Given a central optimization problem (In this case obtained using a Potential Function to the game).
 \item Determine the dual problem to the central, primal problem.
 \item Evaluate if the dual problem can be separated into sub-problems each with independent optimization variables.
-\item Perform an ascent of the dual problem by iterating between solving the dual function of the sub-problems, then broadcasting these solutions to perform the gradient step of the dual problem.
-\item If the problem is convex with strong duality, the dual ascent will converge to the optimal (In this case a Nash Equilibrium).
-
-\end{itemize} 
-\item \textbf{Benefit:} In the communications context, distribution of the optimization problem can reduce that amount of information that needs to be passed between different users of the communication network. 
+\item Perform an ascent of the dual problem by iterating the following:
+\begin{enumerate}
+\item Solve the separate dual function of the sub-problems.
+\item Broadcast these solutions and perform the gradient step of the dual problem.
+\end{enumerate}
 \end{itemize}
+
+If the problem is convex with strong duality, the dual ascent will converge to the optimal (In this case a Nash Equilibrium).
+
+
 \item Concave Programming: To discuss if needed for general setup
 
 
@@ -721,6 +727,9 @@ The concave setup of the FBS utility function is contingent upon knowledge of th
 
 
 \chapter{Conclusion}
+It has been shown that under additional beam-forming constraints on the MIMO capable base stations of uncoordinated communication systems, a unique Nash Equilibrium can be achieved with a distributed solution. 
+
+Discuss future work. 
 
 \newpage
 \bibliography{gt_report}
