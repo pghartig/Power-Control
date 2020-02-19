@@ -21,7 +21,7 @@ def test_power_compare():
     step_size_pow = 1e-5
     step_size_int = 1e-1
     step_size_int = 1
-    userPowerList = [10, 10]
+    userPowerList = [10, 100]
     # userPowerList = [5, 10, 30]
     previousNumberUsers = userPowerList[0]
     num_iterations = 5000

@@ -419,6 +419,9 @@ class Femto_Base_Station():
     def get_user_info(self, ID):
         return self.power_vector[ID], self.beam_forming_matrix[:, ID]
 
+    def get_beamformer(self):
+        return self.beam_forming_matrix
+
     def move_femto_users(self):
         for user in self.users:
             user.move()
@@ -561,7 +564,7 @@ class Femto_User(User):
 
     def setup_channels(self):
         for base_station in self.network.base_stations:
-            distance_to_base_station = base_station.get_location()-self.location+  base_station.coverage_size*.001
+            distance_to_base_station = base_station.get_location()-self.location + base_station.coverage_size*.001
             sqrt_gain = 1/np.linalg.norm(distance_to_base_station)
             channel = np.random.randn(base_station.number_antennas)*sqrt_gain
             if np.any(channel == math.inf) or np.any(channel == - math.inf):
@@ -575,6 +578,13 @@ class Femto_User(User):
     def get_sinr(self):
         power, beamformer = self.parent.get_user_info(self.ID)
         channel = self.downlink_channels[str(self.parent.getID())]
+        # add interference to analyze for the case of imperfect CSI
+        # self.SINR = power*pow(np.linalg.norm(channel@beamformer), 2)/(self.noise_power+self.interference)
+        parent_beamformer = self.parent.get_beamformer()
+        self.interference = 0
+        for j in parent_beamformer.shape[1]:
+            if j is not self.ID:
+                self.interference += pow(np.linalg.norm(channel @ parent_beamformer[:,j]), 2)
         self.SINR = power*pow(np.linalg.norm(channel@beamformer), 2)/(self.noise_power+self.interference)
         return self.SINR
 

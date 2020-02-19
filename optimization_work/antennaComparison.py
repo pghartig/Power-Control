@@ -17,11 +17,11 @@ def test_antenna_compare():
     int_dual = 10
     # pow_dual = 1
     pos_dual = 1e-5
-    num_users = 10
-    step_size_pow = 1e-5
+    num_users = 5
+    step_size_pow = 1e-4
     step_size_int = 1e-1
-    step_size_int = 1
-    num_iterations = 5000
+    step_size_int = 10
+    num_iterations = 500
     numBaseStations = 5
     interferenceThreshold = 1
     userPower = 200
