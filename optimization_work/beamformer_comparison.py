@@ -10,29 +10,30 @@ first setup the network according using the het_net class then consolidate all o
 """
 
 def test_dist_debug():
-    noisePowers = 0
+    noisePowers = 10
     numMacroUsers = 5
     pow_dual = 1
     int_dual = 10
     pos_dual = 1e-5
     num_users = 5
     num_antenna = 10
-    step_size_pow = 1e-5
-    step_size_int = 1
-    num_iterations = 1000
+    step_size_pow = 1e-4
+    step_size_int = 10
+    num_iterations = 300
     numBaseStations = 5
     interferenceThreshold = .1
-    userPower = 100
+    userPower = 200
     network = het_net.Het_Network(numBaseStations, numMacroUsers, num_users, num_antenna, interferenceThreshold, int_dual, pow_dual, pos_dual,
                                    userPower,
                                   power_vector_setup=True,
                                   random=False)
     imperfect_optimized = copy.deepcopy(network)
     # min_corr.change_power_limit(10)
-    imperfect_optimized.update_beam_formers(csi=True)
+    imperfect_optimized.update_beam_formers(csi=True, imperfectCsiNoisePower=noisePowers)
     min_correlation = copy.deepcopy(network)
-    min_correlation.update_beam_formers()
+    min_correlation.update_beam_formers(optimize=True, imperfectCsiNoisePower=noisePowers)
     # Choose number of iterations to allow
+    network.update_beam_formers(imperfectCsiNoisePower=noisePowers)
     utilities, duals, feasibility, intf = network.allocate_power_step(num_iterations, step_size_pow, step_size_int)
     min_corr_utilities, min_corr_duals, min_corr_feasibility, intf = min_correlation.allocate_power_step(num_iterations, step_size_pow, step_size_int)
     csi_utilities, cse_duals, cse_feasibility, intf = imperfect_optimized.allocate_power_step(num_iterations, step_size_pow, step_size_int)
@@ -40,7 +41,7 @@ def test_dist_debug():
     min_corr_duals = np.asarray(min_corr_duals)
     set_duals = np.asarray(cse_duals)
 
-    network.print_layout()
+    # network.print_layout()
 
     length = int(duals.shape[1]/2)+1
 
@@ -58,7 +59,7 @@ def test_dist_debug():
     plt.ylabel("Social Utility (User SNR)")
     plt.xlabel("Iteration")
     time_path = "Output/utility_"+f"{time.time()}"+"curves.png"
-    plt.savefig(time_path, format="png")
+    # plt.savefig(time_path, format="png")
 
     plt.figure(3)
     plt.subplot(length,2,1)
@@ -76,6 +77,6 @@ def test_dist_debug():
         plt.plot(set_duals[:, columns], label="csi set")
         plt.title(labels[columns])
     time_path = "Output/convergence_" + f"{time.time()}" + "curves.png"
-    plt.savefig(time_path, format="png")
+    # plt.savefig(time_path, format="png")
     plt.show()
 

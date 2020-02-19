@@ -110,9 +110,9 @@ class Het_Network():
                 return False
         return True
 
-    def update_beam_formers(self, channel_set=False, csi=True, imperfectCsiNoisePower=0):
+    def update_beam_formers(self, optimize=False, channel_set=False, csi=False, imperfectCsiNoisePower=0):
         for base_station in self.base_stations:
-            base_station.update_beamformer(optimize=True, channel_set=channel_set, csi=csi, imperfectCsiNoisePower=imperfectCsiNoisePower)
+            base_station.update_beamformer(optimize=optimize, channel_set=channel_set, csi=csi, imperfectCsiNoisePower=imperfectCsiNoisePower)
 
 
     def __update_dual_variables(self, step_size_pow, step_size_int, itr_idx):
@@ -306,8 +306,7 @@ class Femto_Base_Station():
         """
         #   find zero-forcing matrix (should be a tall matrix in general)
         if optimize == True:
-            self.beam_forming_matrix = self.optimize_beam_former(channel_set)
-            self.beam_forming_matrix += np.random.standard_normal(self.beam_forming_matrix.shape)*np.sqrt(imperfectCsiNoisePower)
+            self.beam_forming_matrix = self.optimize_beam_former(channel_set, imperfectCsiNoisePower)
             # check = self.H@self.beam_forming_matrix
             # pass
         if csi == True:
@@ -321,7 +320,7 @@ class Femto_Base_Station():
         for column in range(self.beam_forming_matrix.shape[1]):
             self.beam_forming_matrix[:, column] /= np.linalg.norm(self.beam_forming_matrix[:,column])
 
-    def optimize_beam_former(self, set=False):
+    def optimize_beam_former(self, set=False, imperfectCsiNoisePower=0):
         # Setup variables (beamformer)
         x = cp.Variable(self.beam_forming_matrix.shape)
         if set == True:
@@ -336,9 +335,7 @@ class Femto_Base_Station():
                 macro_user_matrix[i, :] = self.H_tilde[arg,:]
         else:
             macro_user_matrix = self.H_tilde
-        # Setup constraints (Zero-Forcing Constraint)
-        # constr = [cp.trace(cp.matmul(self.H@x, x.T@self.H.T)) == 0]
-        constr = [self.H@x == np.eye(self.H.shape[0])]
+        constr = [(self.H+np.random.standard_normal(self.H.shape)*np.sqrt(imperfectCsiNoisePower))@x == np.eye(self.H.shape[0])]
         # Setup problem and solve
         utility = []
         utility += [cp.sum_squares(macro_user_matrix[m,:]@x) for m in range(macro_user_matrix.shape[0])]
@@ -366,7 +363,7 @@ class Femto_Base_Station():
         # Setup problem and solve
         utility = []
         # utility += [cp.sum_squares(macro_user_matrix[m,:]@x) for m in range(macro_user_matrix.shape[0])]
-        utility += [cp.norm2(x) for m in range(macro_user_matrix.shape[0])]
+        utility += [cp.norm2(x)]
         # test adding regularization term to increase user correlation
         # utility += [cp.norm2(self.H[i,:]@x) for i in range(self.H.shape[0])]
         prob = cp.Problem(cp.Minimize(cp.sum(utility)), constr)
@@ -582,7 +579,7 @@ class Femto_User(User):
         # self.SINR = power*pow(np.linalg.norm(channel@beamformer), 2)/(self.noise_power+self.interference)
         parent_beamformer = self.parent.get_beamformer()
         self.interference = 0
-        for j in parent_beamformer.shape[1]:
+        for j in range(parent_beamformer.shape[1]):
             if j is not self.ID:
                 self.interference += pow(np.linalg.norm(channel @ parent_beamformer[:,j]), 2)
         self.SINR = power*pow(np.linalg.norm(channel@beamformer), 2)/(self.noise_power+self.interference)
