@@ -10,13 +10,13 @@ first setup the network according using the het_net class then consolidate all o
 """
 
 def test_dist_debug():
-    noisePowers = 10
+    noisePowers = 0
     numMacroUsers = 5
     pow_dual = 1
     int_dual = 10
     pos_dual = 1e-5
     num_users = 5
-    num_antenna = 10
+    num_antenna = 15
     step_size_pow = 1e-4
     step_size_int = 10
     num_iterations = 300
@@ -29,7 +29,8 @@ def test_dist_debug():
                                   random=False)
     imperfect_optimized = copy.deepcopy(network)
     # min_corr.change_power_limit(10)
-    imperfect_optimized.update_beam_formers(csi=True, imperfectCsiNoisePower=noisePowers)
+    imperfect_optimized.update_beam_formers(optimize=True, channel_set=True, imperfectCsiNoisePower=noisePowers)
+    # imperfect_optimized.update_beam_formers(csi=True, imperfectCsiNoisePower=noisePowers)
     min_correlation = copy.deepcopy(network)
     min_correlation.update_beam_formers(optimize=True, imperfectCsiNoisePower=noisePowers)
     # Choose number of iterations to allow

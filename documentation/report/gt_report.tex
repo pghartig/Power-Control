@@ -8,6 +8,7 @@
 \input defs.tex
 \bibliographystyle{alpha}
 \graphicspath{ {./figures/} }
+\hyphenpenalty=10000
 
 \title{Game Theoretic Solutions to Power Control in MIMO Communications Systems}
 \author{Peter Hartig}
@@ -250,7 +251,6 @@ Each player $\text{f}$ attempts to maximize utility function $U_{\text{f}}()$ wh
 	\end{align}
 	\end{subequations}
 
-TODO: Remove next part as this is only required if utility functions are to be concave. 
 
 Constraint \eqref{zf_const_gen} restricts $\mathbf{U}_{\mathrm{f}}$ to the set of zero-forcing beamformers and thus  
 	$\gamma_{\mathrm{f,i}}$ becomes
@@ -632,6 +632,7 @@ Note also that the dual ascent algorithm uses the dual and thus cannot guarantee
 
 \subsection{Beamformer Optimization for Convex Setup}
 When additional degrees of freedom are available in choosing $\mathbf{U}_{\mathrm{f}}$ after satisfying the zero-forcing constraint (i.e. $T_{\text{f}}> K_{\text{f}}$ ), these degrees of freedom may be utilized to optimize an objective function of the FBS choosing the beamformer. 
+\par
 The first objective function is that which minimizes the noise enhancement and corresponds to the Moore-Penrose pseudoinverse (CITE). 
     \begin{equation}
     \begin{array}{ll}
@@ -642,21 +643,48 @@ The first objective function is that which minimizes the noise enhancement and c
     \label{e-opt-prob}
     \end{equation}
 
+    \par
 Next, we consider the objective function which would minimize the correlation of the chosen beamformer with the known macro cell user channels.
 
     \begin{equation}
     \begin{array}{ll}
-    \underset{\mathbf{U}_{\mathrm{f}} }{\text{argmin}}   & \sum^F_{f=1} \|\mathbf{\tilde{H}}_{\mathrm{f}}^T  \mathbf{U_{\mathrm{f}}}\|^2
+    \underset{\mathbf{U}_{\mathrm{f}} }{\text{argmin}}   & \sum^F_{\text{f}=1} \|\mathbf{\tilde{H}}_{\mathrm{f}}^T  \mathbf{U_{\mathrm{f}}}\|^2
     \\
     \mbox{subject to} & \mathbf{H}_{\mathrm{f}}^T  \mathbf{U_{\mathrm{f}}} = \mathbf{I}
     \end{array}
     \label{e-opt-prob}
     \end{equation}
 This is problem convex in $\mathbf{U}_{\mathrm{f}}$ and can be found easily at individual FBSs (See if Largrangian yields analytic solution?).
+\par
+The concavity assumption in \ref{conproblem} is dependent upon \emph{perfect} channel state information $H_{\text{f}}$. In general, estimate of this channel will be imperfect. This imperfect CSI is modeled as an identically distributed, independent noise source added to the elements of $H_{\text{f}}$. We attempt to minimize the resulting interference power between users of FBS f by choosing solving 
+
+    \begin{equation}
+    \begin{array}{ll}
+    \underset{\mathbf{U}_{\mathrm{f}} }{\text{argmin}}   & E[trace(((H_{\text{f}}+W)U_{\text{f}}))((H_{\text{f}}+W)U_{\text{f}}))^H)]
+    \\
+    \mbox{subject to} & \mathbf{H}_{\mathrm{f}}^T  \mathbf{U_{\mathrm{f}}} = \mathbf{I}
+    \end{array}
+    \label{e-opt-prob}
+    \end{equation}
+
+With $w_{\text{i,j}} \sim \mathcal{CN}(0,1),$ this simplifies to 
+
+    \begin{equation}
+    \begin{array}{ll}
+    \underset{\mathbf{U}_{\mathrm{f}} }{\text{argmin}}   & \sum^F_{f=1} \|\mathbf{u_{\mathrm{fi}}}\|^2_2
+    \\
+    \mbox{subject to} & \mathbf{H}_{\mathrm{f}}^T  \mathbf{U_{\mathrm{f}}} = \mathbf{I}
+    \end{array}
+    \label{e-opt-prob}
+    \end{equation}
+
+
+\par
+TODO discuss why this problem is nonsense
 We also consider the a problem in which FBS minimize correlation with macro cell users while also maximize correlation with channels of its own users. 
     \begin{equation}
     \begin{array}{ll}
-    \underset{\mathbf{U}_{\mathrm{f}} }{\text{argmin}}   & \alpha\sum^F_{f=1} \|\mathbf{\tilde{H}}_{\mathrm{f}}^T  \mathbf{U_{\mathrm{f}}}\|^2
+    \underset{\mathbf{U}_{\mathrm{f}} }{\text{argmin}}   & \alpha\sum^F_{\text{f}=1} \|\mathbf{\tilde{H}}_{\mathrm{f}}^T  \mathbf{U_{\mathrm{f}}}\|^2_2
     -
     (1-\alpha)\sum^F_{f=1} \|\mathbf{H}_{\mathrm{f}}^T  \mathbf{U_{\mathrm{f}}}\|^2, \; 0\leq \alpha \leq 1
     \\
