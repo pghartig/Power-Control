@@ -110,9 +110,10 @@ class Het_Network():
                 return False
         return True
 
-    def update_beam_formers(self, set=False, imperfectCsiNoisePower=0):
+    def update_beam_formers(self, channel_set=False, csi=True, imperfectCsiNoisePower=0):
         for base_station in self.base_stations:
-            base_station.update_beamformer(optimize=True, set=set, imperfectCsiNoisePower=imperfectCsiNoisePower)
+            base_station.update_beamformer(optimize=True, channel_set=channel_set, csi=csi, imperfectCsiNoisePower=imperfectCsiNoisePower)
+
 
     def __update_dual_variables(self, step_size_pow, step_size_int, itr_idx):
         """
@@ -297,7 +298,7 @@ class Femto_Base_Station():
         self.utility_function = self.utility_function(self.get_user_sinr())
         pass
 
-    def update_beamformer(self, optimize = False, set = False, imperfectCsiNoisePower = 0 ):
+    def update_beamformer(self, optimize=False, channel_set=False, csi=False,  imperfectCsiNoisePower = 0 ):
         """
         For the power vector setup this function is used to update the zero-forcing pre-coder
         to the current down-link channel
@@ -305,10 +306,12 @@ class Femto_Base_Station():
         """
         #   find zero-forcing matrix (should be a tall matrix in general)
         if optimize == True:
-            self.beam_forming_matrix = self.optimize_beam_former(set)
+            self.beam_forming_matrix = self.optimize_beam_former(channel_set)
             self.beam_forming_matrix += np.random.standard_normal(self.beam_forming_matrix.shape)*np.sqrt(imperfectCsiNoisePower)
             # check = self.H@self.beam_forming_matrix
             # pass
+        if csi == True:
+            self.beam_forming_matrix = self.optimize_beam_former_for_csi(imperfectCsiNoisePower)
         else:
             self.beam_forming_matrix = np.linalg.pinv(self.H + np.random.standard_normal(self.H.shape)*np.sqrt(imperfectCsiNoisePower))
             if np.any(np.isnan(self.beam_forming_matrix)):
@@ -339,6 +342,31 @@ class Femto_Base_Station():
         # Setup problem and solve
         utility = []
         utility += [cp.sum_squares(macro_user_matrix[m,:]@x) for m in range(macro_user_matrix.shape[0])]
+        # test adding regularization term to increase user correlation
+        # utility += [cp.norm2(self.H[i,:]@x) for i in range(self.H.shape[0])]
+        prob = cp.Problem(cp.Minimize(cp.sum(utility)), constr)
+        # prob = cp.Problem(cp.Minimize(cp.trace(cp.matmul(self.H_tilde@x, x.T@self.H_tilde.T))), constr)
+        prob.solve()
+        # Return optimial beamforming matrix
+        beam_former = x.value
+        return beam_former
+
+    def optimize_beam_former_for_csi(self, imperfectCsiNoisePower=0):
+        """
+        Use the zero-forcing beamformer which minimizes the total leaked energy in the case of imperfect CSI.
+        :param set:
+        :return:
+        """
+        # Setup variables (beamformer)
+        x = cp.Variable(self.beam_forming_matrix.shape)
+        macro_user_matrix = self.H_tilde
+        # Setup constraints (Zero-Forcing Constraint)
+        # constr = [cp.trace(cp.matmul(self.H@x, x.T@self.H.T)) == 0]
+        constr = [(self.H+np.random.standard_normal(self.H.shape)*np.sqrt(imperfectCsiNoisePower))@x == np.eye(self.H.shape[0])]
+        # Setup problem and solve
+        utility = []
+        # utility += [cp.sum_squares(macro_user_matrix[m,:]@x) for m in range(macro_user_matrix.shape[0])]
+        utility += [cp.norm2(x) for m in range(macro_user_matrix.shape[0])]
         # test adding regularization term to increase user correlation
         # utility += [cp.norm2(self.H[i,:]@x) for i in range(self.H.shape[0])]
         prob = cp.Problem(cp.Minimize(cp.sum(utility)), constr)

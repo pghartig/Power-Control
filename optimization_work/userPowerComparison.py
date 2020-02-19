@@ -21,7 +21,7 @@ def test_power_compare():
     step_size_pow = 1e-5
     step_size_int = 1e-1
     step_size_int = 1
-    userPowerList = [10, 200]
+    userPowerList = [10, 10]
     # userPowerList = [5, 10, 30]
     previousNumberUsers = userPowerList[0]
     num_iterations = 5000
@@ -47,10 +47,9 @@ def test_power_compare():
     extra_plt1.set_title("Power Constraint Slack")
     extra_plt1.set_ylabel("Average Constraint Slack ")
     extra_plt1.set_xlabel("Iteration")
-    currNetwork = copy.deepcopy(network)
     check = []
     for powerLimit in userPowerList:
-        currNetwork = copy.deepcopy(currNetwork)
+        currNetwork = copy.deepcopy(network)
         currNetwork.change_power_limit(powerLimit)
         utilities, duals, feasibility, constraints = currNetwork.allocate_power_step(num_iterations, step_size_pow, step_size_int)
         duals = np.asarray(duals)

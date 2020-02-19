@@ -22,7 +22,7 @@ def testCSIQuality():
     step_size_int = 1e-1
     step_size_int = 1
     # userPowerList = [5, 10, 30]
-    num_iterations = 10000
+    num_iterations = 1000
     numBaseStations = 5
     interferenceThreshold = .1
     userPower = 100

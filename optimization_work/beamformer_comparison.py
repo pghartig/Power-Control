@@ -10,27 +10,35 @@ first setup the network according using the het_net class then consolidate all o
 """
 
 def test_dist_debug():
-    num_users = 1
-    num_antenna = 1
-    step_size = 1e-4
-    power_limit = 200
-    interferenceConstraint = 1
-    network = het_net.Het_Network(5, 5, num_users, num_antenna, interferenceConstraint
-                                  , power_limit, power_vector_setup=True, random=False)
-    # network.update_beam_formers()
-    min_corr = copy.deepcopy(network)
+    noisePowers = 0
+    numMacroUsers = 5
+    pow_dual = 1
+    int_dual = 10
+    pos_dual = 1e-5
+    num_users = 5
+    num_antenna = 10
+    step_size_pow = 1e-5
+    step_size_int = 1
+    num_iterations = 1000
+    numBaseStations = 5
+    interferenceThreshold = .1
+    userPower = 100
+    network = het_net.Het_Network(numBaseStations, numMacroUsers, num_users, num_antenna, interferenceThreshold, int_dual, pow_dual, pos_dual,
+                                   userPower,
+                                  power_vector_setup=True,
+                                  random=False)
+    imperfect_optimized = copy.deepcopy(network)
     # min_corr.change_power_limit(10)
-    min_corr.update_beam_formers()
-    set_corr = copy.deepcopy(network)
-    set_corr.update_beam_formers(set=True)
+    imperfect_optimized.update_beam_formers(csi=True)
+    min_correlation = copy.deepcopy(network)
+    min_correlation.update_beam_formers()
     # Choose number of iterations to allow
-    num_iterations = 200
-    utilities, duals, feasibility, intf = network.allocate_power_step(num_iterations, step_size)
-    min_corr_utilities, min_corr_duals, min_corr_feasibility, intf = min_corr.allocate_power_step(num_iterations, step_size)
-    set_utilities, set_duals, set_feasibility, intf = set_corr.allocate_power_step(num_iterations, step_size)
+    utilities, duals, feasibility, intf = network.allocate_power_step(num_iterations, step_size_pow, step_size_int)
+    min_corr_utilities, min_corr_duals, min_corr_feasibility, intf = min_correlation.allocate_power_step(num_iterations, step_size_pow, step_size_int)
+    csi_utilities, cse_duals, cse_feasibility, intf = imperfect_optimized.allocate_power_step(num_iterations, step_size_pow, step_size_int)
     duals = np.asarray(duals)
     min_corr_duals = np.asarray(min_corr_duals)
-    set_duals = np.asarray(set_duals)
+    set_duals = np.asarray(cse_duals)
 
     network.print_layout()
 
@@ -38,13 +46,13 @@ def test_dist_debug():
 
     print(feasibility, "\n")
     print(min_corr_feasibility, "\n")
-    print(set_feasibility)
+    print(cse_feasibility)
 
 
     plt.figure(2)
     plt.plot(np.arange(num_iterations + 1), utilities, label="moore-penrose")
     plt.plot(np.arange(num_iterations + 1), min_corr_utilities, label="minimized correlation")
-    plt.plot(np.arange(num_iterations + 1), set_utilities, label="minimized correlation set")
+    plt.plot(np.arange(num_iterations + 1), csi_utilities, label="csi set")
     plt.legend(loc="lower left")
     plt.title(label="social_utility")
     plt.ylabel("Social Utility (User SNR)")
@@ -56,7 +64,7 @@ def test_dist_debug():
     plt.subplot(length,2,1)
     plt.plot(np.arange(num_iterations + 1), utilities, label="moore-penrose")
     plt.plot(np.arange(num_iterations + 1), min_corr_utilities, label="minimized correlation")
-    plt.plot(np.arange(num_iterations + 1), set_utilities, label="minimized correlation set")
+    plt.plot(np.arange(num_iterations + 1), csi_utilities, label="csi")
     plt.legend(loc="lower left")
     plt.title(label="social_utility")
 
@@ -65,7 +73,7 @@ def test_dist_debug():
         plt.subplot(length, 2, columns+2)
         plt.plot(duals[:, columns], label="moore-penrose")
         plt.plot(min_corr_duals[:, columns], label="minimized correlation")
-        plt.plot(set_duals[:, columns], label="minimized correlation set")
+        plt.plot(set_duals[:, columns], label="csi set")
         plt.title(labels[columns])
     time_path = "Output/convergence_" + f"{time.time()}" + "curves.png"
     plt.savefig(time_path, format="png")
