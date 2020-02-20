@@ -18,13 +18,13 @@ def test_power_compare():
     pos_dual = 1e-5
     num_users = 1
     num_antenna = 1
-    step_size_pow = 1e-5
-    step_size_int = 1e-1
-    step_size_int = 1
+    step_size_pow = 1e-4
+    # step_size_int = 1e-1
+    step_size_int = 10
     userPowerList = [10, 100]
     # userPowerList = [5, 10, 30]
     previousNumberUsers = userPowerList[0]
-    num_iterations = 5000
+    num_iterations = 500
     numMacroUsers = 5
     numBaseStations = 5
     interferenceThreshold = 1

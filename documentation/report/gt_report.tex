@@ -16,7 +16,7 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-This work investigates resource allocation strategies for a communication system with uncoordinated users and MIMO capabilities at base stations. Following a similar, game theoretic approach as the work in \cite{ghosh2015normalized}, it is shown (TODO) that the general problem does not admit a distributed solution to achieving Nash Equilibrium. Refinements of the general problem are then made to permit the use of convex optimization tools to solve for a distributed solution that achieves Nash Equilibrium. These results are verified and further analyzed in simulations. We also investigate the use of the beam-forming capability at base stations in order to increase the achievable utility achieved by players in the game. 
+This work investigates resource allocation strategies for a communication system with uncoordinated users and MIMO capabilities at base stations. Following a similar, game theoretic approach as the work in \cite{ghosh2015normalized}, it is shown that the general problem does not admit a convex solution to achieving Nash Equilibrium. Refinements of the general problem are made to permit the use of convex optimization tools to solve for a distributed solution that achieves a Nash Equilibrium. These results are verified and further analyzed in simulations. We also investigate the use of the beam-forming capability at base stations in order to increase the achievable utility achieved by players in the game. 
 \end{abstract}
 %
 %\newpage
@@ -100,7 +100,7 @@ In words, $ \Psi(b_{\text{f}})$ is a function whose gradient with respect to the
 
 
 \item Distributed Optimization: solving a central optimization problem using multiple processes in parallel.
-In particular, the Dual Ascent method (CITE?), described below, will be used. 
+In particular, the Dual Ascent method described in \cite{boyd2011distributed} will be used. 
 
 \textbf{Distributed Dual Ascent:} 
 \begin{itemize}
@@ -563,7 +563,7 @@ U_{\text{f}}(\gamma_{\text{f}})
 
 The problem can now be solved using a distributed dual ascent to reach the NE of the potential game. 
 \subsubsection{Distributed Algorithm 1}\label{algo1}
-In the following algorithms and simulation results $U_{\text{f}}(\gamma_{\text{f}}) = log(1+\gamma_{\text{f}})$.
+In the following algorithms and simulation results the utility function $U_{\text{fi}}(\gamma_{\text{fi}}) = log(1+\gamma_{\text{fi}})$.
 
 \begin{enumerate}
 \item 
@@ -633,7 +633,7 @@ Note also that the dual ascent algorithm uses the dual and thus cannot guarantee
 \subsection{Beamformer Optimization for Convex Setup}
 When additional degrees of freedom are available in choosing $\mathbf{U}_{\mathrm{f}}$ after satisfying the zero-forcing constraint (i.e. $T_{\text{f}}> K_{\text{f}}$ ), these degrees of freedom may be utilized to optimize an objective function of the FBS choosing the beamformer. 
 \par
-The first objective function is that which minimizes the noise enhancement and corresponds to the Moore-Penrose pseudoinverse (CITE). 
+The first objective function corresponds to the Moore-Penrose pseudoinverse which minimizes the received signal noise enhancement. 
     \begin{equation}
     \begin{array}{ll}
     \underset{\mathbf{U}_{\mathrm{f}} }{\text{argmin}}   & tr(\sigma_n\mathbf{U_{\mathrm{f}}}  \mathbf{U_{\mathrm{f}}}^H)
@@ -644,7 +644,7 @@ The first objective function is that which minimizes the noise enhancement and c
     \end{equation}
 
     \par
-Next, we consider the objective function which would minimize the correlation of the chosen beamformer with the known macro cell user channels.
+Next, we consider the objective function which minimizes the correlation of the chosen beam-former with the known macro cell user channels.
 
     \begin{equation}
     \begin{array}{ll}
@@ -654,7 +654,7 @@ Next, we consider the objective function which would minimize the correlation of
     \end{array}
     \label{e-opt-prob}
     \end{equation}
-This is problem convex in $\mathbf{U}_{\mathrm{f}}$ and can be found easily at individual FBSs (See if Largrangian yields analytic solution?).
+This is problem convex in $\mathbf{U}_{\mathrm{f}}$ and can be found at individual FBSs (TODO: See if Largrangian yields analytic solution).
 \par
 The concavity assumption in \ref{conproblem} is dependent upon \emph{perfect} channel state information $H_{\text{f}}$. In general, estimate of this channel will be imperfect. This imperfect CSI is modeled as an identically distributed, independent noise source added to the elements of $H_{\text{f}}$. We attempt to minimize the resulting interference power between users of FBS f by choosing solving 
 
@@ -680,8 +680,7 @@ With $w_{\text{i,j}} \sim \mathcal{CN}(0,1),$ this simplifies to
 
 
 \par
-TODO discuss why this problem is nonsense
-We also consider the a problem in which FBS minimize correlation with macro cell users while also maximize correlation with channels of its own users. 
+Lastly, we consider the case in which FBSs minimize correlation with macro cell users while also maximize correlation with channels of its own users. 
     \begin{equation}
     \begin{array}{ll}
     \underset{\mathbf{U}_{\mathrm{f}} }{\text{argmin}}   & \alpha\sum^F_{\text{f}=1} \|\mathbf{\tilde{H}}_{\mathrm{f}}^T  \mathbf{U_{\mathrm{f}}}\|^2_2
@@ -693,7 +692,6 @@ We also consider the a problem in which FBS minimize correlation with macro cell
     \label{e-opt-prob}
     \end{equation}
     This problem is not convex in $\mathbf{U}_{\mathrm{f}}$ thus we need to employ additional optimization techniques to find such $\mathbf{U}_{\mathrm{f}}$.
-Note objective function of Moore-Penrose
 
 
 \chapter{Simulation and Results}\label{numerical}
@@ -738,20 +736,20 @@ Using the algorithm in \ref{algo1}, convergence to a Nash Equilibrium is observe
 	  \label{fig:}
 \end{figure}
 
+%
+%\begin{figure}[H]
+%	  	\includegraphics[width=\textwidth,height = 7cm]{figures/increasing_antenna_game_beam-former}
+%	  		  \caption{Different choices for the zero-forcing beam-former $\mathbf{U}_{\text{f}}$}
+%	  \label{fig:inc_fc}
+%\end{figure}
 
-\begin{figure}[H]
-	  	\includegraphics[width=\textwidth,height = 7cm]{figures/increasing_antenna_game_beamformer}
-	  		  \caption{Different choices for the zero-forcing beamformer $\mathbf{U}_{\text{f}}$}
-	  \label{fig:inc_fc}
-\end{figure}
+The concave setup of the FBS utility function is contingent upon knowledge of the channel state information $\mathbf{H}_{\text{f}}$. We now evaluate the effect of imperfect estimate of $\mathbf{H}_{\text{f}}$ on the solution. Imperfect CSi is simulated by adding additive white gaussian noise to the entries in $\mathbf{H}_{\text{f}}$. Need to check if this is even reasonable to simulate because might no longer be a game. TODO: Add Figure
 
-The concave setup of the FBS utility function is contingent upon knowledge of the channel state information $\mathbf{H}_{\text{f}}$. We now evaluate the effect of imperfect estimate of $\mathbf{H}_{\text{f}}$ on the solution. Imperfect CSi is simulated by adding additive white gaussian noise to the entries in $\mathbf{H}_{\text{f}}$. Need to check if this is even reasonable to simulate because might no longer be a game. 
-
-\begin{figure}[H]
-	  	\includegraphics[width=\textwidth,height = 7cm]{figures/increasing_antenna_game_beamformer}
-	  		  \caption{Impact of imperfect estimate of $\mathbf{H}_{\text{f}}$ at FBS $f$}
-	  \label{fig:inc_fc}
-\end{figure}
+%\begin{figure}[H]
+%	  	\includegraphics[width=\textwidth,height = 7cm]{figures/increasing_antenna_game_beam-former}
+%	  		  \caption{Impact of imperfect estimate of $\mathbf{H}_{\text{f}}$ at FBS $f$}
+%	  \label{fig:inc_fc}
+%\end{figure}
 
 
 \chapter{Conclusion}
