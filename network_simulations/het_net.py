@@ -131,9 +131,9 @@ class Het_Network():
         :return:
         """
         # First update the dual variables of the macro users
-        [player.update_dual_variables(step_size_pow, itr_idx) for player in self.base_stations]
+        [player.update_dual_variables(step_size_pow) for player in self.base_stations]
         # Second update the dual variables for the other constraints (Note this order doesn't matter)
-        [macro_user.update_dual_variables(step_size_int, itr_idx) for macro_user in self.macro_users]
+        [macro_user.update_dual_variables(step_size_int) for macro_user in self.macro_users]
 
 
     def update_macro_cells(self):
@@ -180,7 +180,6 @@ class Het_Network():
             total += utility
             utilities.append(utility)
         return total
-        # return np.average(utilities)
 
     def get_base_stations(self):
         return self.base_stations
@@ -451,7 +450,7 @@ class Femto_Base_Station():
                 raise Exception("problem with inversion")
             self.power_vector[ind] = updated_power
 
-    def update_dual_variables(self, step, idx):
+    def update_dual_variables(self, step):
         #update scalar here
         self.power_dual_variable += step*(np.sum(self.power_vector) - self.power_constraint)
         self.power_dual_variable = np.max((0,self.power_dual_variable))

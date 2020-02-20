@@ -12,19 +12,19 @@ first setup the network according using the het_net class then consolidate all o
 def test_power_compare():
 
     # int_dual = 1e-1
-    pow_dual = 1
-    int_dual = 10
+    pow_dual = 10
+    int_dual = 1
     # pow_dual = 1
     pos_dual = 1e-5
     num_users = 1
     num_antenna = 1
     step_size_pow = 1e-4
     # step_size_int = 1e-1
-    step_size_int = 10
-    userPowerList = [10, 100]
+    step_size_int = 1e-2
+    userPowerList = [1, 100]
     # userPowerList = [5, 10, 30]
     previousNumberUsers = userPowerList[0]
-    num_iterations = 500
+    num_iterations = 2000
     numMacroUsers = 5
     numBaseStations = 5
     interferenceThreshold = 1
