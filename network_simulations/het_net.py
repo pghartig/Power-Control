@@ -1,3 +1,7 @@
+"""
+This module is responsible for providing all of the infrastructure for testing
+distributed resource allocation methods.:
+"""
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import numpy as np
@@ -5,6 +9,10 @@ import cvxpy as cp
 import time
 import math
 class Het_Network():
+    """
+    The primary class which defines and provides access to all users and
+    base-stations of the network.
+    """
     def __init__(self, num_femto_cells, num_macro_users, max_users,
                  max_antennas, interferenceThreshold, int_dual, pow_dual, pos_dual, power_limit, power_vector_setup=False, random=True):
         """
@@ -267,6 +275,10 @@ class Het_Network():
 
 
 class Femto_Base_Station():
+    """
+    Creates a base-station with users and in same cases, information regarding
+    the other users to which it causes interference.
+    """
     def __init__(self, ID, network, num_femto_users, num_antenna, power_vector_setup,
                  pow_dual, pos_dual, power_limit, utility_function=np.sum):
         self.ID = ID
@@ -480,6 +492,11 @@ class Femto_Base_Station():
 
 
 class User:
+    """
+    Class to inherit for different types of users. This provides primary 
+    functionality that all types of users will need such as accessing relevant
+    channels and updating paramters related to distributed allocation strategies.
+    """
     def __init__(self, ID, network):
         self.ID = ID
         self.uplink_channels = dict()
@@ -500,6 +517,11 @@ class User:
 
 
 class Macro_User(User):
+    """
+    Defines macro users that will experience interference due to uncoordinated
+    base-stations. They will essentially charge these users for the interference
+    that inflict.
+    """
     def __init__(self, ID, network,interference_threshold, dual):
         User.__init__(self, ID, network)
         self.interference = 0
@@ -544,6 +566,12 @@ class Macro_User(User):
 
 
 class Femto_User(User):
+    """
+    Users of a SINGLE femto base-station. They will track their SINR.
+    The implementation allows for adding interference from other base-stations
+    and users but currently this only considers interference due to the 
+    providing base-station. 
+    """
     def __init__(self, ID, network, parent, sigma_square=1e-3):
         """
         For now assume that the femto users are only single antenna
