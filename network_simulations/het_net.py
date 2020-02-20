@@ -309,7 +309,7 @@ class Femto_Base_Station():
             self.beam_forming_matrix = self.optimize_beam_former(channel_set, imperfectCsiNoisePower)
             # check = self.H@self.beam_forming_matrix
             # pass
-        if csi == True:
+        elif csi == True:
             self.beam_forming_matrix = self.optimize_beam_former_for_csi(imperfectCsiNoisePower)
         else:
             self.beam_forming_matrix = np.linalg.pinv(self.H + np.random.standard_normal(self.H.shape)*np.sqrt(imperfectCsiNoisePower))
