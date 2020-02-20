@@ -54,9 +54,9 @@ def test_macro_compare():
         previousNumberUsers = numMacroUsers
         util_plt.plot(np.arange(num_iterations + 1), utilities, label=f"{numMacroUsers}")
         extra_plt.plot(np.arange(num_iterations), constraints[0],'-' ,label=f"interference slack {numMacroUsers}")
-        extra_plt.plot(np.arange(num_iterations), constraints[1],'-', label=f"interference slack {numMacroUsers}")
+        # extra_plt.plot(np.arange(num_iterations), constraints[1],'-', label=f"interference slack {numMacroUsers}")
         extra_plt1.plot(np.arange(num_iterations), constraints[2], label=f"power slack {numMacroUsers}")
-        extra_plt1.plot(np.arange(num_iterations), constraints[3], label=f"power slack {numMacroUsers}")
+        # extra_plt1.plot(np.arange(num_iterations), constraints[3], label=f"power slack {numMacroUsers}")
 
 
     util_plt.legend(loc="lower left")

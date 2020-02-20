@@ -16,7 +16,7 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-This work investigates resource allocation strategies for a communication system with uncoordinated users and MIMO capabilities at base stations. Following a similar, game theoretic approach as the work in \cite{ghosh2015normalized}, it is shown that the general problem does not admit a convex solution to achieving Nash Equilibrium. Refinements of the general problem are made to permit the use of convex optimization tools to solve for a distributed solution that achieves a Nash Equilibrium. These results are verified and further analyzed in simulations. We also investigate the use of the beam-forming capability at base stations in order to increase the achievable utility achieved by players in the game. 
+This work investigates resource allocation strategies for a communication system with uncoordinated users and MIMO capable base stations. Following a similar, game theoretic approach as the work in \cite{ghosh2015normalized}, it is shown that the general problem does not admit a convex solution with which to achieve Nash Equilibrium. Refinements of the general problem are then made to permit the use of convex optimization tools to solve for a distributed solution that achieves a Nash Equilibrium. These refinements require pre-selection of transmission beam-formers prior to the allocation of power and therefore the beam-former design is considered to increase the achievable player utility. These results are verified and further analyzed in simulations.
 \end{abstract}
 %
 %\newpage
@@ -26,20 +26,21 @@ This work investigates resource allocation strategies for a communication system
 \chapter{Introduction}
 \section{Introduction}
 Modern communication systems often incorporate numerous, uncoordinated users competing for a limited resource.
-In this work, a game theoretic approach considers a wireless communications network with uncoordinated  macrocell users and femtocell base stations. The goal of this approach is to find Nash Equilibrium in which femtocell base stations optimize their utility while ensuring macrocell users experience interference below some threshold. 
+In this work, a game theoretic approach considers a wireless communication network with uncoordinated macrocell users and femtocell base stations. The goal of this approach is to find Nash Equilibrium in which femtocell base stations optimize individual utility while ensuring macrocell interference tolerances are not violated. 
 Previous work has shown solutions for systems in which femtocell base stations transmit over a single input, single output (SISO) channel; therefore the multiple input, multiple ouput (MIMO) case is investigated here. 
 \par
-This work focuses on achieving Nash Equilibrium (NE) using distributed solutions. In the communications context, distribution of the optimization problem can reduce that amount of information that needs to be passed between different users of the communication network. 
+This work focuses on achieving Nash Equilibrium (NE) using distributed solutions. In the communications context, distribution of system optimization is preferable in order to minimize the amount of information passing overhead. 
 
 
 \section{Notation}
 The following notation is used throughout the remainder. 
 $E[x]$ is the expected value of a random variable $x$.
-Vectors are denoted by bold font, lower-case ($\mathbf{x}$) and are assumed to be column vectors.
+Vectors are denoted by bold font, lower-case letters ($\mathbf{x}$) and are assumed to be column vectors.
 Matrices are denoted by bold font and capital letters ($\mathbf{X}$).
+$\mathbf{I}$ denotes the identity matrix.
 
 
-\section{Relevant Tools/Theory}
+\section{Relevant Tools/Theory}\label{tools}
 It is useful to first review relevant game theoretic tools. Together, these tools provide a series of steps to follow in solving for Nash Equilibrium via distributed solutions. 
 
 \begin{enumerate}
@@ -47,20 +48,20 @@ It is useful to first review relevant game theoretic tools. Together, these tool
 
 \begin{itemize}
 \item
-\textbf{Definition:} A game in which individual players maximize a concave utility function and the strategy set resulting from problem constraints (potentially player coupled) is convex. 
+\textbf{Definition:} a game in which individual players maximize a concave utility function and the strategy set resulting from problem constraints (potentially player coupled) is convex. 
 \item 
-\textbf{Existence of Nash Equilibrium:} Pure Strategy NE exist for Concave N-Person  games \cite[Thm1]{rosen1964existence}. 
+\textbf{Existence of Nash Equilibrium:} pure Strategy NE exist for Concave N-Person  games \cite[Thm1]{rosen1964existence}. 
 \item
-\textbf{Uniqueness of Nash Equilibrium:} To prove uniqueness of NE for Concave N-Person  games, the Normalized Nash Equilibrium is introduced.
-First, take a weighted sum of the player utility functions $U_{\mathrm{f}}(b)$.
+\textbf{Uniqueness of Nash Equilibrium:} to prove uniqueness of NE for Concave N-Person  games, the Normalized Nash Equilibrium is introduced.
+First, take a weighted sum of the player utility functions $U_{\mathrm{f}}(b_{\text{f}})$.
 \begin{equation*}
-\sigma(\mathbf{u},\mathbf{r})  = \Sigma_{\mathrm{f=1}}^{\mathrm{F}} r_{\mathrm{f}}U_{\mathrm{f}}(b),\; \mathbf{r}=(r_{\text{1}}... r_{\text{F}})
-,\; \mathbf{u}=(u_{\text{1}}... u_{\text{F}})
+\sigma(\mathbf{b},\mathbf{r})  = \Sigma_{\mathrm{f=1}}^{\mathrm{F}} r_{\mathrm{f}}U_{\mathrm{f}}(b_{\text{f}}),\; \mathbf{r}=(r_{\text{1}}... r_{\text{F}})
+,\; \mathbf{u}=(b_{\text{1}}... b_{\text{F}})
 , \; 
 r_{\mathrm{f}} \geq 0
 \end{equation*}
 The gradient of $
-\sigma(\mathbf{u},\mathbf{r})$
+\sigma(\mathbf{b},\mathbf{r})$
 is  
 \begin{equation}
 g(b,r)= 
@@ -77,7 +78,7 @@ r_F \nabla U_{F}(b)
 
 
 
-Negative Definiteness of the matrix $[G(b,r)+G^{T}(b,r)] $ is a sufficient condition for Diagonally Strict Concavity of $\sigma(u,r)$ which is a sufficient condition for uniqueness of a NNE \cite[Thm4]{rosen1964existence}.
+Negative Definiteness of the matrix $[G(b,r)+G^{T}(b,r)] $ is a sufficient condition for Diagonally Strict Concavity of $\sigma(\mathbf{b},\mathbf{r})$ which is a sufficient condition for uniqueness of a NNE \cite[Thm4]{rosen1964existence}.
 
 
 \end{itemize}
@@ -93,18 +94,18 @@ $ \Psi(b_{\text{f}})$ which satisfies:
 \end{equation} 
 for a game with player utility functions $U_f(b_{\text{f}})$.
 In words, $ \Psi(b_{\text{f}})$ is a function whose gradient with respect to the strategy $b_{\text{f}}$ of a player, is equal to the gradient of that player's utility function with respect to $b_{\text{f}}$.
-\item \textbf{Result:} Global optima to the potential function of a game are Nash Equilibrium.
-\item \textbf{Convex Case:} If a Concave N-Person game admits a potential function, the potential function will be concave allowing for use of convex optimization tools to find a NE. 
+\item \textbf{Result 1:} global optima of the potential function of a game are Nash Equilibrium \cite{monderer1996potential}.
+\item \textbf{Result 2:} for Concave N-Person games which admit a potential function, the potential function is concave; allowing for use of convex optimization tools to find a NE. 
 \end{itemize}
 
 
 
 \item Distributed Optimization: solving a central optimization problem using multiple processes in parallel.
-In particular, the Dual Ascent method described in \cite{boyd2011distributed} will be used. 
+In particular, the Dual Ascent method described in \cite{boyd2011distributed} is used in this work.
 
 \textbf{Distributed Dual Ascent:} 
 \begin{itemize}
-\item Given a central optimization problem (In this case obtained using a Potential Function to the game).
+\item For a central optimization problem (In this case obtained using a Potential Function of the game).
 \item Determine the dual problem to the central, primal problem.
 \item Evaluate if the dual problem can be separated into sub-problems each with independent optimization variables.
 \item Perform an ascent of the dual problem by iterating the following:
@@ -116,26 +117,22 @@ In particular, the Dual Ascent method described in \cite{boyd2011distributed} wi
 
 If the problem is convex with strong duality, the dual ascent will converge to the optimal (In this case a Nash Equilibrium).
 
-
-\item Concave Programming: To discuss if needed for general setup
-
-
 \end{enumerate}
 
 
 
 
 \section{Outline}
-The steps utilizing the above tools are outlined below. 
+The above tools are used in the steps outlined below. 
 \begin{itemize}
 \item 
 \ref{genmodel}: Introduce the system model for the most general setup of the game.
 \item 
 \ref{genproblem}: Analyze the general setup to see why further refinements are useful in arriving at a distributed solution. 
 \item
-\ref{conmodel}: Introduce refinements to the system model 
+\ref{conmodel}: Introduce refinements to the system model.
 \item 
-\ref{conproblem}: Solve the game using the refined system model
+\ref{conproblem}: Solve the game using the refined system model.
 \item 
 \ref{numerical}: Discuss numerical results to proposed solutions. 
 \end{itemize}
@@ -146,17 +143,17 @@ The steps utilizing the above tools are outlined below.
 \subsection{Players: Femtocell Base Stations}
 
 
-Each player of the game, a femtocell base station (FBS) $f \in \{1 ... F\}$ , is characterized by the following.
+Each player of the game, a femtocell base station (FBS) $\text{f} \in \{1 ... F\}$ , is characterized by the following.
 \begin{itemize}
 \item 
-$T_f$ antennas with which to transmit to $K_f$ femtocell users (it is assumed that $T_f \geq K_f$).
+$T_{\text{f}}$ antennas with which to transmit to $K_{\text{f}}$ femtocell users (it is assumed that $T_{\text{f}} \geq K_{\text{f}}$).
 \\
 \item 
-	The beamforming matrix $\mathbf{U}_{\mathrm{f}} \in \mathbb{C}_{T_f \times K_f}$ such that the transmitted 		
+	The beamforming matrix $\mathbf{U}_{\mathrm{f}} \in \mathbb{C}_{T_{\text{f}} \times K_{\text{f}}}$ such that the transmitted 		
 	signal is $\mathbf{s}_{\mathrm{f}
 	}= \mathbf{U_{\mathrm{f}}}\mathbf{x_{\mathrm{f}}}$. The 		
 	vector of symbols for users of FBS $\text{f}$, $\mathbf{x_{\mathrm{f}}}$, is  normalized such that $E[\|x_{\mathrm{f,i}}
-	\|_2^2]=1$ and $E[\mathbf{x}_{\mathrm{f}}\mathbf{x}_{\mathrm{f}}^H]=\mathbf{I}_{K_f \times K_f}$.
+	\|_2^2]=1$ and $E[\mathbf{x}_{\mathrm{f}}\mathbf{x}_{\mathrm{f}}^H]=\mathbf{I}_{K_{\text{f}} \times K_{\text{f}}}$.
 \\
 \item 
 	The power constraint $trace(\mathbf{U}_{\text{f}}^H\mathbf{U}_{\text{f}}) \leq P^{Total}_{\text{f}} $.
@@ -168,12 +165,12 @@ $T_f$ antennas with which to transmit to $K_f$ femtocell users (it is assumed th
     	in which all $U_{\mathrm{f,i}}()$ are non-decreasing (no convexity assumption is made at this point).
 
 \item 
-	Knowledge of the downlink channel matrix $\mathbf{H_\mathrm{f}} \in \mathbb{C}_{K_{\text{f}} \times T_{\text{f}}} $ to the $K_{\text{f}}$ FBS users.
+	Perfect knowledge of the downlink channel matrix $\mathbf{H_\mathrm{f}} \in \mathbb{C}_{K_{\text{f}} \times T_{\text{f}}} $ to the $K_{\text{f}}$ FBS users.
 % TODO(Simulate degradation with incomplete CSI solution?)
 \\
 \item
 	 FBSs are assumed to be spaced far apart in distance such that FBS $\text{f}$ 
-	 causes no interference to the users of any other FBS. As a result, $U_{\text{f}}()$ is independent of other FBSs.
+	 causes no interference to the users of any other FBS.
 \end{itemize}
 
 \subsection{Macrocell Users}
@@ -181,10 +178,10 @@ Macrocell users $m \in \{1 ... M\}$ introduce constraints into the game. These u
 
 \begin{itemize}
 \item 
-	Received interference and constraint
+	Received interference constraint
 	$\sum^F_{\text{f}=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{U_{\mathrm{f}}} 						
 	\mathbf{U_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} \leq I^{Threshold}		
-	_{\mathrm{m}} $.
+	_{\mathrm{m}} $. In which $\mathbf{\tilde{h}}_{\mathrm{m,f}}$ is the channel from FBS $\text{f}$ to macro user $\text{m}$
 
 \item 
 	FBS $\text{f}$ is assumed to know the downlink channel matrix $\tilde{\mathbf{H}_{\mathrm{f}}} \in \mathbb{C}_{M \times T_{\text{f}}}$ to all $M$ Macrocells users.
@@ -229,19 +226,16 @@ By the sufficient spacing assumption above, this reduces to:
 
 \subsection{General Optimization Problem}\label{genproblem}
 
-Each player $\text{f}$ attempts to maximize utility function $U_{\text{f}}()$ while satisfying the interference constraints imposed by the macro cell users and a transmission power constraint. 
+Each FBS $\text{f}$ (player in the game) attempts to maximize utility function $U_{\text{f}}()$ while satisfying the interference constraints imposed by the macro cell users and a transmission power constraint. 
 \par
-
-
-
 
 	\begin{subequations}
 	\label{optim}
 	\begin{align}
-	    \underset{\mathbf{U}_{\mathrm{f}} }{\text{argmin}} \;
+	    \underset{\mathbf{U}_{\mathrm{f}} }{\text{minimize: }} \;
 	    & - \sum_{\mathrm{i=1}}^{\mathrm{K_f}}
     	U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) \label{player_opt} \\
-	    \text{subject to} \; &
+	    \text{subject to: } \; &
 	   \sum^F_{f=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{U_{\mathrm{f}}}		
 	\mathbf{U_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} \leq I^{Threshold}		
 	_{\mathrm{m}} & m \in \{1 ...M\} 
@@ -272,13 +266,13 @@ The convexity of the resulting problem is analyzed to investigate if this system
 
 
 \item
-The constraints form a convex, closed and bounded set. 
+First, check constraints form convex, closed and bounded set. 
 
 \begin{itemize}
 
 \item
-	Constaint \eqref{interference_const_gen} contains $M$ quadratic constraints on $\mathbf{U_f}$ each of which 
-	can be rewritten  
+	Constaint \eqref{interference_const_gen} contains $M$ quadratic constraints on $\mathbf{U_f}$, each of which 
+	can be rewritten  as
 
 \begin{gather*}
 	\sum_{f=1}^F
@@ -293,7 +287,7 @@ This can be further decomposed into
 	\mathbf{u_{\mathrm{f,i}}} \leq I^{Threshold}_{m}
 	\end{gather*}
 in which the matrix $ \mathbf{\tilde{h}_{\mathrm{m,f}}} \mathbf{\tilde{h}}_{\mathrm{m,f}}^H$ is  positive semi-definite creating in a convex set 
-\cite[p.8,9]{BoV:04}. 
+\cite[p.~8,9]{BoV:04}. 
 %This is essentially high dimensional ellipsoid.
 
 
@@ -314,19 +308,18 @@ in which the matrix $ \mathbf{\tilde{h}_{\mathrm{m,f}}} \mathbf{\tilde{h}}_{\mat
 \end{itemize}
 
 
-\item Concavity of the utility function
+\item Second, check if utility function is concave.
 \begin{itemize}
 \item 
 With
-	\begin{equation}\label{zf_snr}
+	\begin{equation*}\label{zf_snr}
 	\gamma_{\mathrm{f,i}} = 
 	\frac{\mathbf{u^H_{\mathrm{f,i}}h_{\mathrm{f,i}}h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}}
 	{\sigma^2_{noise}  
 	}.
-	\end{equation}
+	\end{equation*}
 	 $\mathbf{h}_{\mathrm{f,i}}\mathbf{h}^H_{\mathrm{f,i}}$ is positive semi-definite and $\gamma_{\mathrm{f,i}}$ is convex in ${\mathbf{u}_{\mathrm{f,i}}}$. 
-
-The composition $U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $ is concave only if $U_{\mathrm{f,i}}() $ is concave and non-increasing; violating the non-decreasing definition of $U_{\mathrm{f,i}}() $.
+	 The resulting composition $U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $ is concave only if $U_{\mathrm{f,i}}() $ is concave and non-increasing; violating the non-decreasing definition of $U_{\mathrm{f,i}}() $.
 If $U_{\mathrm{f,i}}() $ is a general, non-decreasing function, the result is quasiconvex \cite[p.~102]{BoV:04}. If $U_{\mathrm{f,i}}() $ is  non-decreasing and convex, the resulting
    function is convex and therefore, concave programming can be used to find a \emph{maximum}. 
 \end{itemize}
@@ -334,19 +327,18 @@ If $U_{\mathrm{f,i}}() $ is a general, non-decreasing function, the result is qu
 \end{enumerate}
 
 \subsection{Potential Game for General Problem}
-Under the current system model, the game is not a Concave N-Person game. Nevertheless, because of the independence of the utility functions due to the spacing assumption, the game still admits a potential function.
-Explain whether or not concave programming will not admit distributed solutions??
-
+Under the current system model, the game is not a Concave N-Person game. Nevertheless, because of the independence of the utility functions due to the spacing assumption, the game still admits a potential function. Investigation of potential distributed, Concave Programming techniques for solving this problem is left for future work. 
 
 \section{Concave System Model}\label{conmodel}
 
 The general setup of this game seen in the previous section prohibits the use of tools established tools to reaching a NE of the game.
 The following refinement of the system model permits a unique Nash Equilibrium to be found via a single convex problem which may be distributed across players of the game.
 \par
-Rather than jointly optimizing the power allocation over the set of all zero-forcing beamformers, we now pre-select the zero-forcing beamformer independently \emph{before} the allocation of power. 
+Rather than jointly optimizing the power allocation over the set of all zero-forcing beamformers, we now pre-select zero-forcing beamformers independently, \emph{before} the allocation of power.
+As seen later, one result of this ordering is that additional degrees of freedom at the FBS cannot be exploited with knowledge of the power allocation at the final Nash Equilibrium.
 
 \subsection{Players: Femtocell Base Stations}
-Femtocells are adapted from the general setup to the refined setup in the following way.
+Femtocell Base Stations are adapted from the general setup to the refined setup by the following.
 \begin{itemize}
 \item 
 	FBSs with multiple antennas ($T_f \geq 1$) can beamform their transmission using the precoding 	
@@ -360,7 +352,7 @@ $\mathbf{U}_f$ is selected as a pseudo-inverse to $\mathbf{H_\mathrm{f}}$.
 Such that
 \begin{gather*}
 \langle \mathbf{h_{f,j}}\mathbf{u_{f,i}} \rangle =0\  \; \forall j \in \{1... K_{\text{f}}\}\backslash i ,\; \forall i \in \{1 ... K_{\text{f}}\}.
-\end{gather*} Later, choices for $\mathbf{U}_f$ will be considered for when there are additional degrees of freedom in the system (i.e when $T_{\text{f}}> K_{\text{f}}$).
+\end{gather*} Later, choices for $\mathbf{U}_{\text{f}}$ will be considered for when there are additional degrees of freedom in the system (i.e when $T_{\text{f}}> K_{\text{f}}$).
 
 \item  
 	FBS $\text{f}$ allocates  transmission power using the diagonal, power allocation  	
@@ -387,13 +379,13 @@ such that the transmitted
 	\sum_{\mathrm{i=1}}^{\mathrm{K_{\text{f}}}}
     	U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $
     	in which all $U_{\mathrm{f,i}}()$ are non-decreasing and
-    	\emph{strictly concave}.
+    	\emph{strictly} concave.
 \item The SINR of the Femto Cell users is now
 \begin{equation}\label{zf_snr}
 	\gamma_{\mathrm{f,i}} = 	\frac{\mathbf{u^H_{\mathrm{f,i}}h_{\mathrm{f,i}}h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}}
 	{\sigma^2_{noise}  
 	}=\frac{\sum_{\mathrm{i=i}}^{\mathrm{K_{f}}}
- p_{\mathrm{fi}}\|h_{\mathrm{f,i}}u_{\mathrm{f,i}}\|^2}
+ p_{\mathrm{f,i}}\|h_{\mathrm{f,i}}u_{\mathrm{f,i}}\|^2}
 	{\sigma^2_{noise}  
 	}
 	\end{equation}
@@ -414,15 +406,15 @@ No change from general setup.
 	\begin{subequations}
 	\label{optim}
 	\begin{align}
-	    \underset{\mathbf{p}_{\mathrm{f}} }{\text{minimize}} \;
+	    \underset{\mathbf{p}_{\mathrm{f}} }{\text{minimize: }} \;
 	    & - \sum_{\mathrm{i=1}}^{\mathrm{K_f}}
     	U_{\mathrm{f,i}}(p_{\mathrm{f,i}}) \label{player_opt_c} \\
-	    \text{subject to} \; &
+	    \text{subject to: } \; &
 	  \sum^F_{\text{f}=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{s}_{\mathrm{f}} 						
 	\mathbf{s_{\mathrm{f}}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} 
 	=
 	\sum_{\mathrm{f=1}}^{\mathrm{F}}	\sum_{\mathrm{i=1}}^{\mathrm{K_f}}
-	p_{\mathrm{f,i}}\|\tilde{h}_{\mathrm{m,f}}^T u_{\mathrm{f,i}}\|^2_2
+	p_{\mathrm{f,i}}\|\tilde{\mathbf{h}}_{\mathrm{m,f}}^T \mathbf{u}_{\mathrm{f,i}}\|^2_2
 	\leq I^{Threshold}		
 	_{\mathrm{m}} & m \in \{1 ...\text{M}\} 
 		\label{interference_const_c}\\
@@ -433,16 +425,16 @@ No change from general setup.
 	\end{align}
 	\end{subequations}
 
-Note that because $\mathbf{U}_{\mathrm{f}}$ is pre-selected as a pseudo-inverse to  $\mathbf{H_\mathrm{f}}$, constraint \eqref{zf_const_gen} has been removed.
+Note that because $\mathbf{U}_{\mathrm{f}}$ is pre-selected as a pseudo-inverse to  $\mathbf{H_\mathrm{f}}$,the zero-forcing constraint \eqref{zf_const_gen} has been removed.
 
 \subsection{Concave N-Person game analysis of concave setup}
-
-Sufficient conditions for a concave problem are:
+The convexity of the resulting problem is analyzed to investigate if this system admits the Concave N-Person game framework. 
 
 \begin{enumerate}
 
+
 \item
-The constraints form a convex, closed and bounded set. 
+First, check constraints form convex, closed and bounded set. 
 
 \begin{itemize}
 
@@ -467,24 +459,25 @@ The constraints form a convex, closed and bounded set.
 
 %Note that affine constaints to not have to satisfy Slater's condition
 
-\item The utility function is assumed concave in its argument $p_{\mathrm{f,i}}$.
+\item The utility function is defined as being concave in its argument $p_{\mathrm{f,i}}$. 
 
 \end{enumerate}
 
 This problem satisfies the conditions for the Concave N-Persion game and therefore a pure strategy Nash Equilibrium exists due to 
 \cite[Thm1]{rosen1964existence}.
 
-As the utility function $U_{\mathrm{fi}}(p_{\mathrm{fi}})$ is strictly concave, (differentiable?), and independent of all $p_{\mathrm{fj}}$ the matrix $[G(b,r)+G^{T}(b,r)] $ is diagonal with values on the diagonal $<0$. As $[G(b,r)+G^{T}(b,r)] $ is negative definite the Normalized Nash Equilibrium are unique \cite[Thm4]{rosen1964existence}.
+With utility function $U_{\mathrm{fi}}(p_{\mathrm{fi}})$ strictly concave and independent of all $p_{\mathrm{fj}}$, the matrix $[G(b,r)+G^{T}(b,r)] $ is diagonal with all diagonal values $<0$. With negative definite $[G(b,r)+G^{T}(b,r)] $ the Normalized Nash Equilibrium are unique \cite[Thm4]{rosen1964existence}.
+
+(TODO:Mention to Prof. that this is now rigorous. See if more detail is wanted)
 
 \subsection{Potential Game for Concave Problem}
 
-\textbf{Potential Function:} The proposed potential function satisfying \eqref{potential_game_condition} is 
+\textbf{Potential Function:} with proposed potential function 
 
 \begin{gather*} \label{Potential_Function}
-\Psi(\mathbf{\gamma}) = \sum_{f = 1}^{F} U_{\text{f}}(\mathbf{\gamma_{\mathrm{f}}}) 
+\Psi(\mathbf{\gamma}) = \sum_{f = 1}^{F} U_{\text{f}}(\mathbf{\gamma_{\mathrm{f}}})
 \end{gather*}
-
-resulting in the single optimization problem 
+satisfying \eqref{potential_game_condition}, the central optimization problem is
 	
 		\begin{subequations}
 	\label{optim}
@@ -501,7 +494,7 @@ resulting in the single optimization problem
         & p_{\mathrm{f,i}} \geq 0 &  \forall i \in \{1 ...K_{\mathrm{f}}\} \; \forall f \in \{1 ... F\}\label{pos_power_const}
 	\end{align}
 	\end{subequations}
-	with $\mathbf{\gamma}= [\mathbf{\gamma_{\mathrm{1}}},\mathbf{\gamma_{\mathrm{2}}}...\mathbf{\gamma_{\mathrm{F}}}]$
+	with $\mathbf{\gamma}= [\mathbf{\gamma_{\mathrm{1}}},\mathbf{\gamma_{\mathrm{2}}}...\mathbf{\gamma_{\mathrm{F}}}]$.
 
 %\begin{theorem}\label{distributed}
 %\cite{ghosh2015normalized}
@@ -509,9 +502,9 @@ resulting in the single optimization problem
 %\end{theorem}
 
 \subsection{Distributed Solution to the Game}
-A distribtued solution to \eqref{potential_game} is now proposed.
+A distributed solution to \eqref{optim} is now proposed using the steps from section \ref{tools}.
 \subsubsection{Central Problem Resulting from Potential Game}
-The Lagrangian to the potential function is derived to formulate the dual problem. 
+The Lagrangian to the potential function (the primal problem) is derived to the form the dual problem. 
 \begin{multline}
 L(\mathbf{U,\lambda}) = 
 \;
@@ -531,20 +524,20 @@ L(\mathbf{U,\lambda}) =
 \nu_{\mathrm{f,i}}(-p_{\mathrm{f,i}})
 \end{multline}
 
-The corresponding dual function is
+Using $\mathbf{P}= [\mathrm{p}_1, \mathrm{p}_2...\mathrm{p}_{\text{F}}],$ corresponding dual function is
 \begin{gather*}
 g(\lambda,\nu) = \underset{\mathbf{p}}{\mathrm{argmin}}\;L(\mathbf{U,\lambda})
 \end{gather*}
-and the resulting dual problem is
+with dual problem 
 \begin{gather*}
-\underset{\lambda}{\mathrm{argmax}}\;\underset{\mathbf{p}}{\mathrm{argmin}}\;L(\mathbf{U,\lambda}) = \underset{\lambda}{\mathrm{argmax}}\;g(\lambda,\nu)
+\underset{\lambda}{\mathrm{argmax}}\;\underset{\mathbf{p}}{\mathrm{argmin}}\;L(\mathbf{U,\lambda}) = \underset{\lambda}{\mathrm{argmax}}\;g(\lambda,\nu).
 \end{gather*}
 
 This dual function can be decomposed into $F$ component functions
 
 
 \begin{multline}
-g_f(\lambda,\nu) = \underset{\mathbf{p_f}}{\mathrm{argmin}}
+g_f(\lambda,\nu) = \underset{p_{\text{f}}}{\mathrm{argmin}}
 \{
 \;
 U_{\text{f}}(\gamma_{\text{f}}) 
@@ -563,7 +556,8 @@ U_{\text{f}}(\gamma_{\text{f}})
 
 The problem can now be solved using a distributed dual ascent to reach the NE of the potential game. 
 \subsubsection{Distributed Algorithm 1}\label{algo1}
-In the following algorithms and simulation results the utility function $U_{\text{fi}}(\gamma_{\text{fi}}) = log(1+\gamma_{\text{fi}})$.
+The non-decreasing, strictly concave utility function $U_{\text{fi}}(\gamma_{\text{fi}}) = log(1+\gamma_{\text{fi}})$ 
+is used in the following algorithms and simulation results.
 
 \begin{enumerate}
 \item 
