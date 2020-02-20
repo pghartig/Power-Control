@@ -1,3 +1,0 @@
-13.11.19
-To Read Bertekas-Nonlinear Programming Chapter 6 for dual ascent review
-Reference - Constrained Optimization and Lagrange Multiplier Methods.
