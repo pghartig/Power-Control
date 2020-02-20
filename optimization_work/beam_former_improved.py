@@ -6,7 +6,8 @@ import copy
 import time
 
 """
-first setup the network according using the het_net class then consolidate all of the information from the network to solve the central optimization problem
+first setup the network according using the het_net class then consolidate all of the information from the network to 
+solve the central optimization problem
 """
 
 def test_beam_former():
@@ -25,7 +26,8 @@ def test_beam_former():
     numBaseStations = 5
     interferenceThreshold = .1
     userPower = 300
-    network = het_net.Het_Network(numBaseStations, numMacroUsers, num_users, num_antenna, interferenceThreshold, int_dual, pow_dual, pos_dual,
+    network = het_net.Het_Network(numBaseStations, numMacroUsers, num_users, num_antenna, interferenceThreshold,
+                                  int_dual, pow_dual, pos_dual,
                                    userPower,
                                   power_vector_setup=True,
                                   random=False)
@@ -54,7 +56,8 @@ def test_beam_former():
             currNetwork.update_beam_formers(csi=True, imperfectCsiNoisePower=noisePowers)
         if beam_former_choice == 3:
             currNetwork.update_beam_formers(optimize=True, channel_set=True, imperfectCsiNoisePower=noisePowers)
-        utilities, duals, feasibility, constraints = currNetwork.allocate_power_step(num_iterations, step_size_pow, step_size_int)
+        utilities, duals, feasibility, constraints = currNetwork.allocate_power_step(num_iterations, step_size_pow,
+                                                                                     step_size_int)
         duals = np.asarray(duals)
         util_plt.plot(np.arange(num_iterations + 1), utilities, label=f"{beam_type[beam_former_choice]}")
         extra_plt.plot(np.arange(num_iterations), constraints[0], label=f"{beam_type[beam_former_choice]}")
