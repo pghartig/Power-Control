@@ -563,8 +563,8 @@ is used in the following algorithms and simulation results.
 \item 
 Individual players (FBSs) can solve $ g_f(\lambda,\nu) $ independently.
 \begin{itemize}
-\item Setting $\frac{\partial g_f(\lambda,\nu)}{\partial p_{\mathrm{f,i}}} = 0$ 
-and solving for $p_{\mathrm{fi}}$ using \eqref{zf_snr} yields
+\item Set $\frac{\partial g_f(\lambda,\nu)}{\partial p_{\mathrm{f,i}}} = 0$ 
+and solve $p_{\mathrm{fi}}$ using \eqref{zf_snr} to find
 
 \begin{gather}
 p_{\mathrm{fi}} = (\sum_{\mathrm{m=1}}^{\mathrm{M}}\lambda_{\mathrm{m}}\|\mathbf{\tilde{h}}_{m,f}^T \mathbf{u}_{\mathrm{f,i}}\|^2_2
@@ -576,9 +576,9 @@ p_{\mathrm{fi}} = (\sum_{\mathrm{m=1}}^{\mathrm{M}}\lambda_{\mathrm{m}}\|\mathbf
 
 \end{itemize}
 \item 
-Using $g(\lambda,\nu) = \sum_{f=1}^{F}g_f(\lambda,\nu)$ and rules from subgradient calculus 
+Using $g(\lambda,\nu) = \sum_{f=1}^{F}g_f(\lambda,\nu)$ and rules of subgradient calculus (TODO: CITE)
 $\partial g(\lambda,\nu) = \sum_{f=1}^{F} \partial g_f(\lambda,\nu)$ 
-, the dual variables can updated with:
+, the dual variables are updated using:
 
 \begin{gather}
 \lambda_{\mathrm{m}}^{\mathrm{k+1}} = (
@@ -594,7 +594,7 @@ p_{\mathrm{fi}}
 - I_{\mathrm{m}}
 ))^+
 \end{gather}
-performed at the macro cell users,
+ at the macro cell users,
 
 \begin{gather}
 \chi_{\mathrm{f}}^{\mathrm{k+1}} = (
@@ -603,7 +603,7 @@ performed at the macro cell users,
 \alpha^{\mathrm{k}}*
 (\underbrace{\sum_{\mathrm{i=1}}^{\mathrm{K_{\mathrm{f}}}} p_{\mathrm{fi}}}_{Used Power} - P_{\mathrm{f}}^{Total}) )^+
 \end{gather}
-performed at individual FBSs, and 
+ at individual FBSs, and 
 
 \begin{gather}
 \nu_{\mathrm{fi}}^{\mathrm{k+1}} = (
@@ -612,7 +612,7 @@ performed at individual FBSs, and
 \alpha^{\mathrm{k}}*
 (-p_{\mathrm{fi}}))^+
 \end{gather}
-also performed at individual FBSs.
+also at individual FBSs.
 As each of dual variables in this update is an inequality constraint, the implementation of this algorithm directly enforces non-negativity using 
 $(arg)^+$.
 Step size $\alpha^{\mathrm{k}}$ is predefined and constant.
@@ -621,13 +621,14 @@ Step size $\alpha^{\mathrm{k}}$ is predefined and constant.
 
 
 \end{enumerate} 
-These local updates require require that additional information is passed through the system. In particular this requires that Macro Cell Users monitor their incoming interference and then broadcast the updated dual variable $\lambda_{\text{m}}$ with which FBSs update the power allocation. 
-Note also that the dual ascent algorithm uses the dual and thus cannot guarantee a feasible solution to the primal problem originally posed. (Discuss constraint tolerance used here? )
+These local updates require that additional information is passed through the system. In particular Macro Cell Users must monitor their incoming interference then broadcast the updated dual variable $\lambda_{\text{m}}$ with which FBSs can update the power allocation. 
+
+(Note also that the dual ascent algorithm uses the dual and thus cannot guarantee a feasible solution to the primal problem originally posed. (Discuss constraint tolerance used here? ))
 
 \subsection{Beamformer Optimization for Convex Setup}
-When additional degrees of freedom are available in choosing $\mathbf{U}_{\mathrm{f}}$ after satisfying the zero-forcing constraint (i.e. $T_{\text{f}}> K_{\text{f}}$ ), these degrees of freedom may be utilized to optimize an objective function of the FBS choosing the beamformer. 
+When additional degrees of freedom are available in choosing $\mathbf{U}_{\mathrm{f}}$ after satisfying the zero-forcing constraint (i.e. $T_{\text{f}}> K_{\text{f}}$ ), these degrees of freedom may be used to optimize an additional objective function. Below, variations of such an objective function are considered. Note again that because the beam-form $\mathbf{U}_{\mathrm{f}}$ is chosen prior to the power allocation, these values of $p_{\text{f,i}}$ cannot be used in this optimization. 
 \par
-The first objective function corresponds to the Moore-Penrose pseudoinverse which minimizes the received signal noise enhancement. 
+The first objective function considered corresponds to the Moore-Penrose pseudoinverse to $\mathbf{H}_{\text{f}}$ which minimizes the received signal noise enhancement. 
     \begin{equation}
     \begin{array}{ll}
     \underset{\mathbf{U}_{\mathrm{f}} }{\text{argmin}}   & tr(\sigma_n\mathbf{U_{\mathrm{f}}}  \mathbf{U_{\mathrm{f}}}^H)
