@@ -106,7 +106,6 @@ class Het_Network():
             powerSlackMin.append(np.min(self.trackPowConstraints()))
             powerSlackMax.append(np.max(self.trackPowConstraints()))
         average_duals.append(self.get_average_duals())
-        [player.solve_local_opimization() for player in self.base_stations]
         return social_utility_vector, average_duals, self.verify_feasibility(),\
                [interferenceSlackMin, interferenceSlackMax, powerSlackMin, powerSlackMax]
 
@@ -174,11 +173,9 @@ class Het_Network():
 
     def get_social_utility(self):
         total = 0
-        utilities = []
         for base_station in self.base_stations:
             utility = base_station.get_utility()
             total += utility
-            utilities.append(utility)
         return total
 
     def get_base_stations(self):
@@ -443,9 +440,9 @@ class Femto_Base_Station():
                 macro_user_channel = m_user.get_channel_for_base_station(self.ID)
                 c += m_user.get_dual_variable()*pow(np.linalg.norm(user_i_channel*macro_user_channel), 2)
             c += self.power_dual_variable
-            c -= self.positivity_dual_variable[ind]
+            # c -= self.positivity_dual_variable[ind]
             #   prohibit negative powers
-            updated_power = np.max((1/(c) - self.sigma_square, 0))
+            updated_power = np.max((1/c - self.sigma_square, 0))
             if math.isnan(updated_power):
                 raise Exception("problem with inversion")
             self.power_vector[ind] = updated_power
@@ -530,8 +527,8 @@ class Macro_User(User):
         """
         total = 0
         for base_station in self.network.get_base_stations():
+            channel = self.get_channel_for_base_station(base_station.ID)
             for ind, power in enumerate(base_station.power_vector):
-                channel = self.get_channel_for_base_station(base_station.ID)
                 beamformer = base_station.beam_forming_matrix[:, ind]
                 total += power*pow(np.linalg.norm(channel@beamformer),2)
                 if math.isnan(power*pow(np.linalg.norm(channel@beamformer),2)):
@@ -589,7 +586,7 @@ class Femto_User(User):
         for j in range(parent_beamformer.shape[1]):
             if j is not self.ID:
                 self.interference += pow(np.linalg.norm(channel @ parent_beamformer[:,j]), 2)
-        self.SINR = power*pow(np.linalg.norm(channel@beamformer), 2)/(self.noise_power+self.interference)
+        self.SINR = (power*pow(np.linalg.norm(channel@beamformer), 2))/(self.noise_power+self.interference)
         return self.SINR
 
     def move(self):
