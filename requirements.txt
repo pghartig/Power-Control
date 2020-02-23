@@ -3,3 +3,4 @@ networkx
 pytest
 matplotlib
 cvxpy
+dccp
