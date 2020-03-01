@@ -403,3 +403,9 @@ TSWLatexianTemp*
 #my whitelisting
 !documentation/readmes/figures/*
 !documentation/report/figures/*
+!documentation/report/clean_report.pdf
+
+
+.DS_Store
+note.txt
+project_summary.txt

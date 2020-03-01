@@ -16,7 +16,7 @@ def test_dist_optimization():
     for_comp = copy.deepcopy(network)
     for_comp.update_beam_formers()
     # Choose number of iterations to allow
-    num_iterations = 50
+    num_iterations = 500
     utilities, duals = network.allocate_power_step(num_iterations)
     test_utilities, test_duals = for_comp.allocate_power_step(num_iterations)
 
