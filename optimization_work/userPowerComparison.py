@@ -11,22 +11,18 @@ first setup the network according using the het_net class then consolidate all o
 
 def test_power_compare():
 
-    # int_dual = 1e-1
-    pow_dual = 1e-1
-    int_dual = 1e-1
-    # int_dual = 10
-    # pow_dual = 1
-    pos_dual = 1e-9
-    num_users = 2
-    num_antenna = 4
-    step_size_pow = 1e-5
-    # step_size_int = 10
+    pow_dual = 1e-5
+    int_dual = pow_dual
+    pos_dual = 1e-6
+    num_users = 1
+    num_antenna = 1
+    step_size_pow = 1e-3
     step_size_int = step_size_pow
-    userPowerList = [10, 200]
+    userPowerList = [10]
     previousNumberUsers = userPowerList[0]
-    num_iterations = 1000
-    numMacroUsers = 10
-    numBaseStations = 10
+    num_iterations = 2000
+    numMacroUsers = 50
+    numBaseStations = 4
     interferenceThreshold = 1
     userPower = userPowerList[0]
     network = HetNet(numBaseStations, numMacroUsers, num_users, num_antenna, interferenceThreshold, int_dual, pow_dual, pos_dual,
@@ -54,7 +50,7 @@ def test_power_compare():
         utilities, duals, feasibility, constraints = currNetwork.allocate_power_step(num_iterations, step_size_pow, step_size_int)
         duals = np.asarray(duals)
         util_plt.plot(np.arange(num_iterations + 1), utilities, label=f"{powerLimit}")
-        extra_plt.plot(np.arange(num_iterations), constraints[0],'-',label=f"interference slack {powerLimit}")
+        extra_plt.plot(np.arange(num_iterations), constraints[0],'-', label=f"interference slack {powerLimit}")
         # extra_plt.plot(np.arange(num_iterations), constraints[1],'-', label=f"interference slack {powerLimit}")
         extra_plt1.plot(np.arange(num_iterations), constraints[2], label=f"power slack {powerLimit}")
         # extra_plt1.plot(np.arange(num_iterations), constraints[3], label=f"power slack {powerLimit}")

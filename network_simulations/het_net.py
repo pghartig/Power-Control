@@ -295,8 +295,8 @@ class FemtoBaseStation:
             self.beam_forming_matrix = cp.Variable((self.number_antennas, num_femto_users), complex=True)
         else:
             self.beam_forming_matrix = np.zeros((self.number_antennas, num_femto_users))
-            self.power_vector = np.ones((num_femto_users)) * (power_limit / (num_femto_users))
-            # self.power_vector = np.zeros((num_femto_users))*(power_limit/(num_femto_users))
+            # self.power_vector = np.ones((num_femto_users)) * (power_limit / (num_femto_users))
+            self.power_vector = np.zeros((num_femto_users))*(power_limit/(num_femto_users))
 
         self.sigma_square = 1e-3
         self.connect_users(num_femto_users, pos_dual)
