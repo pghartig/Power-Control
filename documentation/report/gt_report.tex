@@ -43,8 +43,24 @@ $\mathbf{I}$ denotes the identity matrix.
 It is useful to first review relevant game theoretic tools. Together, these tools provide a series of steps to follow in order to determine Nash Equilibrium via distributed solutions. 
 
 \begin{enumerate}
-\item Normalized Nash Equilibrium: A specific type of Nash Equilibrium for which 
-the Normalized Nash Equilibrium is introduced.
+\item The Potential Function: A central optimization problem equivalent to a game.
+\begin{itemize}
+\item
+\textbf{Definition:}  A function
+$ \Psi(b_{\text{f}})$ which satisfies:
+\begin{equation}\label{potential_game_condition}
+\frac{\partial \Psi(\mathbf{b})}{\partial b_{\text{f}}}
+ =
+ \frac{\partial U_f(b_{\text{f}})}{\partial b_{\text{f}}},
+ \;\textbf{b}=[b_{1}, b_2... b_{\text{F}}]
+\end{equation} 
+for a game with player utility functions $U_f(b_{\text{f}})$.
+In words, $ \Psi(\mathbf{b})$ is a function whose gradient with respect to the strategy $b_{\text{f}}$ of a player, is equal to the gradient of that player's utility function with respect to $b_{\text{f}}$.
+\item \textbf{Result 1:} Global optima of a potential function are Nash Equilibrium \cite{monderer1996potential}.
+
+\end{itemize}
+
+\item Normalized Nash Equilibrium: A Nash Equilibrium for which the dual variables corresponding to inequalities of all players are equal.
 Taking a weighted sum of the player utility functions $U_{\mathrm{f}}(b_{\text{f}})$.
 \begin{equation*}
 \sigma(\mathbf{b},\mathbf{r})  = \Sigma_{\mathrm{f=1}}^{\mathrm{F}} r_{\mathrm{f}}U_{\mathrm{f}}(b_{\text{f}}),\; \mathbf{r}=(r_{\text{1}}... r_{\text{F}})
@@ -82,25 +98,10 @@ r_F \nabla U_{\text{F}}(b_{\text{F}})
  The matrix valued function $G(b,r) $ is defined as the Jacobian of $g(b,r) $.
 
 Negative definiteness of the matrix $[G(b,r)+G^{T}(b,r)] $ is a sufficient condition for diagonally strict concavity of $\sigma(\mathbf{b},\mathbf{r})$ which is a sufficient condition for uniqueness of a NNE.
-
+\item \textbf{Result 1:} For a Concave N-Person games admitting a potential function, the potential function is concave, allowing for use of convex optimization tools to find a NE. 
 
 \end{itemize}
-\item The Potential Function: An equivalent but central optimization problem representing a game.
-\begin{itemize}
-\item
-\textbf{Definition:}  A function
-$ \Psi(b_{\text{f}})$ which satisfies:
-\begin{equation}\label{potential_game_condition}
-\frac{\partial \Psi(\mathbf{b})}{\partial b_{\text{f}}}
- =
- \frac{\partial U_f(b_{\text{f}})}{\partial b_{\text{f}}},
- \;\textbf{b}=[b_{1}, b_2... b_{\text{F}}]
-\end{equation} 
-for a game with player utility functions $U_f(b_{\text{f}})$.
-In words, $ \Psi(\mathbf{b})$ is a function whose gradient with respect to the strategy $b_{\text{f}}$ of a player, is equal to the gradient of that player's utility function with respect to $b_{\text{f}}$.
-\item \textbf{Result 1:} Global optima of a potential function are Nash Equilibrium \cite{monderer1996potential}.
-\item \textbf{Result 2:} For a Concave N-Person games admitting a potential function, the potential function is concave, allowing for use of convex optimization tools to find a NE. 
-\end{itemize}
+
 
 
 

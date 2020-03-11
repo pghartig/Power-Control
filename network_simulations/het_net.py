@@ -442,14 +442,16 @@ class FemtoBaseStation:
     def solve_local_opimization(self):
         for ind, element in enumerate(self.power_vector):
             c = 0
-            user_i_channel = self.users[ind].get_channel_for_base_station(self.ID)
+            beamformer = self.beam_forming_matrix[:, ind]
             for m_user in self.macro_users:
                 macro_user_channel = m_user.get_channel_for_base_station(self.ID)
-                c += m_user.get_dual_variable() * pow(np.linalg.norm(user_i_channel * macro_user_channel), 2)
+                c += m_user.get_dual_variable() * pow(np.linalg.norm(beamformer @ macro_user_channel.T), 2)
             c += self.power_dual_variable
+            user_i_channel = self.users[ind].get_channel_for_base_station(self.ID)
             # c -= self.positivity_dual_variable[ind]
             #   prohibit negative powers
-            updated_power = np.max((1 / c - self.sigma_square, 0))
+            updated_power = np.max((self.sigma_square / c -
+                                    self.sigma_square/pow(np.linalg.norm(user_i_channel@beamformer.T), 2), 0))
             if math.isnan(updated_power):
                 raise Exception("problem with inversion")
             self.power_vector[ind] = updated_power

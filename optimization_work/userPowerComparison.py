@@ -1,4 +1,4 @@
-from network_simulations import het_net
+from network_simulations.het_net import *
 import cvxpy as cp
 import matplotlib.pyplot as plt
 import numpy as np
@@ -17,8 +17,8 @@ def test_power_compare():
     # int_dual = 10
     # pow_dual = 1
     pos_dual = 1e-9
-    num_users = 1
-    num_antenna = 1
+    num_users = 2
+    num_antenna = 4
     step_size_pow = 1e-5
     # step_size_int = 10
     step_size_int = step_size_pow
@@ -29,7 +29,7 @@ def test_power_compare():
     numBaseStations = 10
     interferenceThreshold = 1
     userPower = userPowerList[0]
-    network = het_net.Het_Network(numBaseStations, numMacroUsers, num_users, num_antenna, interferenceThreshold, int_dual, pow_dual, pos_dual,
+    network = HetNet(numBaseStations, numMacroUsers, num_users, num_antenna, interferenceThreshold, int_dual, pow_dual, pos_dual,
                                    userPower,
                                   power_vector_setup=True,
                                   random=False)
