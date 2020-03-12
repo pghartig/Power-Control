@@ -103,6 +103,7 @@ class HetNet:
             [player.solve_local_opimization() for player in self.base_stations]
             #   Second step of dual ascent -> update dual variables based on values from first step
             self.__update_dual_variables(step_size_pow, step_size_int, i)
+
             social_utility_vector.append(self.get_social_utility())
             interferenceSlackMin.append(np.min(self.trackIntConstraints()))
             interferenceSlackMax.append(np.max(self.trackIntConstraints()))
@@ -132,6 +133,8 @@ class HetNet:
         Update all dual variables in the distributed optimization problem
         :return:
         """
+        step_size_pow /= (itr_idx+1)
+        step_size_int /= (itr_idx+1)
         # First update the dual variables of the macro users
         [player.update_dual_variables(step_size_pow) for player in self.base_stations]
         # Second update the dual variables for the other constraints (Note this order doesn't matter)
@@ -200,7 +203,7 @@ class HetNet:
         for mcu in self.macro_users:
             int_dual.append(mcu.dual_variable)
             interference.append(mcu.interference)
-        return np.average(pow_dual), np.average(pos_dual), np.max(int_dual), np.max(interference), np.average(sum_power)
+        return np.average(pow_dual), np.average(pos_dual), np.average(int_dual), np.max(interference), np.average(sum_power)
 
     def trackIntConstraints(self):
         interferenceSlack = []
@@ -298,7 +301,7 @@ class FemtoBaseStation:
             # self.power_vector = np.ones((num_femto_users)) * (power_limit / (num_femto_users))
             self.power_vector = np.zeros((num_femto_users))*(power_limit/(num_femto_users))
 
-        self.sigma_square = 1e-3
+        self.sigma_square = 1e-4
         self.connect_users(num_femto_users, pos_dual)
         self.power_constraint = power_limit
         self.utility_function = utility_function
@@ -450,9 +453,11 @@ class FemtoBaseStation:
             user_i_channel = self.users[ind].get_channel_for_base_station(self.ID)
             # c -= self.positivity_dual_variable[ind]
             #   prohibit negative powers
-            updated_power = np.max((self.sigma_square / c -
+            updated_power = np.max((self.sigma_square / (c+1e-9) -
                                     self.sigma_square/pow(np.linalg.norm(user_i_channel@beamformer.T), 2), 0))
-            if math.isnan(updated_power):
+            # updated_power = np.max((self.sigma_square / (c) -
+            #                         self.sigma_square/pow(np.linalg.norm(user_i_channel@beamformer.T), 2), 0))
+            if math.isnan(updated_power) or np.any(np.isinf(updated_power)):
                 raise Exception("problem with inversion")
             self.power_vector[ind] = updated_power
 
@@ -460,12 +465,12 @@ class FemtoBaseStation:
         # update scalar here
         self.power_dual_variable += step * (np.sum(self.power_vector) - self.power_constraint)
         self.power_dual_variable = np.max((0, self.power_dual_variable))
-        if math.isnan(self.power_dual_variable):
+        if math.isnan(self.power_dual_variable) or np.any(np.isinf(self.power_dual_variable)):
             raise Exception("problem with inversion")
         self.positivity_dual_variable += step * (-self.power_vector)
         self.positivity_dual_variable = np.max((np.zeros(self.positivity_dual_variable.size),
                                                 self.positivity_dual_variable), axis=0)
-        if np.any(np.isnan(self.positivity_dual_variable)):
+        if np.any(np.isnan(self.positivity_dual_variable)) or np.any(np.isinf(self.positivity_dual_variable)):
             raise Exception("problem with inversion")
 
     def get_user_locations(self):
@@ -545,7 +550,7 @@ class MacroUser(User):
                     raise Exception("problem with inversion")
         self.dual_variable += step * (total - self.interference_threshold)
         self.dual_variable = np.max((0, self.dual_variable))
-        if math.isnan(self.dual_variable):
+        if math.isnan(self.dual_variable)or np.any(np.isinf(self.dual_variable)):
             raise Exception("problem with inversion")
         self.interference = total
 
@@ -561,7 +566,7 @@ class FemtoUser(User):
     providing base-station. 
     """
 
-    def __init__(self, ID, network, parent, sigma_square=1e-3):
+    def __init__(self, ID, network, parent, sigma_square=1e-4):
         """
         For now assume that the femto users are only single antenna
         :param ID:

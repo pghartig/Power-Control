@@ -11,18 +11,18 @@ first setup the network according using the het_net class then consolidate all o
 
 def test_power_compare():
 
-    pow_dual = 1e-5
+    pow_dual = 1
     int_dual = pow_dual
-    pos_dual = 1e-6
+    pos_dual = pow_dual
     num_users = 1
     num_antenna = 1
-    step_size_pow = 1e-3
+    step_size_pow = 1e-2
     step_size_int = step_size_pow
-    userPowerList = [10]
+    userPowerList = [20]
     previousNumberUsers = userPowerList[0]
-    num_iterations = 2000
-    numMacroUsers = 50
-    numBaseStations = 4
+    num_iterations = 1000
+    numMacroUsers = 10
+    numBaseStations = 3
     interferenceThreshold = 1
     userPower = userPowerList[0]
     network = HetNet(numBaseStations, numMacroUsers, num_users, num_antenna, interferenceThreshold, int_dual, pow_dual, pos_dual,
@@ -50,10 +50,14 @@ def test_power_compare():
         utilities, duals, feasibility, constraints = currNetwork.allocate_power_step(num_iterations, step_size_pow, step_size_int)
         duals = np.asarray(duals)
         util_plt.plot(np.arange(num_iterations + 1), utilities, label=f"{powerLimit}")
-        extra_plt.plot(np.arange(num_iterations), constraints[0],'-', label=f"interference slack {powerLimit}")
+        extra_plt.plot(np.arange(num_iterations), constraints[2], label=f"power slack {powerLimit}")
+        extra_plt.plot(np.arange(num_iterations), constraints[0], '-', label=f"interference slack {powerLimit}")
+
+
+
         # extra_plt.plot(np.arange(num_iterations), constraints[1],'-', label=f"interference slack {powerLimit}")
-        extra_plt1.plot(np.arange(num_iterations), constraints[2], label=f"power slack {powerLimit}")
-        # extra_plt1.plot(np.arange(num_iterations), constraints[3], label=f"power slack {powerLimit}")
+        extra_plt1.plot(np.arange(num_iterations+1), duals[:, 0], '-', label=f"power slack {powerLimit}")
+        extra_plt1.plot(np.arange(num_iterations+1), duals[:, 2], label=f"int slack {powerLimit}")
 
         print(feasibility, "\n")
         check.append(np.asarray(utilities))
