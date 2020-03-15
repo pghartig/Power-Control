@@ -453,12 +453,20 @@ class FemtoBaseStation:
             user_i_channel = self.users[ind].get_channel_for_base_station(self.ID)
             # c -= self.positivity_dual_variable[ind]
             #   prohibit negative powers
-            updated_power = np.max((self.sigma_square / (c+1e-9) -
+            # regularizer = 1e-7
+            regularizer = 0
+            check = self.sigma_square/pow(np.linalg.norm(user_i_channel@beamformer.T), 2)
+            check1 = self.sigma_square / (c+regularizer)
+            updated_power = np.max((self.sigma_square / (c+regularizer) -
                                     self.sigma_square/pow(np.linalg.norm(user_i_channel@beamformer.T), 2), 0))
+            updated_power = np.min((updated_power, self.power_constraint/self.number_antennas))
             # updated_power = np.max((self.sigma_square / (c) -
             #                         self.sigma_square/pow(np.linalg.norm(user_i_channel@beamformer.T), 2), 0))
             if math.isnan(updated_power) or np.any(np.isinf(updated_power)):
                 raise Exception("problem with inversion")
+            if 0 == updated_power:
+                print("problem")
+                # raise Exception("0 power?")
             self.power_vector[ind] = updated_power
 
     def update_dual_variables(self, step):
