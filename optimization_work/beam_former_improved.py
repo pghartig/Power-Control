@@ -1,5 +1,4 @@
-from network_simulations import het_net
-import cvxpy as cp
+from network_simulations.het_net import *
 import matplotlib.pyplot as plt
 import numpy as np
 import copy
@@ -11,23 +10,20 @@ solve the central optimization problem
 """
 
 def test_beam_former():
-    noisePowers = 0
-    # int_dual = 1e-1
-    noisePowers = 0
-    numMacroUsers = 15
-    pow_dual = 1
-    int_dual = 10
-    pos_dual = 1e-5
+    pow_dual = 1e-5
+    int_dual = pow_dual
+    pos_dual = pow_dual
     num_users = 5
     num_antenna = 10
-    step_size_pow = 1e-4
-    step_size_int = 10
+    step_size_pow = 1e-3
+    step_size_int = step_size_pow
+    userPowerList = [100]
     num_iterations = 500
+    numMacroUsers = 10
     numBaseStations = 5
-    interferenceThreshold = .1
-    userPower = 300
-    network = het_net.Het_Network(numBaseStations, numMacroUsers, num_users, num_antenna, interferenceThreshold,
-                                  int_dual, pow_dual, pos_dual,
+    interferenceThreshold = 1e-4
+    userPower = userPowerList[0]
+    network = HetNet(numBaseStations, numMacroUsers, num_users, num_antenna, interferenceThreshold, int_dual, pow_dual, pos_dual,
                                    userPower,
                                   power_vector_setup=True,
                                   random=False)
@@ -46,16 +42,18 @@ def test_beam_former():
     extra_plt1.set_ylabel("Average Constraint Slack ")
     extra_plt1.set_xlabel("Iteration")
     check = []
-    beam_type = ["Moore-Penrose","Min Correlation","Min 2-Norm"]
+    beam_type = ["Moore-Penrose", "Min Correlation", "Nulling"]
+    noisePowers = 0
     for beam_former_choice in range(len(beam_type)):
         currNetwork = copy.deepcopy(network)
         # Choose the type of beamformers to use at BaseStations
         if beam_former_choice == 1:
             currNetwork.update_beam_formers(optimize=True, imperfectCsiNoisePower=noisePowers)
         if beam_former_choice == 2:
-            currNetwork.update_beam_formers(csi=True, imperfectCsiNoisePower=noisePowers)
-        if beam_former_choice == 3:
             currNetwork.update_beam_formers(optimize=True, channel_set=True, imperfectCsiNoisePower=noisePowers)
+        if beam_former_choice == 3:
+            currNetwork.update_beam_formers(csi=True, imperfectCsiNoisePower=noisePowers)
+
         utilities, duals, feasibility, constraints = currNetwork.allocate_power_step(num_iterations, step_size_pow,
                                                                                      step_size_int)
         duals = np.asarray(duals)
