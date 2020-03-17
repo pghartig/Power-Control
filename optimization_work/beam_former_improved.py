@@ -10,36 +10,35 @@ solve the central optimization problem
 """
 
 def test_beam_former():
-    pow_dual = 1e-5
+    pow_dual = 1e-3
     int_dual = pow_dual
     pos_dual = pow_dual
     num_users = 5
     num_antenna = 10
-    step_size_pow = 1e-3
+    step_size_pow = 1e-2
     step_size_int = step_size_pow
-    userPowerList = [100]
+    userPowerList = [1000]
     num_iterations = 500
     numMacroUsers = 10
     numBaseStations = 5
-    interferenceThreshold = 1e-4
+    interferenceThreshold = 1e-5
     userPower = userPowerList[0]
     network = HetNet(numBaseStations, numMacroUsers, num_users, num_antenna, interferenceThreshold, int_dual, pow_dual, pos_dual,
                                    userPower,
                                   power_vector_setup=True,
                                   random=False)
-    # figsize = (5, 5)
     fig_main = plt.figure()
     util_plt = fig_main.add_subplot(1, 3, 1)
-    util_plt.set_title("Power Convergence")
+    # util_plt.set_title("Power Convergence")
     util_plt.set_ylabel("Social Utility (System Capacity)")
     util_plt.set_xlabel("Iteration")
     extra_plt = fig_main.add_subplot(1, 3, 2)
-    extra_plt.set_title("Interference Constraint Slack")
-    extra_plt.set_ylabel("Average Constraint Slack ")
+    # extra_plt.set_title("Interference Constraint Slack")
+    extra_plt.set_ylabel("Min. Power Constraint Slack")
     extra_plt.set_xlabel("Iteration")
     extra_plt1 = fig_main.add_subplot(1, 3, 3)
-    extra_plt1.set_title("Power Constraint Slack")
-    extra_plt1.set_ylabel("Average Constraint Slack ")
+    # extra_plt1.set_title("Power Constraint Slack")
+    extra_plt1.set_ylabel("Min. Interference Constraint Slack")
     extra_plt1.set_xlabel("Iteration")
     check = []
     beam_type = ["Moore-Penrose", "Min Correlation", "Nulling"]
@@ -58,17 +57,16 @@ def test_beam_former():
                                                                                      step_size_int)
         duals = np.asarray(duals)
         util_plt.plot(np.arange(num_iterations + 1), utilities, label=f"{beam_type[beam_former_choice]}")
-        extra_plt.plot(np.arange(num_iterations), constraints[0], label=f"{beam_type[beam_former_choice]}")
-        extra_plt1.plot(np.arange(num_iterations), constraints[1], label=f"{beam_type[beam_former_choice]}")
-
-        # extra_plt.plot(np.arange(num_iterations), constraints[1], label=f"min power {powerLimit}")
+        extra_plt1.plot(np.arange(num_iterations), constraints[0], '-', label=f"interference slack")
+        extra_plt.plot(np.arange(num_iterations), constraints[2], label=f"power constraint slack")
 
         print(feasibility, "\n")
         check.append(np.asarray(utilities))
 
+    plt.tight_layout()
     util_plt.legend(loc="lower left")
     time_path = "Output/utility_"+f"{time.time()}"+"curves.png"
-    # plt.savefig(time_path, format="png")
+    plt.savefig(time_path, format="png")
     # network.print_layout()
     plt.show()
     pass

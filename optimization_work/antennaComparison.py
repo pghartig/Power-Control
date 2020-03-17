@@ -11,18 +11,18 @@ first setup the network according using the het_net class then consolidate all o
 
 def test_antenna_compare():
 
-    pow_dual = 1e-5
+    pow_dual = 1e-3
     int_dual = pow_dual
     pos_dual = pow_dual
     num_users = 5
-    step_size_pow = 1e-2
+    step_size_pow = 1e-1
     step_size_int = step_size_pow
-    numAntennaList = [10, 20]
+    numAntennaList = [7, 15, 30]
     num_iterations = 1000
     numMacroUsers = 10
     numBaseStations = 5
     interferenceThreshold = 1e-4
-    userPower = 50
+    userPower = 100
 
     # figsize = (5, 5)
     for num_antenna in numAntennaList:

@@ -680,36 +680,51 @@ FBS $f$ initializes power to user $i$ as $p_{\mathrm{fi}} = \frac{{P_{f}^{\text{
 
 \subsection{Simulation Results}
 Using the algorithm from \ref{algo1}, convergence to a Nash Equilibrium is observed over different system scenarios. 
+In the following simulations, the value of the potential function (social utility) is plotted over iterations of the algorithm in Section \ref{algo1}. In addition, we track the minimum slack for both the power and interference constraints in each iteration. By ensuring that there is no slack in the interference constraint, we can verify that player strategies are coupled, and therefore there is a game being played. 
 \subsubsection{Simulation Results for Concave Setup}
 
-\begin{figure}[H]
+In the first scenario considered, each FBS has a single transmission antenna and a single FBS as depicted by Figure \ref{system_figure_single}. Figures \ref{single_power1} and \ref{single_power2} show the convergence to a Normalized Nash equilibrium for the case in which FBSs have power constraints of 100 ad 150, respectively. In both figures, macro cell users have an interference tolerance of 0.1. This case illustrates that when the interference constraints are the limit on the system, adding additional power to the FBS will not impact the final equilibrium (or the resulting social utility). 
+
+\begin{figure}[H]\label{system_figure_single}
 	\includegraphics[width=\textwidth,height = 10cm]{figures/system_figure_single}
 	  \caption{Simluation Environment: Single Antenna and User.}
 \end{figure}
 
-\begin{figure}[H]
-	\includegraphics[width= 15cm,height = 10cm]{figures/single_power}
-	  \caption{Single Antenna Game Simulation with different base station power constraints}
+\begin{figure}[H]\label{single_power1}
+	\includegraphics[width= 15cm,height = 10cm]{figures/single_power1}
+	  \caption{Single Antenna Game Simulation with total FBS power of 100}
+\end{figure}
+\begin{figure}[H]\label{single_power2}
+	\includegraphics[width= 15cm,height = 10cm]{figures/single_power2}
+	  \caption{Single Antenna Game Simulation with total FBS power of 150}
 \end{figure}
 
-\begin{figure}[H]
-	\includegraphics[width= 15cm,height = 10cm]{figures/single_macro}
-	  \caption{Single Antenna Game Simulation with different numbers of macrocell users}
+We now consider the case in which FBSs have $T_f > K_f$ such that additional degrees of freedom are available for the choice of beamforming matrix $\mathbf{U}_f$. The simulation for the convergence shown in Figures \ref{multiple_antenna1}, \ref{multiple_antenna2} and \ref{multiple_antenna3} compares the cases in which FBSs always have 5 FBS users but have 10 and 20 antennas respectively. The power constraint on each FBS is chosen as 100 such that the interference tolerance of the macro cell users, 0.1, is the limiting constraint and thus coupling the strategies of the FBSs. Here we first consider the case in which $\mathbf{U}_f$ is chosen to satisfy the zero-forcing constraint (\ref{zf_const_gen}). It is seen from Figures \ref{multiple_antenna1}, \ref{multiple_antenna2} and \ref{multiple_antenna3} that when interference is the limiting constraint, adding additional antennas to the FBS can increase social utility.
+
+\begin{figure}[H]\label{multiple_antenna1}
+	\includegraphics[width= 15cm,height = 10cm]{figures/multiple_antenna1}
+	  \caption{Multiple antenna simulation for FBSs with 7 antennas and 5 users.}
 \end{figure}
 
-\begin{figure}[H]
-	\includegraphics[width=\textwidth,height = 10cm]{figures/system_figure_multiple}
-	  \caption{Simluation Setup Multiple Antenna and User.
+\begin{figure}[H]\label{multiple_antenna2}
+	\includegraphics[width=\textwidth,height = 10cm]{figures/multiple_antenna2}
+	  \caption{Multiple antenna simulation for FBSs with 15 antennas and 5 users.
+	  }
+\end{figure}
+
+\begin{figure}[H]\label{multiple_antenna3}
+	\includegraphics[width=\textwidth,height = 10cm]{figures/multiple_antenna3}
+	  \caption{Multiple antenna simulation for FBSs with 30 antennas and 5 users.
 	  }
 \end{figure}
 
 
-\begin{figure}[H]
-	  	\includegraphics[width=\textwidth,height = 7cm]{figures/increasing_antenna}
-	  		  \caption{Convergence for different numbers of antennas at FBSs. Number of femto cell users and macrocell users constant. Each BS has 10 users.}
-	  \label{fig:}
-\end{figure}
+Using the same simulation parameters used to generate Figures \ref{multiple_antenna1}, \ref{multiple_antenna2} and \ref{multiple_antenna3}, we also compare strategies for choosing the beamforming matrix $\mathbf{U}_f$ when the number of antennas and all other network parameters are held constant. While the results in Figure \ref{beamformer_comparison} confirm that this choice does have an impact, because none of this optimizes to direct power towards it's own users, these methods are not power efficient. 
 
+\begin{figure}[H]\label{beamformer_comparison}
+	\includegraphics[width= 15cm,height = 10cm]{figures/beamformer_comparison}
+	  \caption{A comparison between choices for beamformer $\mathbf{U}_f$ for the same network.}
+\end{figure}
 
 
 \chapter{Conclusion}
