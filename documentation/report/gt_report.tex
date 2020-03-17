@@ -33,16 +33,16 @@ This work focuses on achieving Nash Equilibrium (NE) using distributed solutions
 
 \section{Notation}
 The following notation is used throughout the remainder. 
-$E[x]$ is the expected value of a random variable $x$.
+$E\{x\}$ is the expected value of a random variable $x$.
 Vectors are denoted by bold font, lower-case letters ($\mathbf{x}$) and are assumed to be column vectors.
-Matrices are denoted by bold font, upper-case letters ($\mathbf{X}$). The transpose and Hermetian of $\mathbf{X}$ are denoted by $\mathbf{X}^T$ and $\mathbf{X}^H$ respectively.
+Matrices are denoted by bold font, upper-case letters ($\mathbf{X}$). The transpose and hermetian of $\mathbf{X}$ are denoted by $\mathbf{X}^T$ and $\mathbf{X}^H$ respectively.
 $\mathbf{I}$ denotes the identity matrix.
 
 
 \section{Relevant Tools/Theory}\label{tools}
 It is useful to first review relevant game theoretic tools. Together, these tools provide a series of steps to follow in order to determine Nash Equilibrium via distributed solutions. 
 \par
-We consider a game in which $F$ players each choose a strategy $\mathbf{b}_{f}$ from a set of possible strategies $\mathcal{B}_f$. The vector $\mathbf{b}=[\mathbf{b}_{1}^T, \mathbf{b}_2^T... \mathbf{b}_{f}^T]^T \in \mathcal{B}$ represents the strategies of all players. Each player has a utility function $U_f(\mathbf{b})$ which it attempts to maximize through the choice of $\mathbf{b}_{f}$. The set $\mathcal{B}_f$ may be dependent on the strategies of other players $\mathbf{b}_{j}, j \neq f $.
+We consider a game in which $F$ players each choose a strategy $\mathbf{b}_{f}$ from a set of possible strategies $\mathcal{B}_f$. The vector $\mathbf{b}=[\mathbf{b}_{1}^T, \mathbf{b}_2^T... \mathbf{b}_{f}^T]^T \in \mathcal{B}$ represents the strategies of all players. Each player has a utility function $U_f(\mathbf{b})$ which it attempts to maximize through the choice of $\mathbf{b}_{f}$. The set of strategies available to a player, $\mathbf{b}_{f} \in\mathcal{B}_f$, may be dependent on the strategies of other players $\mathbf{b}_{j}, j \neq f $.
 
 \begin{enumerate}
 \item The potential function: a central optimization problem used to identify Nash equilibrium of a game.
@@ -53,50 +53,43 @@ $ \Psi(\mathbf{b})$ which satisfies:
 \begin{equation}\label{potential_game_condition}
 \frac{\partial \Psi(\mathbf{b})}{\partial \mathbf{b}_{f}}
  =
- \frac{\partial U_f(\mathbf{b}_{f})}{\partial \mathbf{b}_{f}}.
+ \frac{\partial U_f(\mathbf{b})}{\partial \mathbf{b}_{f}}.
 \end{equation} 
 
 In words, $ \Psi(\mathbf{b})$ is a function whose gradient with respect to the strategy $\mathbf{b}_{f}$ of a player, is equal to the gradient of that player's utility function with respect to $\mathbf{b}_{f}$.
 
-\item \textbf{Result:} Global optima of a potential function are Nash Equilibrium \cite{monderer1996potential}.
-\item \textbf{Note:} Not all game admit a potential function.
+\item \textbf{Result:} Global optima of a potential function are Nash Equilibria \cite{monderer1996potential}.
+\item \textbf{Note:} Not all games admit a potential function.
 
 
 \end{itemize}
 
-\item Normalized Nash equilibrium:  if we consider the case in which the set of possible strategies $\mathbf{b}_{f} \in \mathcal{B}_f$ for player $f$ is restricted by an inequality constraint which couples the strategies of all players, e.g $\|\textbf{b}\|_2^2 \leq A$, a normalized Nash equilibrium is a Nash equilibrium for which the dual variables corresponding to inequalities of all players are equal up to a constant.
-\begin{itemize}
-\item TODO decide if more is needed here. 
-\end{itemize}
+\item Normalized Nash equilibrium: if we consider the case in which the set $\mathcal{B}$ is convex and $U_f(\mathbf{b})$ is concave, non-decreasing and has continuous first derivative in $\mathbf{b}_{f}$, the resulting optimal strategy for each player (and thus any Nash equilibrium) will satisfy the necessary and sufficient KKT conditions. A normalized Nash equilibrium (NNE) is a Nash equilibrium for which the dual variables of all players are equal up to a constant. 
 Intuitively, this can be thought of as a Nash equilibrium at each players is "charged" an equal amount (up to a constant) for any change in strategy.
 
-\item The Concave N-Person game: A framework for proving existence and uniqueness of Normalized Nash Equilibrium (NNE).
+\item The Concave N-Person game: A framework for proving existence and uniqueness of normalized Nash equilibrium.
 
 \begin{itemize}
 \item
-\textbf{Definition:} A game in which all $U_f(\mathbf{b})$ are concave with respect to $\mathbf{b}$ and the set of possible $\textbf{b}\in\mathcal{B}$ is convex. 
+\textbf{Definition:} A game in which all $U_f(\mathbf{b})$ are concave with respect to $\mathbf{b}_f$ and the set of possible $\textbf{b}\in\mathcal{B}$ is convex. 
 \item 
 \textbf{Existence of Nash Equilibrium:} Pure Strategy NEs exist for Concave N-Person games \cite[Thm1]{rosen1964existence}. 
 \item
 \textbf{Uniqueness of Nash Equilibrium:} In general, multiple NNEs may exist for a game. However, sufficient conditions for uniqueness are shown in \cite[Thm4]{rosen1964existence} and introduced in the following. 
-
-With the function  $
-\sigma(\mathbf{b},\mathbf{r})$
-used to define Normalized Nash Equilibrium, we take the gradient with respect to the utility function coeffients ... 
+Taking the gradient of each $U_f(\mathbf{b})$ with respect to the chosen strategy $\textbf{b}_f$ we first form the vector
 \begin{equation}
 g(b,r)= 
 \begin{bmatrix}
-r_1 \nabla U_{1}(b_1)
+\nabla U_{1}(\mathbf{b})
 \\
-r_2 \nabla U_{2}(b_2)
+\nabla U_{2}(\mathbf{b})
 \\
 \vdots\\
-r_F \nabla U_{f}(b_{f})
+\nabla U_{F}(\mathbf{b})
 \end{bmatrix}.
 \end{equation}
- The matrix valued function $G(b,r) $ is defined as the Jacobian of $g(b,r) $.
-
-Negative definiteness of the matrix $[G(b,r)+G^{T}(b,r)] $ is a sufficient condition for diagonally strict concavity of $\sigma(\mathbf{b},\mathbf{r})$ which is a sufficient condition for uniqueness of a NNE.
+We define the Jacobian of $g(b,r) $ as the matrix valued function $G(b,r) $.
+Negative definiteness of the matrix $[G(b,r)+G^{T}(b,r)] $ is a sufficient condition for uniqueness of a NNE.
 \item \textbf{Result 1:} For a Concave N-Person games admitting a potential function, the potential function is concave, allowing for use of convex optimization tools to find a NE. 
 
 \end{itemize}
@@ -149,26 +142,26 @@ The above tools are used in the steps outlined below.
 Each player of the game, a femtocell base station (FBS) $f \in \{1 ... F\}$ , is characterized by the following.
 \begin{itemize}
 \item 
-$T_{f}$ antennas to transmit to $K_{f}$ femtocell users (we assumed that $T_{f} \geq K_{f}$). Each femtocell user $i = [1... \;K_{f}]$ has a signal to interference plus noise ratio (SINR) $\gamma_{\mathrm{f,i}}$ and $\mathbf{\gamma}_{f} = [\gamma_{\mathrm{f,1}}...\; \gamma_{\mathrm{f,K_{f}}}]$
+$T_{f}$ antennas to transmit to $K_{f}$ femtocell users (we assumed that $T_{f} \geq K_{f}$). Each femtocell user $i = [1... \;K_{f}]$ has a signal to interference plus noise ratio (SINR) $\gamma_{f,i}$. The vector of user SINR for FBS $f$ is $\boldsymbol{\gamma}_{f} = [\gamma_{f,1}...\; \gamma_{,K_{f}}]$
 \\
 \item 
 	A beamforming matrix $\mathbf{U}_{f} \in \mathbb{C}_{T_{f} \times K_{f}}$ such that the transmitted 		
 	signal is $\mathbf{s}_{f
-	}= \mathbf{U_{f}}\mathbf{x_{f}}$. The 		
-	vector of symbols for users of FBS $f$, $\mathbf{x_{f}}$, is  normalized such that $E[\|x_{\mathrm{f,i}}
-	\|_2^2]=1$ and $E[\mathbf{x}_{f}\mathbf{x}_{f}^H]=\mathbf{I}_{K_{f} \times K_{f}}$.
+	}= \mathbf{U}_{f}\mathbf{x}_{f}$. The 		
+	vector of symbols for users of FBS $f$, $\mathbf{x}_{f}$, is  normalized such that $E\{\|x_{f,i}
+	\|_2^2\}=1$ and $E\{\mathbf{x}_{f}\mathbf{x}_{f}^H\}=\mathbf{I}_{K_{f} \times K_{f}}$.
 \\
 \item 
-	An average power constraint $trace(\mathbf{U}_{f}^H\mathbf{U}_{f}) \leq P^{Total}_{f} $.
+	An average power constraint $E\{trace(\mathbf{U}_{f}^H\mathbf{U}_{f})\} \leq P^{Total}_{f} $.
 
 \item 
-	A cost function $U_{f}(\mathbf{\gamma}_{f}) =
-	\sum_{\mathrm{i=1}}^{\mathrm{K_{f}}}
-    	 U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $
-    	in which $U_{\mathrm{f,i}}(\cdot)$ is a non-decreasing function describing the utility obtained by each user of FBS f.
+	A cost function $U_{f}(\boldsymbol{\gamma}_{f}) =
+	\sum_{i=1}^{K_{f}}
+    	 U_{f,i}(\gamma_{f,i}) $
+    	in which $U_{f,i}(\cdot)$ is a non-decreasing function describing the utility obtained by each user, $i$, of FBS $f$.
 
 \item 
-	Perfect knowledge of the downlink channel matrix $\mathbf{H_f} \in \mathbb{C}_{K_{f} \times T_{f}} $ to the $K_{f}$ FBS users.
+	Perfect knowledge of the downlink channel matrix $\mathbf{H}_f \in \mathbb{C}_{K_{f} \times T_{f}} $.
 % TODO(Simulate degradation with incomplete CSI solution?)
 \\
 \item
@@ -181,9 +174,9 @@ Macrocell users $m \in \{1 ... M\}$ introduce constraints into the game. These u
 \begin{itemize}
 \item 
 	Received interference constraint
-	$\sum^F_{f=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{U_{f}} 						
-	\mathbf{U_{f}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} \leq I^{Threshold}		
-	_{\mathrm{m}} $. In which $\mathbf{\tilde{h}}_{\mathrm{m,f}}$ is the channel from FBS $f$ to macro user $\text{m}$
+	$E\{\sum^F_{f=1} \mathbf{\tilde{h}}_{m,f}^T  \mathbf{U}_{f}					
+	\mathbf{U}_{f}^{H} \mathbf{\tilde{h}}_{m,f}^*\} \leq I^{Threshold}		
+	_{m} $. In which $\mathbf{\tilde{h}}_{m,f}$ is the channel from FBS $f$ to macro user $m$.
 
 \item 
 	FBS $f$ is assumed to know the downlink channel matrix $\tilde{\mathbf{H}_{f}} \in \mathbb{C}_{M \times T_{f}}$ to all $M$ macrocell users.
@@ -195,16 +188,16 @@ Macrocell users $m \in \{1 ... M\}$ introduce constraints into the game. These u
 
 \item User $i$ of FBS $f$ has signal to interference plus noise ratio (SINR)
 	\begin{equation*}
-	\gamma_{\mathrm{f,i}} = \frac{\|\mathbf{h}^H_{\mathrm{f,i}}\mathbf{u}_{\mathrm{f,i}}\|^2}
+	\gamma_{f,i} = \frac{\|\mathbf{h}^H_{f,i}\mathbf{u}_{f,i}\|^2}
 	{\sigma^2_{\text{noise}}   +
 	\underbrace{
-	 \sum_{\mathrm{\tilde{f}}=1,\mathrm{\tilde{f}}\neq f}^{f} \sum_{\mathrm{u=1}}^{K_{\mathrm{\tilde{f}}}}
-	\|\mathbf{h}^H_{\mathrm{\tilde{f},u}}\mathbf{u}_{\mathrm{\tilde{f},i}}\|^2}_{\mathrm{inter-cell}}
+	 \sum_{\tilde{f}=1, \tilde{f}\neq f}^{f} \sum_{u=1}^{K_{\tilde{f}}}
+	\|\mathbf{h}^H_{\tilde{f},u}\mathbf{u}_{\tilde{f},i}\|^2}_{\mathrm{inter-cell}}
 	 + 
 	 \underbrace{
-	 \sum_{\mathrm{\tilde{k}\neq i}}^{\mathrm{K_f}}
-	 \|\mathbf{h}^H_{\mathrm{f,\tilde{k}}}\mathbf{u}_{\mathrm{f,\tilde{k}}}\|^2}_{\mathrm{intra-cell}}},
-	  \; \mathrm{i \in \{1 ... K_f\}}
+	 \sum_{\tilde{k}=1, \tilde{k}\neq i}^{K_f}
+	 \|\mathbf{h}^H_{f,\tilde{k}}\mathbf{u}_{f,\tilde{k}}\|^2}_{\mathrm{intra-cell}}},
+	  \; i \in \{1 ... K_f\}
 	  \end{equation*}
 \\
 with noise power $\sigma^2_{\text{noise}}.$
@@ -212,16 +205,15 @@ with noise power $\sigma^2_{\text{noise}}.$
 
 By the FBS spacing assumption above, this reduces to
 	\begin{equation*}
-	\gamma_{\mathrm{f,i}} = \frac{\|\mathbf{h}^H_{\mathrm{f,i}}\mathbf{u}_{\mathrm{f,i}}\|^2}
+	\gamma_{f,i} = \frac{\|\mathbf{h}^H_{f,i}\mathbf{u}_{f,i}\|^2}
 	{\sigma^2_{\text{noise}} 
-	 + \sum_{\mathrm{\tilde{k}\neq i}}^{\mathrm{K_f}}
-	  \|\mathbf{h^H_{\mathrm{f,\tilde{k}}}u_{\mathrm{f,\tilde{k}}}}\|^2},
-	  \; \mathrm{i \in \{1 ... K_f\}}
+	 + \sum_{\tilde{k}=1, \tilde{k}\neq i}^{K_f}
+	  \|\mathbf{h^H_{f,\tilde{k}}u_{f,\tilde{k}}}\|^2},
+	  \; i \in \{1 ... K_f\}
 	\end{equation*}
 \\
 \item 
-A user utility function $U_{\mathrm{f,i}}(\cdot)$ used in the utility function of FBS f, $U_{f}(\cdot)$. 
-
+A user utility function $U_{f,i}(\cdot)$. 
 \end{itemize}
 
 
@@ -237,31 +229,31 @@ Each FBS $f$ attempts to maximize utility function $U_{f}()$ while satisfying th
 	\label{optim}
 	\begin{align}
 	    \underset{\mathbf{U}_{f} }{\text{minimize: }} \;
-	    & - \sum_{\mathrm{i=1}}^{\mathrm{K_f}}
-    	U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) \label{player_opt} \\
+	    & - \sum_{i=1}^{K_f}
+    	U_{f,i}(\gamma_{f,i}) \label{player_opt} \\
 	    \text{subject to: } \; &
-	   \sum^F_{f=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^H  \mathbf{U}_{f}^*		
-	\mathbf{U_{f}^{\mathrm{T}}} \mathbf{\tilde{h}_{\mathrm{m,f}}} \leq I^{Threshold}		
-	_{\mathrm{m}} & m \in \{1 ...M\} 
+	   \sum^F_{f=1} \mathbf{\tilde{h}}_{m,f}^H  \mathbf{U}_{f}^*		
+	\mathbf{U}_{f}^{T} \mathbf{\tilde{h}}_{m,f} \leq I^{Threshold}		
+	_{m} & m \in \{1 ...M\} 
 		\label{interference_const_gen}\\
         & trace(\mathbf{U}_{f}^H\mathbf{U}_{f}) \leq P^{Total}_{f} \label{power_const_gen}\\
-        & \mathbf{h}_{\text{f,j}}^H\mathbf{u}_{\text{f,i}} =0\ & \; \forall \; \text{j} \in \{1... K_{f}\}\backslash \text{i} ,\; \forall \; \text{i} \in \{1 ... K_{f}\} \label{zf_const_gen}
+        & \mathbf{h}_{f,i}^H\mathbf{u}_{f,i} =0\ & \; \forall \; j \in \{1... K_{f}\}\backslash i,\; \forall \; i\in \{1 ... K_{f}\} \label{zf_const_gen}
 	\end{align}
 	\end{subequations}
 
 
 Constraint \eqref{zf_const_gen} imply that $\mathbf{U}_{f}$ is chosen such that  
 	\begin{equation}\label{zf_snr}
-	\gamma_{\mathrm{f,i}} = \frac{\|\mathbf{h}^H_{\mathrm{f,i}}u_{\mathrm{f,i}}\|^2}
+	\gamma_{f,i} = \frac{\|\mathbf{h}^H_{f,i}\mathbf{u}_{f,i}\|^2}
 	{\sigma^2_{noise}  
 	}
 	= 
-	\frac{\mathbf{u^H_{\mathrm{f,i}}h_{\mathrm{f,i}}h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}}
+	\frac{\mathbf{u}^H_{f,i}\mathbf{h}_{f,i}\mathbf{h}^H_{f,i}\mathbf{u}_{f,i}}
 	{\sigma^2_{noise}  
 	},
 	\end{equation}
-	which is a convex function with respect to $u_{\mathrm{f,i}}$.
-%	As a result, $U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $ is concave with respect to $\gamma_{\mathrm{f,i}}$.
+	which is a convex function with respect to $\mathbf{u}_{f,i}$.
+%	As a result, $U_{f,i}(\gamma_{f,i}) $ is concave with respect to $\gamma_{f,i}$.
 	
 \subsection{Concave N-Person game analysis of general setup}
 In this section, the convexity of the resulting problem is analyzed to investigate if the system satisfies the conditions of the Concave N-Person game described \ref{tools}. 
@@ -278,31 +270,31 @@ First, we check that constraints \eqref{interference_const_gen}-\eqref{zf_const_
 
 \begin{gather*}
 	\sum_{f=1}^{f}
-	trace(\mathbf{U}_{f}^H \mathbf{\tilde{h}}_{\text{m,f}} \mathbf{\tilde{h}}_{\text{m,f}}^H \mathbf{U_f} )\leq 
+	trace(\mathbf{U}_{f}^H \mathbf{\tilde{h}}_{m,f} \mathbf{\tilde{h}}_{m,f}^H \mathbf{U}_f )\leq 
 	I^{Threshold}_{m}.
 \end{gather*}
 This can be further decomposed into a sum of independent, quadratic form terms
 	\begin{gather*}
 	\sum_{f=1}^{f}
 	\sum_{i=1}^{f_i}
-	\mathbf{u}_{\mathrm{f,i}}^H\mathbf{\tilde{h}}_{\mathrm{m,f}} \mathbf{\tilde{h}}_{\mathrm{m,f}}^H
-	\mathbf{u}_{\mathrm{f,i}} \leq I^{Threshold}_{m}
+	\mathbf{u}_{f,i}^H\mathbf{\tilde{h}}_{m,f} \mathbf{\tilde{h}}_{m,f}^H
+	\mathbf{u}_{f,i} \leq I^{Threshold}_{m}
 	\end{gather*}
-in which each matrix $\mathbf{\tilde{h}_{\mathrm{m,f}}} \mathbf{\tilde{h}}_{\mathrm{m,f}}^H$ is positive semi-definite \cite[p.~8,9]{BoV:04}. The union of independent convex sets forms a convex set \cite{BoV:04}, therefore this constraint is convex. 
+in which each matrix $\mathbf{\tilde{h}}_{m,f} \mathbf{\tilde{h}}_{m,f}^H$ is positive semi-definite \cite[p.~8,9]{BoV:04}. The union of independent convex sets forms a convex set \cite{BoV:04}, therefore this constraint is convex. 
 %This is essentially high dimensional ellipsoid.
 
 \item \
 	Constraint \eqref{power_const_gen} can be similarly decomposed into the sum
 	\begin{gather*}
-		\sum_{i=1}^{K_{f}}\mathbf{u_{\mathrm{f,i}}^{\mathrm{H}}} \mathbf{I} 		
-		\mathbf{u_{\mathrm{f,i}}} \leq  P^{Total}_{f}
+		\sum_{i=1}^{K_{f}}\mathbf{u}_{f,i}^{H} \mathbf{I} 		
+		\mathbf{u}_{f,i} \leq  P^{Total}_{f}
 	\end{gather*}
 	in which $\mathbf{I}$ is positive definite, creating a strictly convex set.
 
 \item 
 	Constaint \eqref{zf_const_gen} is an affine constraint. 
 		\begin{gather*}
-		\mathbf{h}_{\mathrm{f,j}}^T \mathbf{u}_{\mathrm{f,i}} =0
+		\mathbf{h}_{f,j}^T \mathbf{u}_{f,i} =0
 		\end{gather*}
 %Note that affine constaints to not have to satisfy Slater's condition
 \end{itemize}
@@ -313,15 +305,15 @@ in which each matrix $\mathbf{\tilde{h}_{\mathrm{m,f}}} \mathbf{\tilde{h}}_{\mat
 \item 
 Let us consider the SINR at femto-user i of FBS f given by
 	\begin{equation*}\label{zf_snr}
-	\gamma_{\mathrm{f,i}} = 
-	\frac{\mathbf{u^H_{\mathrm{f,i}}h_{\mathrm{f,i}}h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}}
+	\gamma_{f,i} = 
+	\frac{\mathbf{u}^H_{f,i}\mathbf{h}_{f,i}\mathbf{h}^H_{f,i}\mathbf{u}_{f,i}}
 	{\sigma^2_{noise}  
 	}.
 	\end{equation*}
 	Since
-	 $\mathbf{h}_{\mathrm{f,i}}\mathbf{h}^H_{\mathrm{f,i}}$ is positive semi-definite, $\gamma_{\mathrm{f,i}}$ is convex in ${\mathbf{u}_{\mathrm{f,i}}}$. 
-	 The resulting composition $U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $ is concave only if $U_{\mathrm{f,i}}(\cdot) $ is concave and non-increasing; violating the non-decreasing definition of $U_{\mathrm{f,i}}() $.
-If $U_{\mathrm{f,i}}(\cdot) $ is a general, non-decreasing function, the result is quasiconvex \cite[p.~102]{BoV:04}. If $U_{\mathrm{f,i}}(\cdot) $ is  non-decreasing and convex, the resulting
+	 $\mathbf{h}_{f,i}\mathbf{h}^H_{f,i}$ is positive semi-definite, $\gamma_{f,i}$ is convex in ${\mathbf{u}_{f,i}}$. 
+	 The resulting composition $U_{f,i}(\gamma_{f,i}) $ is concave only if $U_{f,i}(\cdot) $ is concave and non-increasing; violating the non-decreasing definition of $U_{f,i}(\cdot) $.
+If $U_{f,i}(\cdot) $ is a general, non-decreasing function, the result is quasiconvex \cite[p.~102]{BoV:04}. If $U_{f,i}(\cdot) $ is  non-decreasing and convex, the resulting
    function is convex which can be solved using concave programming to find a \emph{maximum}.
 \end{itemize}
 
@@ -332,7 +324,7 @@ Under the current system model, the game is not a concave N-person game. Neverth
 
 \section{Concave System Model}\label{conmodel}
 
-The general setup of the game proposed in the previous section does not enable the use of the n-person concave game framework to find Normalized Nash Equilibrium. We propose a more restrictive model characterized by a unique Normalized Nash Equilibrium. This NNE can be be found via a single convex optimization problem which may be solved in a distributed manner across FBSs and macro-users in the network.
+The general setup of the game proposed in the previous section does not enable the use of the n-person concave game framework to find normalized Nash equilibrium. We propose a more restrictive model characterized by a unique NNE. This NNE can be be found via a single convex optimization problem which may be solved in a distributed manner across FBSs and macro-users in the network.
 \par
 Rather than jointly optimizing the power allocation and the zero-forcing beamformers, we now pre-select normalized, zero-forcing beamformers independently, \emph{before} the allocation of powers.
 As we will see later, one result of this restriction is that the degrees of freedom available at the FBS cannot be exploited completely by power allocation. 
@@ -344,31 +336,31 @@ Femtocell Base Stations are adapted from the general setup to the restricted set
 	FBSs with multiple antennas ($T_f \geq 1$) can beamform their transmission using the precoding 	
 	matrix $\mathbf{U}_{f} \in \mathbb{C}_{T_{f} \times K_{f}}$ .
 	The columns of $\mathbf{U}_{f}$ are now \emph{normalized} such that 
-	 $\|\mathbf{u}_{\mathrm{fi}}\|^2 =1 \;\forall i \in \{1 ... K_{f}\}$.
+	 $\|\mathbf{u}_{f,i}\|^2 =1 \;\forall i \in \{1 ... K_{f}\}$.
 \\
 
 \item 
-$\mathbf{U}_f$ is selected as a pseudo-inverse to $\mathbf{H_f}$.
+$\mathbf{U}_f$ is selected as a pseudo-inverse to $\mathbf{H}_f$.
 Such that
 \begin{gather*}
-\mathbf{H}_{f}  \mathbf{U_{f}} = \mathbf{I}.
+\mathbf{H}_{f}  \mathbf{U}_{f} = \mathbf{I}.
 \end{gather*} 
 
 
 \item  
 	FBS $f$ allocates the transmit powers using the diagonal, power allocation  	
-	matrix $\mathrm{diag}(\mathbf{p}_{f})$ with $p_{\mathrm{f,i}} \geq 0, \forall i \in \{1 ... K_{f}\}$
+	matrix $\mathrm{diag}(\mathbf{p}_{f})$ with $p_{f,i} \geq 0, \forall i \in \{1 ... K_{f}\}$
 such that the transmitted 		
 	signal is 
-	$\mathbf{s}_{f	}= \mathbf{U_{f}} 
+	$\mathbf{s}_{f	}= \mathbf{U}_{f} 
 	\mathrm{diag}(\mathbf{p}_{f})^{\frac{1}{2}}
-	\mathbf{x_{f}}$. We define the variable $\mathbf{p}= [\mathbf{p}_1, \mathbf{p}_2...\mathbf{p}_{f}]$ containing the power allocation of all FBSs.
+	\mathbf{x}_{f}$. We define the vector variable $\mathbf{p}^T= [\mathbf{p}_1^T, \mathbf{p}_2^T...\mathbf{p}_{f}^T]$ containing the transmit power vectors of all FBSs.
 \\
 \item 
 	FBS $f$ enforces the power constraint given by
 	\begin{gather*}
 	trace(E[\mathbf{s}_f\mathbf{s}_f^H]) =
-	\sum_{\mathrm{i=1}}^{\mathrm{K_{f}}} p_{\mathrm{fi}}
+	\sum_{i=1}^{K_{f}} p_{f,i}
 	  \leq P^{Total}_{f}.
 	  	\end{gather*}
 
@@ -377,17 +369,15 @@ such that the transmitted
 
 
 \item 
-	Utility function of FBS f is given by $U_{f}() =
-	\sum_{\mathrm{i=1}}^{\mathrm{K_{f}}}
-    	U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) $
-    	where all $U_{\mathrm{f,i}}(\cdot)$ are non-decreasing and
+	Utility function of FBS f is given by $U_{f}(\boldsymbol{\gamma}_f) =
+	\sum_{i=1}^{K_{f}}
+    	U_{f,i}(\gamma_{f,i}) $
+    	where all $U_{f,i}(\cdot)$ are non-decreasing and
     	\emph{strictly} concave.
-\item The SINR of the femto-user i in FBS f is given by
+\item The SINR of the femto-user $i$ in FBS $f$ is given by
 \begin{equation}\label{zf_snr}
-	\gamma_{\mathrm{f,i}} = 	\frac{\mathbf{u^H_{\mathrm{f,i}}h_{\mathrm{f,i}}h^H_{\mathrm{f,i}}u_{\mathrm{f,i}}}}
-	{\sigma^2_{noise}  
-	}=\frac{\sum_{\mathrm{i=i}}^{\mathrm{K_{f}}}
- p_{\mathrm{f,i}}\|h_{\mathrm{f,i}}u_{\mathrm{f,i}}\|^2}
+	\gamma_{f,i} =\frac{\sum_{i=i}^{K_{f}}
+ p_{f,i}\|h_{f,i}u_{f,i}\|^2}
 	{\sigma^2_{noise}  
 	}.
 	\end{equation}
@@ -409,25 +399,25 @@ The optimization problem at FBS $f$ for the system described in \ref{conmodel_fb
 	\label{optim}
 	\begin{align}
 	    \underset{\mathbf{p}_{f} }{\text{minimize: }} \;
-	    & - \sum_{\mathrm{i=1}}^{\mathrm{K_f}}
-    	U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}) \label{player_opt_c} \\
+	    & - \sum_{i=1}^{K_f}
+    	U_{f,i}(\gamma_{f,i}) \label{player_opt_c} \\
 	    \text{subject to: } \; &
-	  \sum^F_{f=1} E\left[ \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{s}_{f} 						
-	\mathbf{s_{f}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} \right]
+	  \sum^F_{f=1} E\{ \mathbf{\tilde{h}}_{m,f}^T  \mathbf{s}_{f} 						
+	\mathbf{s}_{f}^{H} \mathbf{\tilde{h}}_{m,f}^* \}
 	=
-	\sum_{\mathrm{f=1}}^{f}	\sum_{\mathrm{i=1}}^{\mathrm{K_f}}
-	E\left[ p_{\mathrm{f,i}}\|\tilde{\mathbf{h}}_{\mathrm{m,f}}^T \mathbf{u}_{\mathrm{f,i}}\|^2_2\right]
+	\sum_{f=1}^{f}	\sum_{i=1}^{K_f}
+	 p_{f,i}\|\tilde{\mathbf{h}}_{m,f}^T \mathbf{u}_{f,i}\|^2_2
 	\leq I^{Threshold}		
-	_{\mathrm{m}} & m \in \{1 ...\text{M}\} 
+	_{m} & m \in \{1 ...m\} 
 		\label{interference_const_c}\\
         & 
-        	\sum_{\mathrm{i=1}}^{\mathrm{K_{f}}} p_{\mathrm{f,i}}
+        	\sum_{i=1}^{K_{f}} p_{f,i}
 	   \leq P_{f}^{\text{Total}}  \label{power_const_c}\\
-        & p_{\mathrm{f,i}} \geq 0 &  \text{i} \in \{1 ...\text{K}_{f}\} \label{pos_power_const_c}
+        & p_{f,i} \geq 0 &  i\in \{1 ...K_{f}\} \label{pos_power_const_c}
 	\end{align}
 	\end{subequations}
 
-Note that because $\mathbf{U}_{f}$ is pre-selected as a pseudo-inverse to  $\mathbf{H_f}$, the zero-forcing constraint \eqref{zf_const_gen} has been removed.
+Note that because $\mathbf{U}_{f}$ is pre-selected as a pseudo-inverse to  $\mathbf{H}_f$, the zero-forcing constraint \eqref{zf_const_gen} has been removed.
 
 \subsection{Concave N-Person game analysis of concave setup}
 The convexity of the resulting problem is analyzed to investigate if this system admits the Concave N-Person game framework. 
@@ -441,69 +431,64 @@ First, check that the constraints form a convex, closed and bounded set.
 \begin{itemize}
 
 \item
-	Note that \eqref{interference_const_c} includes $\text{M}$ affine constraints on $diag(\mathbf{p_{f}})$.
+	Note that \eqref{interference_const_c} includes $m$ affine constraints in $\mathbf{p}_{f}$.
 
 \begin{gather*}
-	  \sum^F_{f=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{s}_{f} 						
-	\mathbf{s_{f}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} 
+	  \sum^F_{f=1} \mathbf{\tilde{h}}_{m,f}^T  \mathbf{s}_{f} 						
+	\mathbf{s_{f}^{H}} \mathbf{\tilde{h}_{m,f}^*} 
 	=
-	\sum_{\mathrm{f=1}}^{f}	\sum_{\mathrm{i=1}}^{\mathrm{K_f}}
-	p_{\mathrm{f,i}}\|\tilde{\mathbf{h}}_{\mathrm{mf}}^T \mathbf{u}_{\mathrm{f,i}}\|
-	\leq I^{Threshold}_{\mathrm{m}} 
+	\sum_{f=1}^{f}	\sum_{i=1}^{K_f}
+	p_{f,i}\|\tilde{\mathbf{h}}_{m,f}^T \mathbf{u}_{f,i}\|
+	\leq I^{Threshold}_{m} 
 \end{gather*}
 
 \item \
-	Constraint \eqref{power_const_c} is  affine in $diag(\mathbf{p_{f}})$.
+	Constraint \eqref{power_const_c} is  affine in $\mathbf{p}_{f}$.
 	
 \item \
-	Constraint \eqref{pos_power_const_c} is affine in $diag(\mathbf{p_{f}})$.
+	Constraint \eqref{pos_power_const_c} is affine in $\mathbf{p}_{f}$.
 \end{itemize}
 
 %Note that affine constaints to not have to satisfy Slater's condition
 
-\item The utility function was defined to be concave in $p_{\mathrm{f,i}}$. 
+\item The utility function was defined to be concave in $p_{f,i}$. 
 
 \end{enumerate}
 
-This problem satisfies the conditions for the concave N-person game and therefore a pure strategy Normalized Nash equilibrium exists due to 
+This problem satisfies the conditions for the concave N-person game and therefore a  normalized Nash equilibrium exists due to 
 \cite[Thm1]{rosen1964existence}.
 
-Assuming continuously differentiable $U_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}})$ and $\gamma_{\mathrm{f,i}}(p_{\mathrm{f,i}})$, the diagonal elements of $[G(b,r)+G^{T}(b,r)] $ correspond to
+Assuming continuously differentiable $U_{f,i}(\gamma_{f,i})$ and $\gamma_{f,i}(p_{f,i})$, the diagonal elements of $[G(b,r)+G^{T}(b,r)] $ correspond to
 \begin{equation}
-\underbrace{U^{''}_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}(p_{\mathrm{f,i}}))}_{<0}\underbrace{\gamma^{'}_{\mathrm{f,i}}(p_{\mathrm{f,i}})\gamma^{'}_{\mathrm{f,i}}(p_{\mathrm{f,i}})}_{>0}
+\underbrace{U^{''}_{f,i}(\gamma_{f,i}(p_{f,i}))}_{<0}\underbrace{\gamma^{'}_{f,i}(p_{f,i})\gamma^{'}_{f,i}(p_{f,i})}_{>0}
 +
-\underbrace{U^{'}_{\mathrm{f,i}}(\gamma_{\mathrm{f,i}}(p_{\mathrm{f,i}}))}_{>0}\underbrace{\gamma^{''}_{\mathrm{f,i}}(p_{\mathrm{f,i}})}_{0};
+\underbrace{U^{'}_{f,i}(\gamma_{f,i}(p_{f,i}))}_{>0}\underbrace{\gamma^{''}_{f,i}(p_{f,i})}_{0};
 \end{equation}
 satisfying the  negative definite condition on $[G(b,r)+G^{T}(b,r)] $ for a unique Normalized Nash equilibrium \cite[Thm4]{rosen1964existence}.
 
-(TODO: Discuss this)
-
 \subsection{Potential Game for Concave Problem}
-
-The potential function given by 
+Noting that during power allocation, $\boldsymbol{\gamma}_{f}$ is only dependent upon $\mathbf{p}_f$, the potential function given by 
 
 \begin{gather*} \label{Potential_Function}
-\Psi(\mathbf{\boldsymbol{\gamma}}) = \sum_{f = 1}^{F} U_{f}(\mathbf{\boldsymbol{\gamma}_{f}})
+\Psi(\mathbf{p}) = \sum_{f = 1}^{F} U_{f}(\mathbf{p}_{f})
 \end{gather*}
-and 
-satisfying \eqref{potential_game_condition} is proposed to state the following central optimization problem
+and satisfying \eqref{potential_game_condition} is proposed to state the following central optimization problem
 	
 		\begin{subequations}
 	\label{optim}
 	\begin{align}
-	    \underset{\mathbf{\gamma}}{\text{minimize: }}
-	    & \; \Psi(\mathbf{\gamma}) \label{potential_game} \\
+	    \underset{\mathbf{p}}{\text{minimize: }}
+	    & \; \Psi(\mathbf{p}) \label{potential_game} \\
 	    \text{subject to: } \; &
-	  \sum^F_{f=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{s}_{f} 						
-	\mathbf{s_{f}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} \leq I^{Threshold}		
-	_{\mathrm{m}} & m \in \{1 ...\text{M}\} 
+	  \sum^F_{f=1} E\{\mathbf{\tilde{h}}_{m,f}^T  \mathbf{s}_{f} 						
+	\mathbf{s}_{f}^{H} \mathbf{\tilde{h}}_{m,f}^* \}\leq I^{Threshold}		
+	_{m} & m \in \{1 ...m\} 
 		\label{interference_const}\\
-        & trace(\mathbf{s}_f\mathbf{s}_f^H)  \leq P_{f}^{\text{Total}}  \label{power_const}
+        & E\{trace(\mathbf{s}_f\mathbf{s}_f^H)\}  \leq P_{f}^{\text{Total}}  \label{power_const}
         & \forall f \in \{1 ... f\}\\
-        & p_{\mathrm{f,i}} \geq 0 &  \forall i \in \{1 ...K_{f}\} \; \forall f \in \{1 ... F\}\label{pos_power_const}
+        & p_{f,i} \geq 0 &  \forall i \in \{1 ...K_{f}\} \; \forall f \in \{1 ... F\}\label{pos_power_const}
 	\end{align}
-	\end{subequations}
-	with $\mathbf{\gamma}= [\mathbf{\gamma_{\mathrm{1}}},\mathbf{\gamma_{\mathrm{2}}}...\mathbf{\gamma_{f}}]$.
+	\end{subequations}.
 
 %\begin{theorem}\label{distributed}
 %\cite{ghosh2015normalized}
@@ -515,129 +500,136 @@ A distributed solution to \eqref{optim} is now proposed using the steps from Sec
 \subsubsection{Central Problem Resulting from the Potential Game}
 The Lagrangian of the potential game (the primal problem) is
 \begin{multline}
-L(\mathbf{\mathbf{p},\lambda,\chi,\nu}) = 
+L(\mathbf{\mathbf{p},\boldsymbol{\lambda},\boldsymbol{\chi},\boldsymbol{\nu}}) = 
 \;
-\sum_{f=1}^F U_{f}(\gamma_{f}) 
-+
-\sum_{\mathrm{m=1}}^M \lambda_{\mathrm{m}}
-(	  \sum^F_{f=1} \mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{s}_{f} 						
-	\mathbf{s_{f}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} - I^{Threshold}		
-	_{\mathrm{m}} )
+\sum_{f=1}^F U_{f}(\mathbf{p}_{f}) 
++\\
+\sum_{m=1}^M \lambda_{m}
+(	  \sum^F_{f=1} \mathbf{\tilde{h}}_{m,f}^T \mathbf{U}_{f} 
+	\mathrm{diag}(\mathbf{p}_{f})^{\frac{1}{2}}
+	E\{\mathbf{x}_{f}\mathbf{x}_{f}^H\}\mathrm{diag}(\mathbf{p}_{f})^{\frac{1}{2}}\mathbf{U}_{f} ^H					
+	 \mathbf{\tilde{h}}_{m,f}^* - I^{Threshold}		
+	_{m} )+
 \\
-+ 
 \sum_{f=1}^f
-\chi_{f}(trace(\mathbf{s}_f\mathbf{s}_f^H)-P^{Total}_{f} )
+\chi_{f}(trace(\mathbf{U}_{f} 
+	\mathrm{diag}(\mathbf{p}_{f})^{\frac{1}{2}}
+	E\{\mathbf{x}_{f}\mathbf{x}_{f}^H\}\mathrm{diag}(\mathbf{p}_{f})^{\frac{1}{2}}\mathbf{U}_{f} ^H	)-P^{Total}_{f} )
 +
 \sum_{f=1}^f
 \sum_{i=1}^{K_{f}}
-\nu_{\mathrm{f,i}}(-p_{\mathrm{f,i}}).
+\nu_{f,i}(-p_{f,i}).
 \end{multline}
-
-Using $\mathbf{p}= [\mathbf{p}_1, \mathbf{p}_2...\mathbf{p}_{f}],$ the corresponding dual function is
+Using $\mathbf{p}= [\mathbf{p}_1, \mathbf{p}_2...\mathbf{p}_{f}],$ the corresponding dual problem is given by
 \begin{gather*}
-g(\lambda, \chi, \nu) = \underset{\mathbf{p}}{\mathrm{argmin}}\;L(\mathbf{\mathbf{p},\lambda})
+\underset{\boldsymbol{\lambda},\boldsymbol{\chi},\boldsymbol{\nu}}{\mathrm{maximize}}\;\underset{\mathbf{p}}{\mathrm{argmin}}\;L(\mathbf{\mathbf{p},\lambda}).
 \end{gather*}
-and the dual problem is given by
-\begin{gather*}
-\underset{\lambda, \chi, \nu}{\mathrm{argmax}}\;\underset{\mathbf{p}}{\mathrm{argmin}}\;L(\mathbf{\mathbf{p},\lambda}) = \underset{\lambda, \chi, \nu}{\mathrm{argmax}}\;g(\lambda, \chi, \nu).
-\end{gather*}
-
+		\begin{subequations}
+	\label{optim}
+	\begin{align}
+\underset{\boldsymbol{\lambda},\boldsymbol{\chi},\boldsymbol{\nu}}{\mathrm{maximize:}}&&\underset{\mathbf{p}}{\mathrm{argmin}}\;L(\mathbf{\mathbf{p},\lambda})\\
+\text{subject to:}&& \boldsymbol{\lambda},\boldsymbol{\chi},\boldsymbol{\nu} \geq \boldsymbol{0}
+	\end{align}
+	\end{subequations}.
 This dual function can be decomposed into F component functions
 
 
 \begin{multline}
-g_f(\lambda, \chi, \nu) = \underset{p_{f}}{\mathrm{argmin}}
+g_f(\boldsymbol{\lambda},\boldsymbol{\chi},\boldsymbol{\nu}) = \underset{p_{f}}{\mathrm{argmin}}
 \{
 \;
 U_{f}(\gamma_{f}) 
-+
-\sum_{\mathrm{m=1}}^M \lambda_{\mathrm{m}}
-(\mathbf{\tilde{h}}_{\mathrm{m,f}}^T  \mathbf{s}_{f} 						
-	\mathbf{s_{f}^{\mathrm{H}}} \mathbf{\tilde{h}_{\mathrm{m,f}}^*} - \frac{I^{Threshold}_{\mathrm{m}}}{F})
+\\+
+\sum_{m=1}^M \lambda_{m}
+(\mathbf{\tilde{h}}_{m,f}^T  \mathbf{U}_{f} 
+	\mathrm{diag}(\mathbf{p}_{f})^{\frac{1}{2}}
+	\mathrm{diag}(\mathbf{p}_{f})^{\frac{1}{2}}\mathbf{U}_{f} ^H \mathbf{\tilde{h}_{m,f}^*} - \frac{I^{Threshold}_{m}}{F})
 \\
 + 
-\chi_{f}(trace(\mathbf{s}_f\mathbf{s}_f^H)-P^{Total}_{f} )
+\chi_{f}(trace(\mathbf{U}_{f} 
+	\mathrm{diag}(\mathbf{p}_{f})^{\frac{1}{2}}
+	\mathrm{diag}(\mathbf{p}_{f})^{\frac{1}{2}}\mathbf{U}_{f} ^H)-P^{Total}_{f} )
 +
 \sum_{i=1}^{K_f}
-\nu_{\mathrm{f,i}}(-p_{\mathrm{f,i}})\}
+\nu_{f,i}(-p_{f,i})\}
 \end{multline}
 \\
 
 The problem can now be solved using a distributed version of dual ascent to reach the unique NE of the potential game. 
 \subsubsection{Distributed Algorithm}\label{algo1}
-The non-decreasing, strictly concave utility function $U_{\text{f,i}}(\gamma_{\text{f,i}}) = log(1+\gamma_{\text{f,i}})$ 
+The non-decreasing, strictly concave utility function $U_{f,i}(\gamma_{f,i}) = log(1+\gamma_{f,i})$ 
 is used in the following algorithms and simulation results.
 
 \begin{enumerate}
 \item 
-Individual players (FBSs) can solve $ g_f(\lambda, \chi, \nu) $ independently and analytically setting $\frac{\partial g_f(\lambda, \chi, \nu)}{\partial p_{\mathrm{f,i}}} = 0$ 
-and solving for $p_{\mathrm{fi}}$ using \eqref{zf_snr}.
+Individual players (FBSs) can solve $ g_f(\boldsymbol{\lambda},\boldsymbol{\chi},\boldsymbol{\nu})$ independently and analytically by setting $\frac{\partial g_f(\lambda, \chi, \nu)}{\partial p_{f,i}} = 0$ 
+and solving for the power of user $i$ of FBS $f$, $p_{f,i}$ using
 
 \begin{gather}
-p_{\mathrm{fi}} = (\sum_{\mathrm{m=1}}^{\mathrm{M}}\lambda_{\mathrm{m}}\|\mathbf{\tilde{h}}_{m,f}^T \mathbf{u}_{\mathrm{f,i}}\|^2_2
-+\chi_{f} \|\mathbf{u}_{\mathrm{f,i}}\|^2_2
--\nu_{\mathrm{f,i}}
- )^{-1}
-  - \sigma^2_{\text{noise}}.
+p_{f,i} = \frac{\sigma^2_{\text{noise}}}{(\sum_{m=1}^{m}\lambda_{m}\|\mathbf{\tilde{h}}_{m,f}^T \mathbf{u}_{f,i}\|^2_2
++\chi_{f} \|\mathbf{u}_{f,i}\|^2_2
+-\nu_{f,i}
+ )}-
+  \frac{\sigma^2_{\text{noise}}}{\|\mathbf{h}_{f,i}^T \mathbf{u}_{f,i}\|^2_2}.
 \end{gather}
 
 \item 
-With $g(\lambda, \chi, \nu) = \sum_{f=1}^{F}g_f(\lambda, \chi, \nu)$ the dual variables are updated independently in the direction of the positive gradient of the dual function using
+With $g(\boldsymbol{\lambda},\boldsymbol{\chi},\boldsymbol{\nu}) = \sum_{f=1}^{F}g_f(\boldsymbol{\lambda},\boldsymbol{\chi},\boldsymbol{\nu})$ the dual variables are updated independently in the direction of the positive gradient of the dual function using
 
 \begin{gather}
-\lambda_{\mathrm{m}}^{\mathrm{k+1}} = (
-\lambda_{\mathrm{m}}^{\mathrm{k}}
+\lambda_{m}^{k+1} = (
+\lambda_{m}^{k}
 +
-\alpha^{\mathrm{k}}*
+\alpha^{k}*
 (
 \underbrace{
-\sum _{\mathrm{f=1}}^{f}
-\sum _{\mathrm{i=1}}^{\mathrm{K_{f}}}
-p_{\mathrm{fi}}
-\|\mathbf{\tilde{h}}_{\mathrm{mf}}^T \mathbf{u_{\mathrm{fi}}}\|^2_2}_{Interference}
-- I_{\mathrm{m}}
+\sum _{f=1}^{f}
+\sum _{i=1}^{K_{f}}
+p_{f,i}
+\|\mathbf{\tilde{h}}_{m,f}^T \mathbf{u}_{f,i}\|^2_2}_{\text{Interference created}}
+- I_{m}
 ))^+
 \end{gather}
  at the macrocell users,
 
 \begin{gather}
-\chi_{f}^{\mathrm{k+1}} = (
-\chi_{f}^{\mathrm{k}}
+\chi_{f}^{k+1} = (
+\chi_{f}^{k}
 +
-\alpha^{\mathrm{k}}*
-(\underbrace{\sum_{\mathrm{i=1}}^{\mathrm{K_{f}}} p_{\mathrm{fi}}}_{Used Power} - P_{f}^{Total}) )^+
+\alpha^{k}*
+(\underbrace{\sum_{i=1}^{K_{f}} p_{f,i}}_{\text{Used power}} - P_{f}^{Total}) )^+
 \end{gather}
  at individual FBSs, and 
 
 \begin{gather}
-\nu_{\mathrm{fi}}^{\mathrm{k+1}} = (
-\nu_{\mathrm{fi}}^{\mathrm{k}}
+\nu_{f,i}^{k+1} = (
+\nu_{f,i}^{k}
 +
-\alpha^{\mathrm{k}}*
-(-p_{\mathrm{fi}}))^+
+\alpha^{k}*
+(-p_{f,i}))^+
 \end{gather}
 also at individual FBSs.
 As each of dual variables correspond an inequality constraint, the implementation of this algorithm directly enforces non-negativity using 
 $(arg)^+$.
-The step size $\alpha^{\mathrm{k}}$ is predefined and constant (TODO show proof of convergence for this).
- % must satisfy  $\sum_{\mathrm{k=1}}^{\infty} \alpha^{\mathrm{k}}$ (cite).
+The step size $\alpha^{k}$ is predefined and constant (TODO show proof of convergence for this).
+ % must satisfy  $\sum_{\mathrm{k=1}}^{\infty} \alpha^{k}$ (cite).
 
 
 
 \end{enumerate} 
-These local updates impose additional information passing in the network. In particular, macrocell users must monitor their incoming interference then broadcast the updated dual variable $\lambda_{\text{m}}^{\text{k+1}}$ with which FBSs can update the power allocation. In contrast, however, a central solution would require the same information plus addition information from FBSs to be passed to a central location; a much higher overhead on the system than the proposed distributed solution. 
+These local updates impose additional information passing in the network. In particular, macrocell users must monitor their incoming interference then broadcast the updated dual variable $\lambda_{m}^{k+1}$ with which FBSs can update the power allocation. In contrast, however, a central solution would require the same information plus addition information from FBSs to be passed to a central location; a much higher overhead on the system than the proposed distributed solution. 
 
 (Note also that the dual ascent algorithm uses the dual and thus cannot guarantee a feasible solution to the primal problem originally posed. (Discuss constraint tolerance used in simulation? ))
 
 \subsection{Beamformer Optimization for Convex Setup}
-When additional degrees of freedom for the choice of $\mathbf{U}_{f}$ are available after satisfying the zero-forcing constraint (i.e. $T_{f}> K_{f}$ ), a preliminary optimization can be performed. In the following, variations of an objective function are considered. Note that because the beamformer $\mathbf{U}_{f}$ is chosen prior to the power allocation, the final values of $p_{\text{f,i}}$ are not yet known for this optimization. 
+When additional degrees of freedom for the choice of $\mathbf{U}_{f}$ are available after satisfying the zero-forcing constraint (i.e. $T_{f}> K_{f}$ ), a preliminary optimization can be performed. In the following, variations of an objective function are considered. Note that because the beamformer $\mathbf{U}_{f}$ is chosen prior to the power allocation, the final values of $p_{f,i}$ are not yet known for this optimization. 
 \par
 The first objective function considered corresponds to the Moore-Penrose pseudoinverse of $\mathbf{H}_{f}$ which minimizes the received signal noise enhancement. 
     \begin{equation}
     \begin{array}{ll}
-    \underset{\mathbf{U}_{f} }{\text{minimize:}}   & tr(\sigma_n\mathbf{U_{f}}  \mathbf{U_{f}}^H)
+    \underset{\mathbf{U}_{f} }{\text{minimize:}}   & tr(\sigma_n\mathbf{U}_{f}  \mathbf{U}_{f}^H)
     \\
-    \mbox{subject to:} & \mathbf{H}_{f}  \mathbf{U_{f}} = \mathbf{I}
+    \mbox{subject to:} & \mathbf{H}_{f}  \mathbf{U}_{f} = \mathbf{I}
     \end{array}
     \label{e-opt-prob}
     \end{equation}
@@ -648,9 +640,9 @@ Next, the objective function is optimized to minimize the correlation of the cho
 
     \begin{equation}
     \begin{array}{ll}
-    \underset{\mathbf{U}_{f} }{\text{minimize:}}   & \sum^F_{f=1} \|\mathbf{\tilde{H}}_{f}  \mathbf{U_{f}}\|^2
+    \underset{\mathbf{U}_{f} }{\text{minimize:}}   & \sum^F_{f=1} \|\mathbf{\tilde{H}}_{f}  \mathbf{U}_{f}\|^2
     \\
-    \mbox{subject to:} & \mathbf{H}_{f} \mathbf{U_{f}} = \mathbf{I}
+    \mbox{subject to:} & \mathbf{H}_{f} \mathbf{U}_{f} = \mathbf{I}
     \end{array}
     \label{e-opt-prob}
     \end{equation}
@@ -660,11 +652,11 @@ This is problem also convex in $\mathbf{U}_{f}$ and can be found at individual F
 Lastly, we consider the case in which FBSs minimize correlation with macrocell users while also maximizing correlation with the channels of its own users. The relative importance of these two terms is weighted by $\alpha.$
     \begin{equation}
     \begin{array}{ll}
-    \underset{\mathbf{U}_{f} }{\text{minimize:}}   & \alpha\sum^F_{f=1} \|\mathbf{\tilde{H}}_{f}  \mathbf{U_{f}}\|^2_2
+    \underset{\mathbf{U}_{f} }{\text{minimize:}}   & \alpha\sum^F_{f=1} \|\mathbf{\tilde{H}}_{f}  \mathbf{U}_{f}\|^2_2
     -
-    (1-\alpha)\sum^F_{f=1} \|\mathbf{H}_{f}  \mathbf{U_{f}}\|^2, \; 0\leq \alpha \leq 1
+    (1-\alpha)\sum^F_{f=1} \|\mathbf{H}_{f}  \mathbf{U}_{f}\|^2, \; 0\leq \alpha \leq 1
     \\
-    \mbox{subject to:} & \mathbf{H}_{f}  \mathbf{U_{f}} = \mathbf{I}
+    \mbox{subject to:} & \mathbf{H}_{f}  \mathbf{U}_{f} = \mathbf{I}
     \end{array}
     \label{e-opt-prob}
     \end{equation}
@@ -675,7 +667,7 @@ Lastly, we consider the case in which FBSs minimize correlation with macrocell u
 \chapter{Simulation and Results}\label{numerical}
 \subsection{Simulation System Description}
 The Heterogeneous Network is simulated by randomly placing F FBSs and M macrocell users within a predefined area. Each FBS is assigned $K_{f}$ unique Femto Users. All channels between FBSs and users (both Femtro and Macro) are simulated using rayleigh fading and the attenuation coefficient $d^{- \beta}$ with $\beta =2$ and $d$ as the distance between user and base-station.
-FBS $f$ initializes power to user $i$ as $p_{\mathrm{fi}} = \frac{{P_{f}^{\text{Total}}}}{K_{f}} $ such that the corresponding power constraint is not violated. 
+FBS $f$ initializes power to user $i$ as $p_{f,i} = \frac{{P_{f}^{\text{Total}}}}{K_{f}} $ such that the corresponding power constraint is not violated. 
 
 
 \subsection{Simulation Results}
