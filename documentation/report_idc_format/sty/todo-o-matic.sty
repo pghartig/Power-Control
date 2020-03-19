@@ -1,0 +1,25 @@
+%% $Id: todo-o-matic.sty 14 2009-02-02 12:37:24Z aschmidt $
+% Visible TODO and FIXME markers
+\RequirePackage[colorinlistoftodos]{\stypath/todonotes}
+\RequirePackage{xkeyval}
+
+\newcommand*{\@todoomatic@todocolor}{red}
+\newcommand*{\@todoomatic@fixmecolor}{orange}
+
+\define@key{todo-o-matic.sty}%
+  {todocolor}{\renewcommand{\@todoomatic@todocolor}{#1}}
+\define@key{todo-o-matic.sty}%
+  {fixmecolor}{\renewcommand{\@todoomatic@fixmecolor}{#1}}
+\ProcessOptionsX
+
+\newcounter{todoomatic@todocount}
+
+\newcommand*{\TODO}[1]{\todo[size=\small, color=\@todoomatic@todocolor]{#1}\stepcounter{todoomatic@todocount}}
+\newcommand*{\FIXME}[1]{\todo[size=\small, color=\@todoomatic@fixmecolor]{#1}\stepcounter{todoomatic@todocount}}
+
+\AtEndDocument{
+  \ifnum\value{todoomatic@todocount}>0
+    \addchap{Action Points}
+    \listoftodos
+  \fi
+}

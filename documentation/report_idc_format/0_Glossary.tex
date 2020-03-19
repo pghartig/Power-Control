@@ -1,0 +1,86 @@
+%% $Id: 0_Glossary.tex 32 2009-07-22 10:17:40Z rohde $
+%% ----  Glossar/ Glossary ---------------------------------
+%%
+\newcommand{\glossaryfirstcolumnlength}{\hspace{6.1em}}
+%
+\addsec{\abbreviationsname}
+%%
+\begin{acronym}[\glossaryfirstcolumnlength]
+ \acro{AWGN}{Additive White Gaussian Noise}
+ \acro{SNR}[\ensuremath{\mathrm{SNR}}]{Signal-to-Noise Ratio}
+ \acro{pdf}{Probability Density Function}
+ \acro{LTI}{Linear, Time-Invariant}
+\end{acronym}
+%%
+%% -----no empty line here------------------------------------------
+%%
+\addsec{\operatorsname}
+%
+\begin{symbollist}{\glossaryfirstcolumnlength}
+  \sym{$||\cdot||$}{Euclidean Norm}
+  \sym{$p(\cdot)$}{Probability}
+  \sym{$p(\cdot|\cdot)$}{Conditional Probability}
+  \sym{sign$(\cdot)$}Sign Operator
+  \sym{floor$(\cdot)$}Floor Operator
+
+\end{symbollist}
+%%
+%% -----no empty line here------------------------------------------
+%%
+%\addsec{\symbolsname}
+%
+%\begin{symbollist}{\glossaryfirstcolumnlength}
+
+%% -A-
+%% -B-
+%  \sym{$B$}{Bandbreite [\si{\Hz}]}
+%% -C-
+%  \sym{$c_0$}{Lichtgeschwindigkeit [\si[per=frac,fraction=frac]{\meter\per\second}]}
+%% -D-
+%% -E-
+%% -F-
+%  \sym{$f$}{Frequenz [\si{\Hz}]}
+%% -G-
+%% -H-
+%% -I,J-
+%  \sym{$\lmat{I}$}{Einheitsmatrix}
+%  \sym{$J(\cdot)$}{Kostenfunktion}
+%% -K-
+%  \sym{$k$}{Zeit- bzw. Symbolindex}
+%% -L-
+%  \sym{$\Lambda$}{Metrik}
+%% -M-
+%% -N-
+%% -O-
+%% -P-
+%  \sym{$\varphi(\cdot)$}{Auto- bzw. Kreuzkorrelationsfunktion}
+%% -Q-
+%% -R-
+%  \sym{$r(t),\,r[k]$}{Empfangssignal im Zeitbereich (zeitkontinuierlich, zeitdiskret)}
+%% -S-
+%  \sym{$s(t),\,s[k]$}{Sendesignal im Zeitbereich (zeitkontinuierlich, zeitdiskret)}
+%  \sym{$\sigma^2$}{Varianz (�quivalent zu Leistung)}
+%% -T-
+%  \sym{$t$}{Zeit [\si{\second}]}
+%% -U,V,W-
+%% -X,Y,Z-
+%%
+%\end{symbollist}
+\addsec{Notation}
+%
+The following notation is used through this work. \par
+\begin{itemize}
+\item 
+Vectors are denoted by bold-font lower-case letters ($\mathbf{x}$) and are assumed column vectors.
+\item 
+$x \sim \mathcal{N}(0,1)$ denotes a Gaussian distributed random variable $x$ with mean 0 and variance 1.
+\item 
+The vector $\mathbf{x}_{\mathrm{i}}^{\mathrm{j}}$ denotes a vector containing the elements i through j of $\mathbf{x}$.
+\item Sets are denoted using upper-case calligraphic letters ($\textit{\cal{A}}$).
+\item The set $\textit{\cal{A}}^N$ denotes the set of all sequences length N for which each element is selected from $\textit{\cal{A}}$ with replacement.
+\item The cardinality of a set $\textit{\cal{A}}$ is denoted by $|\textit{\cal{A}}|$.
+\item The set of complex and real numbers are denoted by $\mathcal{C}$ and $\mathcal{R}$ respectively.
+\item $\underset{x}{\text{argmin}} \; f(x)$ denotes the value of variable $x$ which minimizes a function $f(x)$.
+\end{itemize}
+
+\clearpage

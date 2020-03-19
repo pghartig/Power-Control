@@ -1,0 +1,59 @@
+\begin{figure}[H]
+\begin{center}
+\begin{tikzpicture}[]
+% 1st column
+\node               at (-1.5,5) {$s_1=00$};
+\node               at (-1.5,4) {$s_2=01$};
+\node               at (-1.5,3) {$s_3=10$};
+\node               at (-1.5,2) {$s_4=11$};
+\node[mainstate] (s1_1) at (0,5) {$s_1$};
+\node[state] (s2_1) at (0,4) {$s_2$};
+\node[state] (s3_1) at (0,3) {$s_3$};
+\node[state] (s4_1) at (0,2) {$s_4$};
+%\node at (0,1) {Node1};
+% 2nd column
+\node[mainstate] (s1_2) at (2,5) {$s_1$}
+    edge[mainedge] (s1_1);
+\node[mainstate] (s2_2) at (2,4) {$s_2$}
+     edge[lightedge] (s1_1);
+
+\node[state] (s3_2) at (2,3) {$s_3$};
+
+\node[state] (s4_2) at (2,2) {$s_4$};
+
+%\node at (2,1) {Node2};
+% 3rd column
+%\node               at (4,6) {$t=2$};
+\node[mainstate] (s1_3) at (4,5) {$s_1$}
+    edge[mainedge]  (s1_2);
+
+\node[mainstate] (s2_3) at (4,4) {$s_2$}
+    edge[lightedge] (s1_2);
+
+\node[mainstate] (s3_3) at (4,3) {$s_3$}
+    edge[mainedge] (s2_2);    
+\node[mainstate] (s4_3) at (4,2) {$s_4$}
+    edge[lightedge] (s2_2);
+%\node at (4,1) {Node3};
+% 4th column
+%\node               at (6,6) {$t=3$};
+\node[mainstate] (s1_4) at (6,5) {$s_1$}
+    edge[mainedge]  (s1_3)
+    edge[mainedge]  (s3_3);
+\node[mainstate] (s2_4) at (6,4) {$s_2$}
+    edge[lightedge] (s1_3)
+    edge[lightedge] (s3_3);
+\node[mainstate] (s3_4) at (6,3) {$s_3$}
+    edge[mainedge] (s2_3)
+    edge[mainedge] (s4_3);
+\node[mainstate] (s4_4) at (6,2) {$s_4$}
+    edge[lightedge] (s2_3)
+    edge[lightedge] (s4_3);
+%\node at (6,1) {Node4};
+
+\end{tikzpicture}
+	\end{center}
+	\caption{MAP decoding trellis for and LTI channel with $\mathcal{A}=\{0,1\}$ and channel memory $L=2$. Each state $s_1 ... \; s_4$ represents a possible transmit symbol sequence
+	$\left[x[\mathrm{i-1}],x[\mathrm{i}]\right]$.}
+	\label{fig:trellis}
+\end{figure}

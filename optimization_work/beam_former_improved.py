@@ -10,18 +10,18 @@ solve the central optimization problem
 """
 
 def test_beam_former():
-    pow_dual = 1e-3
+    pow_dual = 1
     int_dual = pow_dual
     pos_dual = pow_dual
     num_users = 5
     num_antenna = 10
-    step_size_pow = 1e-2
+    step_size_pow = 1e-1
     step_size_int = step_size_pow
     userPowerList = [1000]
-    num_iterations = 500
+    num_iterations = 1000
     numMacroUsers = 10
     numBaseStations = 5
-    interferenceThreshold = 1e-5
+    interferenceThreshold = 1
     userPower = userPowerList[0]
     network = HetNet(numBaseStations, numMacroUsers, num_users, num_antenna, interferenceThreshold, int_dual, pow_dual, pos_dual,
                                    userPower,
@@ -41,7 +41,7 @@ def test_beam_former():
     extra_plt1.set_ylabel("Min. Interference Constraint Slack")
     extra_plt1.set_xlabel("Iteration")
     check = []
-    beam_type = ["Moore-Penrose", "Min Correlation", "Nulling"]
+    beam_type = ["Moore-Penrose", "Min Correlation"]
     noisePowers = 0
     for beam_former_choice in range(len(beam_type)):
         currNetwork = copy.deepcopy(network)
@@ -57,14 +57,18 @@ def test_beam_former():
                                                                                      step_size_int)
         duals = np.asarray(duals)
         util_plt.plot(np.arange(num_iterations + 1), utilities, label=f"{beam_type[beam_former_choice]}")
-        extra_plt1.plot(np.arange(num_iterations), constraints[0], '-', label=f"interference slack")
-        extra_plt.plot(np.arange(num_iterations), constraints[2], label=f"power constraint slack")
+        extra_plt.plot(np.arange(num_iterations), constraints[2], label=f"min: {beam_type[beam_former_choice]}")
+        extra_plt.plot(np.arange(num_iterations), constraints[3], label=f"max: {beam_type[beam_former_choice]}")
+        extra_plt1.plot(np.arange(num_iterations), constraints[0], '-', label=f"min: {beam_type[beam_former_choice]}")
+        extra_plt1.plot(np.arange(num_iterations), constraints[1], '-', label=f"max: {beam_type[beam_former_choice]}")
 
         print(feasibility, "\n")
         check.append(np.asarray(utilities))
 
     plt.tight_layout()
     util_plt.legend(loc="lower left")
+    extra_plt1.legend(loc="lower right")
+    extra_plt.legend(loc="lower right")
     time_path = "Output/utility_"+f"{time.time()}"+"curves.png"
     plt.savefig(time_path, format="png")
     # network.print_layout()

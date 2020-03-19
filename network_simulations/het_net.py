@@ -89,7 +89,7 @@ class HetNet:
 
     def allocate_power_step(self, num_iterations, step_size_pow, step_size_int):
         social_utility_vector = []
-        average_duals = []
+        dual_std = []
         feasibility = []
         interferenceSlackMin = []
         interferenceSlackMax = []
@@ -98,7 +98,7 @@ class HetNet:
         social_utility_vector.append(self.get_social_utility())
         #   intitialize with correct duals given the starting allocation
         for i in range(num_iterations):
-            average_duals.append(self.get_average_duals())
+            dual_std.append(self.get_average_duals())
             #   First step in dual ascent -> find dual function
             [player.solve_local_opimization() for player in self.base_stations]
             #   Second step of dual ascent -> update dual variables based on values from first step
@@ -109,8 +109,8 @@ class HetNet:
             interferenceSlackMax.append(np.max(self.trackIntConstraints()))
             powerSlackMin.append(np.min(self.trackPowConstraints()))
             powerSlackMax.append(np.max(self.trackPowConstraints()))
-        average_duals.append(self.get_average_duals())
-        return social_utility_vector, average_duals, self.verify_feasibility(), \
+        dual_std.append(self.get_average_duals())
+        return social_utility_vector, dual_std, self.verify_feasibility(), \
                [interferenceSlackMin, interferenceSlackMax, powerSlackMin, powerSlackMax]
 
     def verify_feasibility(self):
@@ -194,23 +194,19 @@ class HetNet:
         pow_dual = []
         pos_dual = []
         int_dual = []
-        interference = []
-        sum_power = []
         for bs in self.base_stations:
             pow_dual.append(bs.power_dual_variable)
-            pos_dual.append(np.average(bs.positivity_dual_variable))
-            sum_power.append(np.sum(bs.power_vector))
+            pos_dual.append(np.std(bs.positivity_dual_variable))
         for mcu in self.macro_users:
             int_dual.append(mcu.dual_variable)
-            interference.append(mcu.interference)
-        return np.average(pow_dual), np.average(pos_dual), np.average(int_dual), np.max(interference), np.average(sum_power)
+        return np.std(pow_dual), np.average(pow_dual), np.std(int_dual), np.average(int_dual)
 
     def trackIntConstraints(self):
         interferenceSlack = []
         for mu in self.macro_users:
             interferenceSlack.append(mu.interference_threshold - mu.interference)
-            # if mu.interference_threshold-mu.interference <0:
-            #     print("check")
+            if mu.interference == 0:
+                print("check")
         return interferenceSlack
 
     def trackPowConstraints(self):
@@ -301,7 +297,7 @@ class FemtoBaseStation:
             # self.power_vector = np.ones((num_femto_users)) * (power_limit / (num_femto_users))
             self.power_vector = np.zeros((num_femto_users))*(power_limit/(num_femto_users))
 
-        self.sigma_square = 1e-4
+        self.sigma_square = 1
         self.connect_users(num_femto_users, pos_dual)
         self.power_constraint = power_limit
         self.utility_function = utility_function
@@ -460,12 +456,11 @@ class FemtoBaseStation:
             updated_power = np.max((self.sigma_square / (c+regularizer) -
                                     self.sigma_square/pow(np.linalg.norm(user_i_channel@beamformer.T), 2), 0))
             updated_power = np.min((updated_power, self.power_constraint/self.number_antennas))
-            # updated_power = np.max((self.sigma_square / (c) -
-            #                         self.sigma_square/pow(np.linalg.norm(user_i_channel@beamformer.T), 2), 0))
             if math.isnan(updated_power) or np.any(np.isinf(updated_power)):
                 raise Exception("problem with inversion")
             if 0 == updated_power:
-                print("problem")
+                pass
+                #  print("problem")
                 # raise Exception("0 power?")
             self.power_vector[ind] = updated_power
 
@@ -574,7 +569,7 @@ class FemtoUser(User):
     providing base-station. 
     """
 
-    def __init__(self, ID, network, parent, sigma_square=1e-4):
+    def __init__(self, ID, network, parent, sigma_square=1):
         """
         For now assume that the femto users are only single antenna
         :param ID:

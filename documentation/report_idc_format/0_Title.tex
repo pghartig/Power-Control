@@ -1,0 +1,35 @@
+%% $Id: 0_Title.tex 30 2009-04-14 09:34:52Z aschmidt $
+%%     ----- Titelblatt -----
+\newlength{\logoheight}\setlength{\logoheight}{20mm}
+\newlength{\logomargin}\setlength{\logomargin}{35mm}
+
+\addcontentsline{toc}{chapter}{\titlename}
+\begin{titlepage}
+\begin{tikzpicture}[remember picture, overlay]
+  \begin{scope}[every node/.style={text badly centered,text width=1.1\textwidth}]
+    \path (current page.north)
+      +(0mm,-40mm)  node[font=\Large] {\Thesis}
+      +(0mm,-60mm)  node[font=\huge\bfseries,minimum height=5cm] {\Title}
+      +(0mm,-95mm)  node[font=\large] {\Author}
+      +(0mm,-135mm) node[font=\large] {
+        \textbf{Lehrstuhl f\"{u}r Digitale \"{U}bertragung}\\
+        Prof. Dr.-Ing. Robert Schober\\
+        Universit\"{a}t Erlangen-N\"{u}rnberg\\
+      }
+      +(0mm,-175mm) node {
+        \begin{tabular}{ll}
+          Betreuer: & Prof. Dr.-Ing. Laura Cottatellucci\\
+        \end{tabular}
+      }
+      +(0mm,-225mm) node {\Date}
+    ; % path
+  \end{scope}
+%
+  \node[shift={(+\logomargin,1.5\logoheight)},anchor=west] at (current page.south west){%
+    \includegraphics[height=\logoheight]{/titlepage/IDC_logo}%
+  };
+  \node[shift={(-\logomargin,1.5\logoheight)},anchor=east] at (current page.south east){%
+    \includegraphics[height=\logoheight]{/titlepage/fau_tf_logo}%
+  };
+\end{tikzpicture}
+\end{titlepage}

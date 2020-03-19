@@ -1,0 +1,92 @@
+\documentclass[twoside,BCOR=12mm]{sty/idcthesis}
+\IDCThesisOptions{language=en,onehalfspacing=true,linkcolor=black!50!blue,fixfloatplacement=true}
+
+% If you are using a proper editor please replace "latin1" by "utf8" !!
+% WinEdt and TeXnicCenter do not support unicode and therefore need "latin1".
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{multicol}
+%\input defs.tex
+%\bibliographystyle{alpha}
+\usepackage{graphicx, neuralnetwork,tikz}
+\usepackage{float}
+\usetikzlibrary{positioning}
+%\usepackage{cite}
+\graphicspath{{./figures/}}
+
+\input{Macros}
+
+%% fill in all your relevant stuff
+\setupthesis{ASC Major Project}
+  {Game Theoretic Solutions to Multiple Antenna Power Control in Heterogeneous Networks}
+  {Peter Hartig}
+  {LaTeX-Vorlage, Hinweise zu LaTeX, Nomenklatur}
+  {\today}
+
+%%--------------------------------------------------------------------
+%% user-defined hyphenation:
+\hyphenation{Di-ver-si-ty}
+\hyphenation{Do-ku-ment-ei-gen-schaf-ten}
+%%-----------------------------------------------------------------
+%
+\begin{document}
+\begin{spacing}{1}
+    \KOMAoptions{cleardoublepage=empty}
+    \pagestyle{empty} \pagenumbering{roman} \setcounter{page}{1}
+%% ---- Titelseite/ Title page ----
+    \input{0_Title}
+%% ---- Themenstellung/ Task description----	
+ %   \clearpage
+%    \input{Themenstellung}
+%% ---- Erklaerung ----
+    \inputdecl   
+%% ---- Inhaltsverzeichnis/ Table of contents ----
+    \tableofcontents
+%% ---- Zusammenfassung/ Abstract ----
+\end{spacing}
+%%
+\addchap{\abstractname}
+\input{0_Abstract}
+%%
+\begin{spacing}{1}
+%% ---- Glossar/ Glossary ----
+%    \addchap{\glossaryname}
+%    \input{0_Glossary}
+%%
+%% ---- Abbildungsverzeichnis/ List of figures ----
+%     \listoffigures
+%%
+%% ---- Tabellenverzeichnis/ List of tables
+%     \listoftables
+\end{spacing}
+%%-----------------------------------------------------------------
+%% ---- Kapitel 1/ Chapter 1 ----
+%\chapter{Hinweise zu Layout und Struktur}
+%\label{chap:1_Layout}
+%\pagenumbering{arabic} \setcounter{page}{1}
+%\input{1_Layout}
+%%
+%% ---- Kapitel 2/ Chapter 2 ----
+\label{chap:2_Latex}
+\input{2_Latex}
+%
+%% ---- Literaturverzeichnis/ Bibliography ----
+%\bibliographystyle{sty/unsrt_lmk}
+\bibliography{literature}
+\bibliographystyle{plain}
+
+%%
+%%-----------------------------------------------------------------
+%% ---- Anhang/ Appendix  ----
+%\appendix
+%\chapter{Additional diagrams}
+%\input{Appendix_A}
+%
+%\chapter{Calculations}
+%\input{Appendix_B}
+%
+%%-----------------------------------------------------------------
+%
+\end{document}

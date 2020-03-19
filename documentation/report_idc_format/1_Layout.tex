@@ -1,0 +1,178 @@
+%% $Id: 1_Layout.tex 32 2009-07-22 10:17:40Z rohde $
+%% ---- Kapitel 1 Layout ----
+%%
+Auf die Einführung in den inhaltlichen Aufbau einer wissenschaftlichen Arbeit folgt eine
+Beschreibung der Struktur des Dokumentenquellcodes. Abschließend wird die zu beachtende
+Nomenklaturkonvention beschrieben. 
+
+Dieses Dokument soll nicht das Merkblatt zum Format für Studien- oder Diplomarbeiten ersetzen,
+sondern ergänzen. Es wird keine komplette Einführung in \LaTeX{} gegeben, aber an geeigneter
+Stelle auf weiterführende Literatur und Dokumente verwiesen.
+Sämtliche hier verlinkten PDF-\/Dokumente befinden sich in \cite{L_Manual_Verz} und
+können von dort auch direkt geöffnet werden.
+    
+%==========================================================================================================================
+\section{Inhaltliche Struktur des Dokuments}    
+Die Arbeit sollte sich inhaltlich in folgende Abschnitte und in dieser Reihenfolge gliedern lassen:
+Zusammenfassung, Einführung, Hauptteil, Schluss. Die Aufgaben der jeweiligen Dokumentabschnitte 
+werden im Folgenden kurz erörtert.
+
+Eine \textbf{Zusammenfassung} ist eine prägnante Inhaltsangabe, ein Abriss ohne Interpretation und Wertung.
+Der Umfang sollte nicht mehr als eine Seite betragen.
+
+Auf einige wenige Seiten sollte sich die \textbf{Einführung} beschränken. Hier wird in das
+Themengebiet eingeführt, die Problemstellung erörtert, die Problemlösung motiviert und 
+eventuell auf bereits bekannte Lösungsansätze hingewiesen, jedoch nicht einfach die Aufgabenstellung
+kopiert.
+
+Der \textbf{Hauptteil} des Dokuments beinhaltet das Aufstellen eines Systemmodells, Beschreibung 
+verwendeter Methoden und Algorithmen. Zur Bewertung der beschriebenen Verfahren sollen auf theoretische
+Betrachtungen die Mess- und/oder Simulationsergebnisse folgen. 
+
+Der \textbf{Schluss} soll eine abschließende Zusammenfassung bzgl. der Lösung der Aufgabenstellung, 
+zentrale Schlussfolgerungen aus den Mess- oder Simulationsergebnissen und eventuell einen Ausblick auf weiteres Forschungspotential umfassen.
+    
+
+%==========================================================================================================================
+\section{Struktur des \LaTeX-Dokuments}
+Um schneller einen Überblick über die Vorlage zu erhalten, wird zunächst kurz die Struktur
+beschrieben. Letztere wird in \verb"Main_Document.tex", der Hauptdatei des Dokuments, festgelegt.
+Dort wird zuerst mittels \verb"\documentclass[]{}" die Dokumentklasse und Dokumenteigenschaften bestimmt,
+wobei die geschweiften Klammern die Dokumentklasse definieren und die eckigen Klammern Optionen beinhalten können.
+Die verwendete Klasse lautet \verb"idcthesis", welche das Layout definiert, Zusatzfunktionen lädt und
+nicht verändert werden sollte. 
+
+Zur Erstellung eines doppelseitigen Dokuments wird die Option \verb"twoside" in die eckige Klammer gesetzt.
+Ohne diese Option wird ein einseitiges Dokument erzeugt. Hier wird u.a. berücksichtigt ob die Bindung 
+der jeweiligen Seite links oder rechts erfolgen wird. Im Falle eines zweiseitigen Drucks erfolgt ein 
+bedingtes Einfügen einer leeren Seite so, dass die erste Seite eines nachfolgenden Kapitels immer 
+eine ungerade Seitenzahl aufweist. Der Kapitelbeginn steht damit immer auf der Blattvorderseite.
+	      
+Um eine erweiterte Steuerung zu ermöglichen stehen über \verb"\IDCThesisOptions" folgende 
+Optionen zur Verfügung
+\begin{itemize}
+	\item \verb"language=de" für Dokumentsprache Deutsch oder \verb"language=en" für Englisch, 
+	      was z.B. für die automatische Silbentrennung wichtig ist
+	\item \verb"linkcolor=black!50!blue" zur Farbeinstellung einer Verknüpfung
+	\item \verb"onehalfspacing=true" erzeugt eineinhalbzeiligen Zeilenabstand,\\ \verb"onehalfspacing=false" einzeiligen
+	\item \verb"fixfloatplacement=true" verhindert, dass Grafiken zu weit entfernt von ihrer geplanten
+	      Platzierung in der Ausgabe erscheinen. Die Standard-Platzierung wird mit \verb"fixfloatplacement=false" 
+	      wiederhergestellt.
+\end{itemize}
+
+%--------------------------------------------------------------------------------------------------------------------------
+    \subsection{Kopf}
+    Der Kopf oder Header, zu dem auch die bereits beschriebene Dokumentklassendefinition gehört, besteht 
+    des weiteren aus
+		\begin{itemize}
+			\item Laden zusätzlicher Pakete mittels \verb"\usepackage"
+			\item Standardpfad zu Grafiken des Dokuments mittels \verb"\graphicspath"
+			\item Laden der Datei \verb"Macros.tex" mittels des Befehls \verb"\input"
+			\item Definition der Dokumentdaten wie Titel, Autor, usw.
+			\item Benutzerdefinierte Silbentrennung mit \verb"\hyphenation"
+		\end{itemize}
+    Die Datei \verb"Macros.tex" wird in \cref{sec:2_LatexMakros} beschrieben. Alle
+    globalen Einstellungen und Makrodefinitionen sollten im Dokumentkopf getätigt werden.
+
+%--------------------------------------------------------------------------------------------------------------------------
+    \subsection{Dokumentrumpf}
+    Der Rumpf ist definiert über die Umgebung \verb"document", d.h.
+    \verb"\begin{document}" kennzeichnet den Beginn und \verb"\end{document}" das Ende. Text,
+    der außerhalb steht, führt entweder zu Fehlern oder erscheint nicht im Ausgabedokument.
+
+    Innerhalb dieser Umgebung werden alle Unterdateien, z.B. Titelseite \texttt{0\_Title.tex}
+    oder Kapiteldateien wie \texttt{1\_Layout.tex},
+    in der Reihenfolge eingebunden, wie sie im fertigen Dokument angeordnet seinen sollen.
+    Listen, wie Inhalts-, Abbildungs- oder Literaturverzeichnis, werden per Befehl automatisch
+    durch \LaTeX{} erstellt, wie aus dem Quellcode ersichtlich. Ein eventuell gewünschter Anhang 
+    wird mit \verb"\appendix" eingeleitet. Alle nachfolgend eingebundenen Textabschnitte werden
+    damit dem Anhang zugeordnet.
+    
+    Damit die Listen bzw. Verzeichnisse korrekte Daten über das Dokument wiedergeben, z.B. korrekte
+    Seitenzahlen, muss das Dokument mindestens zweimal kompiliert werden. Auf die Erstellung des 
+    Literaturverzeichnisses wird in \cref{sec:2_Bib} eingegangen.
+
+%--------------------------------------------------------------------------------------------------------------------------
+    \subsection{Gliederungshierachie}
+    Die nummerierte und in der Inhaltsangabe gezeigte Hierarchietiefe sollte den Wert drei nicht
+    übersteigen. An erster Hierarchiestufe steht die Kapitelebene, die durch den Befehl \verb"\chapter{}",
+    erzeugt wird, an zweiter die Abschnittsebene \verb"\section{}" und schließlich die Unterabschnittsebene
+    \verb"\subsection{}".
+
+    Ist eine weitere Ebene nötig, sollte der Befehl \verb"\subsubsection{}" mit dem \verb"*"-Suffix
+    versehen werden: \verb"\subsubsection*{}". Dies verhindert, dass die Überschrift eine Nummer
+    erhält und im Inhaltsverzeichnis erscheint. Auf die Unterunterabschnittsüberschrift kann jedoch
+    folglich auch nicht referenziert werden. Nachfolgend ist ein Beispiel zur Verwendung des
+    \verb"*"-Suffix zu sehen.
+
+    \subsubsection{Unterunterabschnitt mit Nummer vermeiden!}\label{sssuc:1_test}
+    $\Rightarrow$ Zu vermeidende Variante. Der Quelltext zu diesem Beispiel lautet\\
+    \verb"\subsubsection{Unterunterabschnitt mit Nummer vermeiden!}".
+
+    \subsubsection*{Unterunterabschnitt ohne Nummer, da \texttt{*}-Suffix verwendet wurde}
+    $\Rightarrow$ Zu bevorzugende Variante. Der verkürzte Quelltext zu diesem Beispiel lautet\\
+    \verb"\subsubsection*{Unterunterabschnitt ohne Nummer, ...}".
+
+
+%==========================================================================================================================
+\section{Nomenklaturkonvention}
+Aus den Skripten diverser Vorlesungen und der Fachliteratur sollte die gebräuchliche Nomenklatur
+der Nachrichtentechnik bereits bekannt sein. Einige Punkte seien jedoch hier noch erwähnt und im
+Glossar befindet eine Liste einiger bereits vorbelegter Variablen.
+
+Der wichtigste Aspekt ist, dass die Nomenklatur für das ganze Dokument konsistent ist und den Bezug zu
+einem eingeführten Systemmodell aufrecht erhält. Bei der erstmaligen Verwendung einer Variablen
+oder eines Operators ist darauf zu achten, dass zur Einführung dessen Funktion und dessen Name
+beschrieben wird.
+
+%--------------------------------------------------------------------------------------------------------------------------
+    \subsection{Kleine, große Buchstaben}\label{ssec:1_klgrB}
+    Im Normalfall bezeichnen kleine lateinische Buchstaben Variablen
+    im Zeitbereich, wohingegen große Buchstaben Variablen im Frequenzbereich darstellen. Mit dieser
+    Konvention konkurriert die Forderung für Matrizen große Buchstaben und für Vektoren kleine zu verwenden.
+    Als Kompromiss wird gefordert, dass eine Matrix in jedem Fall groß zu schreiben ist. Bei
+    Vektoren sei die Festlegung dem Autor überlassen. Laufvariablen sind immer klein zu schreiben.
+
+    Zusätzliche Kollisionen können
+    mit der Definition von Zufallsvariablen auftreten, da der Prozess oder die Zufallsvariable
+    groß und eine Realisation mit einem kleinen Buchstaben bezeichnet wird. Die hier zu bevorzugende
+    Nomenklatur ist mit dem Betreuer abzusprechen.
+
+%--------------------------------------------------------------------------------------------------------------------------
+    \subsection{Griechische Buchstaben}
+    Bei griechischen Buchstaben spielt die Unterscheidung zwischen kleinen und großen
+    Buchstaben eine untergeordnete Rolle. Es ist jedoch zu beachten, dass verschiedenen Zeichen
+    bereits eine Bedeutung zukommt bzw. zugeordnet ist, wie $\sigma$, $\Sigma$, $\pi$, $\Pi$, $\omega$,
+    $\Omega$.
+
+%--------------------------------------------------------------------------------------------------------------------------
+    \subsection{Klammern}
+    Runde Klammern bezeichnen die Abhängigkeit von einer kontinuierlichen Variablen: $x(t)$, $t\in\mathbb{R}$. Eckige
+    Klammern verweisen dagegen auf einen diskreten Index: $x[k]$, $k\in\mathbb{Z}$. Je nach Fall kann ein diskreter
+    Index auch tiefgestellt werden: $x_k$. Ein diskrete Zeitindex wie z.B. $k$ sollte jedoch immer in eckigen
+    Klammern geschrieben werden. Geschweifte Klammern werden für die Bezeichnung des Operatorarguments
+    benutzt, wie z.B. der Erwartungswert $E\{X\}$ oder die \ac{DFT}:
+    $\ac{DFT}\{\lvec{x}\}$. Zur Klammerung von Formelausdrücken dürfen alle Klammern verwendet werden.
+
+%--------------------------------------------------------------------------------------------------------------------------
+    \subsection{Vektoren, Matrizen}\label{ssec:1_VekMat}
+    Im Gegensatz zu Skalaren, werden Vektoren und Matrizen fett und nicht kursiv geschrieben. Zur
+    Kennzeichung der Matrix wird zusätzlich noch ein Unterstrich angebracht. Dies gilt zusätzlich zu
+    dem bereits angesprochenen Kompromiss bzgl. Klein- und Großschreibung in
+    \cref{ssec:1_klgrB}, um eine eindeutige Unterscheidbarkeit herzustellen. Beispiele:
+     $a$, \lvec{a}, \lmat{A}. 
+     
+%--------------------------------------------------------------------------------------------------------------------------
+    \subsection{Funktionen und Variablen aus Abkürzungen}
+    Ein Symbol bzw. Variable die eine Abkürzung bzw. ein Akronym darstellt, ist im Mathematikmodus "`roman"' zu
+    schreiben mit dem Befehl \verb"\mathrm{}". Beispiel \ac{SNR}:
+    Falsch: $SNR$ $\rightarrow$ Richtig: $\ac{SNR}$
+    
+    Da im Textmodus dagegen bereits eine "`roman"'-Schriftart verwendet wird, muss bei einer Abkürzung
+    nichts weiter beachtet werden: SNR. Auf effiziente Verwendung von Akronymen in \LaTeX{} wird in
+    \cref{ssec:2_Akronym} genauer eingegangen.
+
+    Funktionen wie z.B. $\sin(2\pi ft)$ werden ebenfalls nicht kursiv geschrieben. \LaTeX{} bietet bereits einen
+    komfortablen Umfang an vordefinierten Funktionen an, die direkt verwendet werden können und nicht mittels
+    \verb"\mathrm{}" formatiert werden müssen. Der Quelltext des Eingangsbeispiels lautet:
+    \verb"\sin(2\pi ft)".

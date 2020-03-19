@@ -1,42 +1,18 @@
-\documentclass[12pt,a4paper]{report}
-\usepackage[utf8]{inputenc}
-\usepackage{amsmath}
-\usepackage{amsfonts}
-\usepackage{amssymb}
-\usepackage{graphicx}
-\usepackage{float}
-\input defs.tex
-\bibliographystyle{alpha}
-\graphicspath{ {./figures/} }
-%\hyphenpenalty=10000
-
-\title{Game Theoretic Solutions to Multiple Antenna Power Control in Heterogeneous Networks}
-\author{Peter Hartig}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-This work investigates resource allocation strategies for a communication system with uncoordinated users and MIMO capable base stations. Following a game theoretic solution, it is shown that unlike the SISO case investigated in \cite{ghosh2015normalized}, the general MIMO problem does not admit the N-Concave game framework. Refinements of the general problem are then made to use the N-Concave game framework. These refinements require pre-selection of transmission beamformers prior to the allocation of power and therefore the beamformer design is also considered to increase the achievable player utility. These results are verified and further analyzed in simulations.
-\end{abstract}
-%
-%\newpage
-\tableofcontents
-
 
 \chapter{Introduction}
-Modern communication systems often incorporate numerous, uncoordinated users competing for a limited resource. In this work, a game theoretic approach considers a wireless communication network with uncoordinated macrocell users and femtocell base stations. The goal of this approach is to find Nash Equilibrium in which femtocell base stations optimize individual utility while ensuring interference tolerances are not violated for macrocell users. 
+Modern communication systems often incorporate numerous, uncoordinated users competing for a limited resource. In this work, a game theoretic approach considers a wireless communication network with uncoordinated macrocell users and femtocell base stations. The goal of this approach is to find Nash equilibrium (NE) in which femtocell base stations optimize individual utility while ensuring interference tolerances are not violated for macrocell users. 
 Previous work has shown solutions for systems in which femtocell base stations transmit over a single input, single output (SISO) channel; therefore the multiple input, multiple ouput (MIMO) case is investigated here. 
 \par
 In the communications context, distributed optimization is often preferable in order to minimize the overhead of information passing required by central optimization. 
-This work focuses on achieving Nash Equilibrium (NE) using distributed solutions. 
+This work focuses on achieving NE using distributed solutions. 
 
 
 \section{Notation}
 The following notation is used throughout the remainder. 
-$E\{x\}$ is the expected value of a random variable $x$.
+$E\{\cdot\}$ is the expectation operator.
 Vectors are denoted by bold font, lower-case letters ($\mathbf{x}$) and are assumed to be column vectors.
 Matrices are denoted by bold font, upper-case letters ($\mathbf{X}$). The transpose and hermetian of $\mathbf{X}$ are denoted by $\mathbf{X}^T$ and $\mathbf{X}^H$ respectively.
-$\mathbf{I}$ denotes the identity matrix.
+$\mathbf{I}$ denotes the identity matrix. $\mathrm{diag}(\mathbf{x})$ denotes the diagonal matrix created by placeing the elements of the vector $\mathbf{x}$ along the diagonal. $\mathrm{trace}(\cdot)$ is the trace operator. The operator $(\cdot)^+$ yields the argument if greater than 0, and 0 otherwise.
 
 
 \section{Relevant Tools/Theory}\label{tools}
@@ -65,7 +41,7 @@ In words, $ \Psi(\mathbf{b})$ is a function whose gradient with respect to the s
 \end{itemize}
 
 \item Normalized Nash equilibrium: if we consider the case in which the set $\mathcal{B}$ is convex and $U_f(\mathbf{b})$ is concave, non-decreasing and has continuous first derivative in $\mathbf{b}_{f}$, the resulting optimal strategy for each player (and thus any Nash equilibrium) will satisfy the necessary and sufficient KKT conditions. A normalized Nash equilibrium (NNE) is a Nash equilibrium for which the dual variables of all players are equal up to a constant. 
-Intuitively, this can be thought of as a Nash equilibrium at each players is "charged" an equal amount (up to a constant) for any change in strategy.
+Intuitively, this can be thought of as a Nash equilibrium for which each players is "charged" an equal amount (up to a constant) for any change in strategy.
 
 \item The Concave N-Person game: A framework for proving existence and uniqueness of normalized Nash equilibrium.
 
@@ -78,7 +54,7 @@ Intuitively, this can be thought of as a Nash equilibrium at each players is "ch
 \textbf{Uniqueness of Nash Equilibrium:} In general, multiple NNEs may exist for a game. However, sufficient conditions for uniqueness are shown in \cite[Thm4]{rosen1964existence} and introduced in the following. 
 Taking the gradient of each $U_f(\mathbf{b})$ with respect to the chosen strategy $\textbf{b}_f$ we first form the vector
 \begin{equation}
-g(b,r)= 
+g(\mathbf{b})= 
 \begin{bmatrix}
 \nabla U_{1}(\mathbf{b})
 \\
@@ -88,9 +64,9 @@ g(b,r)=
 \nabla U_{F}(\mathbf{b})
 \end{bmatrix}.
 \end{equation}
-We define the Jacobian of $g(b,r) $ as the matrix valued function $G(b,r) $.
-Negative definiteness of the matrix $[G(b,r)+G^{T}(b,r)] $ is a sufficient condition for uniqueness of a NNE.
-\item \textbf{Result 1:} For a Concave N-Person games admitting a potential function, the potential function is concave, allowing for use of convex optimization tools to find a NE. 
+We define the Jacobian of $g(\mathbf{b}) $ as the matrix valued function $G(\mathbf{b}) $.
+Negative definiteness of the matrix $[G(\mathbf{b})+G^{T}(\mathbf{b})] $ is a sufficient condition for uniqueness of a NNE.
+\item \textbf{Result 1:} For a Concave N-Person game admitting a potential function, the potential function is concave, allowing for use of convex optimization tools to find a NE. 
 
 \end{itemize}
 
@@ -142,7 +118,7 @@ The above tools are used in the steps outlined below.
 Each player of the game, a femtocell base station (FBS) $f \in \{1 ... F\}$ , is characterized by the following.
 \begin{itemize}
 \item 
-$T_{f}$ antennas to transmit to $K_{f}$ femtocell users (we assumed that $T_{f} \geq K_{f}$). Each femtocell user $i = [1... \;K_{f}]$ has a signal to interference plus noise ratio (SINR) $\gamma_{f,i}$. The vector of user SINR for FBS $f$ is $\boldsymbol{\gamma}_{f} = [\gamma_{f,1}...\; \gamma_{,K_{f}}]$
+$T_{f}$ antennas to transmit to $K_{f}$ femtocell users (we assumed that $T_{f} \geq K_{f}$). Each femtocell user $i = [1... \;K_{f}]$ has a signal to interference plus noise ratio (SINR) $\gamma_{f,i}$. The vector of user SINRs for FBS $f$ is $\boldsymbol{\gamma}_{f} = [\gamma_{f,1}...\; \gamma_{,K_{f}}]$
 \\
 \item 
 	A beamforming matrix $\mathbf{U}_{f} \in \mathbb{C}_{T_{f} \times K_{f}}$ such that the transmitted 		
@@ -161,7 +137,7 @@ $T_{f}$ antennas to transmit to $K_{f}$ femtocell users (we assumed that $T_{f} 
     	in which $U_{f,i}(\cdot)$ is a non-decreasing function describing the utility obtained by each user, $i$, of FBS $f$.
 
 \item 
-	Perfect knowledge of the downlink channel matrix $\mathbf{H}_f \in \mathbb{C}_{K_{f} \times T_{f}} $.
+	Perfect knowledge of the downlink channel to the users of FBS $f$ given by the matrix $\mathbf{H}_f \in \mathbb{C}_{K_{f} \times T_{f}} $ .
 % TODO(Simulate degradation with incomplete CSI solution?)
 \\
 \item
@@ -174,12 +150,12 @@ Macrocell users $m \in \{1 ... M\}$ introduce constraints into the game. These u
 \begin{itemize}
 \item 
 	Received interference constraint
-	$E\{\sum^F_{f=1} \mathbf{\tilde{h}}_{m,f}^T  \mathbf{U}_{f}					
-	\mathbf{U}_{f}^{H} \mathbf{\tilde{h}}_{m,f}^*\} \leq I^{Threshold}		
-	_{m} $. In which $\mathbf{\tilde{h}}_{m,f}$ is the channel from FBS $f$ to macro user $m$.
+	$E\{\sum^F_{f=1} \tilde{\mathbf{h}}_{m,f}^T  \mathbf{U}_{f}					
+	\mathbf{U}_{f}^{H} \tilde{\mathbf{h}}_{m,f}^*\} \leq I^{Threshold}		
+	_{m} $. In which $\tilde{\mathbf{h}}_{m,f}$ is the channel from FBS $f$ to macro user $m$.
 
 \item 
-	FBS $f$ is assumed to know the downlink channel matrix $\tilde{\mathbf{H}_{f}} \in \mathbb{C}_{M \times T_{f}}$ to all $M$ macrocell users.
+	FBS $f$ is assumed to know the downlink channel matrix $\tilde{\mathbf{H}}_{f} \in \mathbb{C}_{M \times T_{f}}$ to all $M$ macrocell users.
 \\
 \end{itemize}
 
@@ -208,12 +184,10 @@ By the FBS spacing assumption above, this reduces to
 	\gamma_{f,i} = \frac{\|\mathbf{h}^H_{f,i}\mathbf{u}_{f,i}\|^2}
 	{\sigma^2_{\text{noise}} 
 	 + \sum_{\tilde{k}=1, \tilde{k}\neq i}^{K_f}
-	  \|\mathbf{h^H_{f,\tilde{k}}u_{f,\tilde{k}}}\|^2},
+	  \|\mathbf{h}^H_{f,\tilde{k}}\mathbf{u}_{f,\tilde{k}}\|^2},
 	  \; i \in \{1 ... K_f\}
 	\end{equation*}
-\\
-\item 
-A user utility function $U_{f,i}(\cdot)$. 
+
 \end{itemize}
 
 
@@ -222,7 +196,7 @@ A user utility function $U_{f,i}(\cdot)$.
 
 \subsection{General Optimization Problem}\label{genproblem}
 
-Each FBS $f$ attempts to maximize utility function $U_{f}()$ while satisfying the interference constraints imposed by the macrocell users and a transmission power constraint. This results in the following optimization problem at each FBS.
+Each FBS $f$ attempts to maximize utility function $U_{f}(\cdot)$ while satisfying the interference constraints imposed by the macrocell users and a transmission power constraint. This results in the following optimization problem at each FBS.
 \par
 
 	\begin{subequations}
@@ -232,8 +206,8 @@ Each FBS $f$ attempts to maximize utility function $U_{f}()$ while satisfying th
 	    & - \sum_{i=1}^{K_f}
     	U_{f,i}(\gamma_{f,i}) \label{player_opt} \\
 	    \text{subject to  } \; &
-	   \sum^F_{f=1} \mathbf{\tilde{h}}_{m,f}^H  \mathbf{U}_{f}^*		
-	\mathbf{U}_{f}^{T} \mathbf{\tilde{h}}_{m,f} \leq I^{Threshold}		
+	   \sum^F_{f=1} \tilde{\mathbf{h}}_{m,f}^H  \mathbf{U}_{f}^*		
+	\mathbf{U}_{f}^{T} \tilde{\mathbf{h}}_{m,f} \leq I^{Threshold}		
 	_{m} & m \in \{1 ...M\} 
 		\label{interference_const_gen}\\
         & trace(\mathbf{U}_{f}^H\mathbf{U}_{f}) \leq P^{Total}_{f} \label{power_const_gen}\\
@@ -242,7 +216,7 @@ Each FBS $f$ attempts to maximize utility function $U_{f}()$ while satisfying th
 	\end{subequations}
 
 
-Constraint \eqref{zf_const_gen} imply that $\mathbf{U}_{f}$ is chosen such that  
+The constraints in \eqref{zf_const_gen} imply that $\mathbf{U}_{f}$ is chosen such that  
 	\begin{equation}\label{zf_snr}
 	\gamma_{f,i} = \frac{\|\mathbf{h}^H_{f,i}\mathbf{u}_{f,i}\|^2}
 	{\sigma^2_{noise}  
@@ -256,7 +230,7 @@ Constraint \eqref{zf_const_gen} imply that $\mathbf{U}_{f}$ is chosen such that
 %	As a result, $U_{f,i}(\gamma_{f,i}) $ is concave with respect to $\gamma_{f,i}$.
 	
 \subsection{Concave N-Person game analysis of general setup}
-In this section, the convexity of the resulting problem is analyzed to investigate if the system satisfies the conditions of the Concave N-Person game described \ref{tools}. 
+In this section, the convexity of the resulting problem is analyzed to investigate if the system satisfies the conditions of the concave N-person game described \ref{tools}. 
 
 \begin{enumerate}
 \item
@@ -270,17 +244,17 @@ First, we check that constraints \eqref{interference_const_gen}-\eqref{zf_const_
 
 \begin{gather*}
 	\sum_{f=1}^{f}
-	trace(\mathbf{U}_{f}^H \mathbf{\tilde{h}}_{m,f} \mathbf{\tilde{h}}_{m,f}^H \mathbf{U}_f )\leq 
+	trace(\mathbf{U}_{f}^H \tilde{\mathbf{h}}_{m,f} \tilde{\mathbf{h}}_{m,f}^H \mathbf{U}_f )\leq 
 	I^{Threshold}_{m}.
 \end{gather*}
 This can be further decomposed into a sum of independent, quadratic form terms
 	\begin{gather*}
 	\sum_{f=1}^{f}
 	\sum_{i=1}^{f_i}
-	\mathbf{u}_{f,i}^H\mathbf{\tilde{h}}_{m,f} \mathbf{\tilde{h}}_{m,f}^H
+	\mathbf{u}_{f,i}^H\tilde{\mathbf{h}}_{m,f} \tilde{\mathbf{h}}_{m,f}^H
 	\mathbf{u}_{f,i} \leq I^{Threshold}_{m}
 	\end{gather*}
-in which each matrix $\mathbf{\tilde{h}}_{m,f} \mathbf{\tilde{h}}_{m,f}^H$ is positive semi-definite \cite[p.~8,9]{BoV:04}. The union of independent convex sets forms a convex set \cite{BoV:04}, therefore this constraint is convex. 
+in which each matrix $\tilde{\mathbf{h}}_{m,f} \tilde{\mathbf{h}}_{m,f}^H$ is positive semi-definite \cite[p.~8,9]{BoV:04}. The union of independent convex sets forms a convex set \cite{BoV:04}, therefore this constraint is convex. 
 %This is essentially high dimensional ellipsoid.
 
 \item \
@@ -320,17 +294,17 @@ If $U_{f,i}(\cdot) $ is a general, non-decreasing function, the result is quasic
 \end{enumerate}
 
 \subsection{Potential Game for the General Problem}
-Under the current system model, the game is not a concave N-person game. Nevertheless, since the utility function of individual FBSs are independent of the strategy chosen by other FBSs, due to the spacing assumption, the game still admits a potential function. The investigation of distributed concave programming techniques for solving this problem is left for future work. 
+Under the current system model, the game is not a concave N-person game. Nevertheless, since the utility function of individual FBSs are independent of the strategy chosen by other FBSs, due to the spacing assumption, the game still admits a potential function. The investigation of distributed concave programming techniques for solving this general formulation of the problem is left for future work. 
 
 \section{Concave System Model}\label{conmodel}
 
-The general setup of the game proposed in the previous section does not enable the use of the n-person concave game framework to find normalized Nash equilibrium. We propose a more restrictive model characterized by a unique NNE. This NNE can be be found via a single convex optimization problem which may be solved in a distributed manner across FBSs and macro-users in the network.
+The general setup of the game proposed in the previous section does not enable the use of the N-person concave game framework to find normalized Nash equilibrium. We propose a more restrictive model characterized by a unique, normalized Nash equilibrium. This NNE can be be found via a single convex optimization problem which may be solved in a distributed manner across FBSs and macro-users in the network.
 \par
 Rather than jointly optimizing the power allocation and the zero-forcing beamformers, we now pre-select normalized, zero-forcing beamformers independently, \emph{before} the allocation of powers.
-As we will see later, one result of this restriction is that the degrees of freedom available at the FBS cannot be exploited completely by power allocation. 
+As we will see later, one result of this restriction is that the degrees of freedom available at the FBS cannot be fully exploited during power allocation. 
 
 \subsection{Players: Femtocell Base Stations}\label{conmodel_fbs}
-Femtocell Base Stations are adapted from the general setup to the restricted setup by the following.
+Femtocell base stations are adapted from the general setup to the restricted setup by the following.
 \begin{itemize}
 \item 
 	FBSs with multiple antennas ($T_f \geq 1$) can beamform their transmission using the precoding 	
@@ -359,7 +333,7 @@ such that the transmitted
 \item 
 	FBS $f$ enforces the power constraint given by
 	\begin{gather*}
-	trace(E[\mathbf{s}_f\mathbf{s}_f^H]) =
+	\text{trace}(E[\mathbf{s}_f\mathbf{s}_f^H]) =
 	\sum_{i=1}^{K_{f}} p_{f,i}
 	  \leq P^{Total}_{f}.
 	  	\end{gather*}
@@ -402,8 +376,8 @@ The optimization problem at FBS $f$ for the system described in \ref{conmodel_fb
 	    & - \sum_{i=1}^{K_f}
     	U_{f,i}(\gamma_{f,i}) \label{player_opt_c} \\
 	    \text{subject to  } \; &
-	  \sum^F_{f=1} E\{ \mathbf{\tilde{h}}_{m,f}^T  \mathbf{s}_{f} 						
-	\mathbf{s}_{f}^{H} \mathbf{\tilde{h}}_{m,f}^* \}
+	  \sum^F_{f=1} E\{ \tilde{\mathbf{h}}_{m,f}^T  \mathbf{s}_{f} 						
+	\mathbf{s}_{f}^{H} \tilde{\mathbf{h}}_{m,f}^* \}
 	=
 	\sum_{f=1}^{f}	\sum_{i=1}^{K_f}
 	 p_{f,i}\|\tilde{\mathbf{h}}_{m,f}^T \mathbf{u}_{f,i}\|^2_2
@@ -420,7 +394,7 @@ The optimization problem at FBS $f$ for the system described in \ref{conmodel_fb
 Note that because $\mathbf{U}_{f}$ is pre-selected as a pseudo-inverse to  $\mathbf{H}_f$, the zero-forcing constraint \eqref{zf_const_gen} has been removed.
 
 \subsection{Concave N-Person game analysis of concave setup}
-The convexity of the resulting problem is analyzed to investigate if this system admits the Concave N-Person game framework. 
+The convexity of the resulting problem is analyzed to investigate if this system admits the concave N-person game framework. 
 
 \begin{enumerate}
 
@@ -434,8 +408,8 @@ First, check that the constraints form a convex, closed and bounded set.
 	Note that \eqref{interference_const_c} includes $m$ affine constraints in $\mathbf{p}_{f}$.
 
 \begin{gather*}
-	  \sum^F_{f=1} \mathbf{\tilde{h}}_{m,f}^T  \mathbf{s}_{f} 						
-	\mathbf{s_{f}^{H}} \mathbf{\tilde{h}_{m,f}^*} 
+	  \sum^F_{f=1} \tilde{\mathbf{h}}_{m,f}^T  \mathbf{s}_{f} 						
+	\mathbf{s_{f}^{H}} \tilde{\mathbf{h}_{m,f}^*} 
 	=
 	\sum_{f=1}^{f}	\sum_{i=1}^{K_f}
 	p_{f,i}\|\tilde{\mathbf{h}}_{m,f}^T \mathbf{u}_{f,i}\|
@@ -480,8 +454,8 @@ and satisfying \eqref{potential_game_condition} is proposed to state the followi
 	    \underset{\mathbf{p}}{\text{minimize  }}
 	    & \; \Psi(\mathbf{p}) \label{potential_game} \\
 	    \text{subject to  } \; &
-	  \sum^F_{f=1} E\{\mathbf{\tilde{h}}_{m,f}^T  \mathbf{s}_{f} 						
-	\mathbf{s}_{f}^{H} \mathbf{\tilde{h}}_{m,f}^* \}\leq I^{Threshold}		
+	  \sum^F_{f=1} E\{\tilde{\mathbf{h}}_{m,f}^T  \mathbf{s}_{f} 						
+	\mathbf{s}_{f}^{H} \tilde{\mathbf{h}}_{m,f}^* \}\leq I^{Threshold}		
 	_{m} & m \in \{1 ...m\} 
 		\label{interference_const}\\
         & E\{trace(\mathbf{s}_f\mathbf{s}_f^H)\}  \leq P_{f}^{\text{Total}}  \label{power_const}
@@ -505,10 +479,10 @@ L(\mathbf{\mathbf{p},\boldsymbol{\lambda},\boldsymbol{\chi},\boldsymbol{\nu}}) =
 \sum_{f=1}^F U_{f}(\mathbf{p}_{f}) 
 +\\
 \sum_{m=1}^M \lambda_{m}
-(	  \sum^F_{f=1} \mathbf{\tilde{h}}_{m,f}^T \mathbf{U}_{f} 
+(	  \sum^F_{f=1} \tilde{\mathbf{h}}_{m,f}^T \mathbf{U}_{f} 
 	\mathrm{diag}(\mathbf{p}_{f})^{\frac{1}{2}}
 	E\{\mathbf{x}_{f}\mathbf{x}_{f}^H\}\mathrm{diag}(\mathbf{p}_{f})^{\frac{1}{2}}\mathbf{U}_{f} ^H					
-	 \mathbf{\tilde{h}}_{m,f}^* - I^{Threshold}		
+	 \tilde{\mathbf{h}}_{m,f}^* - I^{Threshold}		
 	_{m} )+
 \\
 \sum_{f=1}^f
@@ -541,9 +515,9 @@ g_f(\boldsymbol{\lambda},\boldsymbol{\chi},\boldsymbol{\nu}) = \underset{p_{f}}{
 U_{f}(\gamma_{f}) 
 \\+
 \sum_{m=1}^M \lambda_{m}
-(\mathbf{\tilde{h}}_{m,f}^T  \mathbf{U}_{f} 
+(\tilde{\mathbf{h}}_{m,f}^T  \mathbf{U}_{f} 
 	\mathrm{diag}(\mathbf{p}_{f})^{\frac{1}{2}}
-	\mathrm{diag}(\mathbf{p}_{f})^{\frac{1}{2}}\mathbf{U}_{f} ^H \mathbf{\tilde{h}_{m,f}^*} - \frac{I^{Threshold}_{m}}{F})
+	\mathrm{diag}(\mathbf{p}_{f})^{\frac{1}{2}}\mathbf{U}_{f} ^H \tilde{\mathbf{h}}_{m,f}^* - \frac{I^{Threshold}_{m}}{F})
 \\
 + 
 \chi_{f}(trace(\mathbf{U}_{f} 
@@ -562,11 +536,11 @@ is used in the following algorithms and simulation results.
 
 \begin{enumerate}
 \item 
-Individual players (FBSs) can solve $ g_f(\boldsymbol{\lambda},\boldsymbol{\chi},\boldsymbol{\nu})$ independently and analytically by setting $\frac{\partial g_f(\lambda, \chi, \nu)}{\partial p_{f,i}} = 0$ 
-and solving for the power of user $i$ of FBS $f$, $p_{f,i}$ using
+Individual players (FBSs) can solve $ g_f(\boldsymbol{\lambda},\boldsymbol{\chi},\boldsymbol{\nu})$ independently and analytically by setting $\frac{\partial g_f(\boldsymbol{\lambda},\boldsymbol{\chi},\boldsymbol{\nu})}{\partial p_{f,i}} = 0$ 
+and solving for the power of user $i$ of FBS $f$, $p_{f,i}$, using
 
 \begin{gather}
-p_{f,i} = \frac{\sigma^2_{\text{noise}}}{(\sum_{m=1}^{m}\lambda_{m}\|\mathbf{\tilde{h}}_{m,f}^T \mathbf{u}_{f,i}\|^2_2
+p_{f,i} = \frac{\sigma^2_{\text{noise}}}{(\sum_{m=1}^{m}\lambda_{m}\|\tilde{\mathbf{h}}_{m,f}^T \mathbf{u}_{f,i}\|^2_2
 +\chi_{f} \|\mathbf{u}_{f,i}\|^2_2
 -\nu_{f,i}
  )}-
@@ -586,7 +560,7 @@ With $g(\boldsymbol{\lambda},\boldsymbol{\chi},\boldsymbol{\nu}) = \sum_{f=1}^{F
 \sum _{f=1}^{f}
 \sum _{i=1}^{K_{f}}
 p_{f,i}
-\|\mathbf{\tilde{h}}_{m,f}^T \mathbf{u}_{f,i}\|^2_2}_{\text{Interference created}}
+\|\tilde{\mathbf{h}}_{m,f}^T \mathbf{u}_{f,i}\|^2_2}_{\text{Interference created}}
 - I_{m}
 ))^+
 \end{gather}
@@ -609,7 +583,7 @@ p_{f,i}
 (-p_{f,i}))^+
 \end{gather}
 also at individual FBSs.
-The algorithm directly enforces non-negativity using $(arg)^+$.
+The algorithm directly enforces non-negativity using $(\cdot)^+$.
 The step size $\alpha^{k}$ is predefined and constant .
  % must satisfy  $\sum_{\mathrm{k=1}}^{\infty} \alpha^{k}$ (cite).
 
@@ -617,8 +591,7 @@ The step size $\alpha^{k}$ is predefined and constant .
 
 \end{enumerate} 
 These local updates impose additional information passing in the network. In particular, macrocell users must monitor their incoming interference then broadcast the updated dual variable $\lambda_{m}^{k+1}$ with which FBSs can update  transmit power. In contrast, however, a central solution would require the same information plus addition information from FBSs to be passed to a central location, a much higher overhead on the system than the proposed distributed solution. 
-
-(Note also that the dual ascent algorithm uses the dual and thus cannot guarantee a feasible solution to the primal problem originally posed. (Discuss constraint tolerance used in simulation? ))
+(Note also that the dual ascent algorithm uses the dual and thus cannot guarantee a feasible solution to the primal problem originally posed.)
 
 \subsection{Beamformer Optimization for Convex Setup}\label{beamformer_optimization}
 When additional degrees of freedom for the choice of $\mathbf{U}_{f}$ are available after satisfying the zero-forcing constraint (i.e. $T_{f}> K_{f}$ ), a preliminary optimization can be performed. In the following, variations of an objective function are considered. Note that because the beamformer $\mathbf{U}_{f}$ is chosen prior to the power allocation, the final values of $p_{f,i}$ are not yet known for this optimization. 
@@ -632,14 +605,15 @@ The first objective function considered corresponds to the Moore-Penrose pseudoi
     \end{array}
     \label{mp_opt}
     \end{equation}
+    in which $\sigma_n$ is the constant receiver noise variance.
     This problem is convex and therefore can be found easily at individual FBSs. 
 
     \par
-Next, the objective function is optimized to minimize the correlation of the chosen beam-former $\mathbf{U}_{f}$ with the known macrocell user channels $\mathbf{\tilde{H}}_{f}$.
+Alternatively, we can optimize to minimize the correlation of the chosen beam-former $\mathbf{U}_{f}$ with the known macrocell user channels $\tilde{\mathbf{h}}_{f}$.
 
     \begin{equation}
     \begin{array}{ll}
-    \underset{\mathbf{U}_{f} }{\text{minimize }}   & \sum^F_{f=1} \sum^{K_f}_{i=1}\|\mathbf{\tilde{H}}_{f}  \mathbf{u}_{f,i}\|^2
+    \underset{\mathbf{U}_{f} }{\text{minimize }}   & \sum^F_{f=1} \sum^{K_f}_{i=1}\|\tilde{\mathbf{h}}_{f}  \mathbf{u}_{f,i}\|^2
     \\
     \mbox{subject to } & \mathbf{H}_{f} \mathbf{U}_{f} = \mathbf{I}
     \end{array}
@@ -651,7 +625,7 @@ This is problem also convex in $\mathbf{U}_{f}$ and can be found at individual F
 Lastly, we consider the case in which FBSs minimize correlation with macrocell users while also maximizing correlation with the channels of its own users. The relative importance of these two terms is weighted by $\alpha.$
     \begin{equation}
     \begin{array}{ll}
-    \underset{\mathbf{U}_{f} }{\text{minimize }}   & \alpha\sum^F_{f=1} \|\mathbf{\tilde{H}}_{f}  \mathbf{U}_{f}\|^2_2
+    \underset{\mathbf{U}_{f} }{\text{minimize }}   & \alpha\sum^F_{f=1} \|\tilde{\mathbf{h}}_{f}  \mathbf{U}_{f}\|^2_2
     -
     (1-\alpha)\sum^F_{f=1} \|\mathbf{H}_{f}  \mathbf{U}_{f}\|^2, \; 0\leq \alpha \leq 1
     \\
@@ -665,16 +639,47 @@ Lastly, we consider the case in which FBSs minimize correlation with macrocell u
 
 \chapter{Simulation and Results}\label{numerical}
 \subsection{Simulation System Description}
-The Heterogeneous Network is simulated by randomly placing $F$ FBSs and $M$ macrocell users within a predefined area. $K_{f}$ femto users are served by FBS $f$ and channels between FBSs and users (both femto and macro) are simulated using rayleigh fading and the attenuation coefficient $d^{- \beta}$ where $\beta=2$ and $d$ is the distance between user and base-station.
-FBS $f$ initializes the transmit power of user $i$ as $p_{f,i} = 0$ such that the  total transmit power constraint for the FBS is not violated. 
+The heterogeneous network is simulated by randomly placing $F$ FBSs and $M$ macrocell users within a predefined area. $K_{f}$ femto users are served by FBS $f$ and channels between FBSs and users (both femto and macro) are simulated using rayleigh fading and the attenuation coefficient $d^{- \beta}$ where $\beta=2$ and $d$ is the distance between user and base-station. Case-specific parameters of the simulation environment are detailed in tables in the following.
 
 
 \subsection{Simulation Results}
 Using the algorithm from \ref{algo1}, convergence to a Nash Equilibrium is observed over different system scenarios. 
-In the following simulations, the value of the potential function (social utility) is plotted over iterations of the algorithm in Section \ref{algo1}. By observing that the total value of player utility functions converges we infer that players a satisfied with their current strategy and a NE of the systsem has been reached.  In addition, we track the \emph{minimum} slack for both the power (over the FBSs) and interference constraints (at macro users) in each iteration. By ensuring that there is no positive slack in the interference constraint, we can verify that player strategies are coupled, and therefore there is a game being played. 
-\subsubsection{Simulation Results for Concave Setup}
+In the following simulations, the value of the potential function is plotted over iterations of the algorithm detailed in Section \ref{algo1}. Note that in this case the potential function value is equivalent to the total capacity of the femto base station network and is therefore referred to as the "social utility". By observing convergence of this value, we can infer that players are satisfied with their current strategy and thus a NNE of the system has been reached.  In addition, we track the \emph{minimum} and \emph{maximum} residual tolerance (referred to as slack) for both the transmit power and interference constraints in each iteration. By ensuring that there is no positive slack in the interference constraint, we can verify that player strategies are coupled, implying that a game is indeed being played. 
+\par
+The first system considered is characterized by the parameters in Table \ref{table1} and the results for the simulations are shown in Figures \ref{single_power1} and \ref{single_power2}. The results of Figure \ref{single_power1} indicate that FBSs do not have sufficient power to begin violating the interference constraints of the macro cell users. This is seen by noting that the maximum slack on the power constraints in Figure \ref{single_power1} is $0$ (no slack) while even the minimum slack on interference is greater than $0$. In contrast, Figure \ref{single_power2} illustrates the case in which FBSs do have sufficient power to violate interference constraints and thus cannot use all of their power. This is seen by noting that the minimum power constraint slack is greater than 0 while the minimum interference constraint slack is $0$. One additional point illustrated in Figure \ref{single_power2} is that this allocation strategy may enforce that some FBSs transmit with very low power in order to satisfy the interference constraints. Noting that the maximum slack in the power constraint of Figure \ref{single_power2} is very close to the total power available (and thus very little power is transmitted) suggests that this strategy may give some FBSs very high utility while others have very low utility. Such "unfairness" can be resolved using methods described in (cite) but are not investigated here.
 
-In the first scenario considered, each FBS has a single antenna and serves a single user as depicted by Figure \ref{system_figure_single}. Figures \ref{single_power1} and \ref{single_power2} show the convergence to a Normalized Nash equilibrium for the case in which FBSs have power constraints of 100 and 150, respectively. In both figures, macro cell users have an interference tolerance of $1\times 10^{-4}$. The comparison of these figures illustrates that when the interference constraints are the limiting constraint on the system, adding additional power to the FBS will not impact the final equilibrium. 
+
+\begin{center}
+\begin{figure}
+\begin{tabular}{ | m{8cm} | m{5cm} | } 
+\hline
+Simulation Area & $30 \times 30$\\ 
+\hline
+Number of macrocell users & 10\\ 
+\hline
+Number of FBSs & 5\\ 
+\hline
+Number of users for each FBSs & 1\\ 
+\hline
+Number of antennas for each FBSs & 1\\ 
+\hline
+Noise at femto cell users & $1$\\ 
+\hline
+FBS power constraint & 10 (Fig. \ref{single_power1}) or 1000 (Fig. \ref{single_power2})  \\ 
+\hline
+Macro user interference threshold & $1$\\ 
+\hline
+Initial value $p_{f,i}$ & $p_{f,i} = 0$\\
+\hline
+Initial value of dual variables $\chi_{f}$, $\lambda_{m}$ and $\nu_{f,i}$ & $\nu_{f,i}=1$, $\lambda_{m}=1 $, $\chi_{f}=1$\\
+\hline
+Dual variable step size $\alpha^k$& $\alpha^k= 1$ $\forall k$\\
+\hline
+\end{tabular}
+\caption{System parameters for Figures \ref{single_power1} and \ref{single_power2}}
+\label{table1}
+\end{figure}
+\end{center}
 
 \begin{figure}[H]
 	\includegraphics[width=\textwidth,height = 10cm]{figures/system_figure_single}
@@ -693,31 +698,77 @@ In the first scenario considered, each FBS has a single antenna and serves a sin
 	  \label{single_power2}
 \end{figure}
 
-We now consider the case in which FBSs have $T_f > K_f$ such that additional degrees of freedom are available for the choice of beamforming matrix $\mathbf{U}_f$. The simulations for the convergence shown in Figures \ref{multiple_antenna1}, \ref{multiple_antenna2} and \ref{multiple_antenna3} compare the cases in which FBSs always serve 5 users but have 7, 15 and 30 antennas respectively. The power constraint on each FBS is chosen as 100 such that the interference tolerance of the macro cell users, $1\times 10^{-4}$, is the limiting constraint and thus coupling the strategies of the FBSs. Here we consider the case in which $\mathbf{U}_f$ is chosen to satisfy the zero-forcing constraint (\ref{zf_const_gen}) using the Moore-Penrose inverse. It is seen from Figures \ref{multiple_antenna1}, \ref{multiple_antenna2} and \ref{multiple_antenna3} that when interference is the limiting constraint, adding additional antennas to the FBS can increase social utility.
 
-\begin{figure}[H]\label{multiple_antenna1}
+We now consider the case in which FBSs have $T_f > K_f$ such that additional degrees of freedom are available for the choice of beamforming matrix $\mathbf{U}_f$. Figures \ref{multiple_antenna1}, \ref{multiple_antenna2} and \ref{multiple_antenna3} compare the systems with parameters detailed in Table \ref{table2}.
+Here we consider the case in which $\mathbf{U}_f$ is chosen according to Problem \ref{mp_opt} to satisfy the zero-forcing constraint (\ref{zf_const_gen}) using the Moore-Penrose inverse. It is seen from Figures \ref{multiple_antenna1}, \ref{multiple_antenna2} and \ref{multiple_antenna3} that when interference is the limiting constraint, additional antennas to the FBS can increase social utility but additional that if too many antennas are available, this method of choosing the beamforming matrix $\mathbf{U}_f$ can lead to decreased utility. This observation further motivates the need for improved methods of choosing $\mathbf{U}_f$.
+
+
+\begin{center}
+\begin{figure}
+\begin{tabular}{ | m{8cm} | m{5cm} | } 
+\hline
+Simulation Area & $30 \times 30$\\ 
+\hline
+Number of macrocell users & 10\\ 
+\hline
+Number of FBSs & 5\\ 
+\hline
+Number of users for each FBSs & 5\\ 
+\hline
+Number of antennas for each FBSs & 7 (Fig. \ref{multiple_antenna1}), 15 (Fig. \ref{multiple_antenna2}), 30 (Fig. \ref{multiple_antenna3})\\ 
+\hline
+Noise at femto cell users & $1$\\ 
+\hline
+FBS power constraint & 1000 \\ 
+\hline
+Macro user interference threshold & $1$\\ 
+\hline
+Initial value $p_{f,i}$ & $p_{f,i} = 0$\\
+\hline
+Initial value of dual variables $\chi_{f}$, $\lambda_{m}$ and $\nu_{f,i}$ & $\nu_{f,i}=1$, $\lambda_{m}=1 $, $\chi_{f}=1$\\
+\hline
+Dual variable step size $\alpha^k$& $\alpha^k= 1$ $\forall k$\\
+\hline
+\end{tabular}
+\caption{System parameters for Figures \ref{single_power1} and \ref{single_power2}}
+\label{table2}
+\end{figure}
+\end{center}
+
+
+\begin{figure}[H]
 	\includegraphics[width= 15cm,height = 10cm]{figures/multiple_antenna1}
 	  \caption{Simulation Environment: 5 FBSs each with multiple antennas ($T_f \geq K_f$) and 5 user in an environment of 10 macro cell users.}
+	  \label{multiple_antenna1}
 \end{figure}
 
-\begin{figure}[H]\label{multiple_antenna2}
+\begin{figure}[H]
 	\includegraphics[width=\textwidth,height = 10cm]{figures/multiple_antenna2}
 	  \caption{Multiple antenna simulation for FBSs with 15 antennas and 5 users.
 	  }
+	  \label{multiple_antenna2}
 \end{figure}
 
-\begin{figure}[H]\label{multiple_antenna3}
+\begin{figure}[H]
 	\includegraphics[width=\textwidth,height = 10cm]{figures/multiple_antenna3}
 	  \caption{Multiple antenna simulation for FBSs with 30 antennas and 5 users.
 	  }
+	  \label{multiple_antenna3}
 \end{figure}
 
 
-Using the same simulation parameters used to generate Figures \ref{multiple_antenna1}, \ref{multiple_antenna2} and \ref{multiple_antenna3}, we also compare the convergence when the solutions to \ref{mp_opt}, and \ref{correlation_opt} are used to choose $\mathbf{U}_f$. The results in Figure \ref{beamformer_comparison} confirm that this choice does have an impact and suggest that choosing a beamformer which minimizes correlation to macro cell users may allow FBSs to increase the power transmitted to users. 
+Last, using the simulation parameters from Table \ref{table2}, we compare the game when $\mathbf{U}_f$ is chosen according to the solutions of Problems \ref{mp_opt}, and \ref{correlation_opt}. The results in Figures \ref{beamformer_comparison} and \ref{beamformer_comparison2} are generated by placing the user and base station locations randomly. These two example are presented to illustrate the following two scenarios. First, in the case (Fig. \ref{beamformer_comparison}) that macro user channels are highly correlated to the user channels of FBSs, we see that Moore-Penrose beamformer resulting from Problem \ref{mp_opt} outperforms the beamformer from Problem \ref{correlation_opt}, minimizing correlation with macro users. In contrast, we see that when user channels are \emph{not} correlated with macro user channels (Fig. \ref{beamformer_comparison2}), the correlation minimizing beamformer can outperform the Moore-Penrose beamformer by utilizing the full power available at the FBS.  
 
-\begin{figure}[H]\label{beamformer_comparison}
+\begin{figure}[H]
 	\includegraphics[width= 15cm,height = 10cm]{figures/beamformer_comparison}
-	  \caption{A comparison between choices for beamformer $\mathbf{U}_f$ using the solutions to the optimization problems in \ref{mp_opt}, and \ref{correlation_opt}.}
+	  \caption{First comparison scenario between choices for beamformer $\mathbf{U}_f$ using the solutions to the optimization problems in \ref{mp_opt}, and \ref{correlation_opt}.}
+	  \label{beamformer_comparison}
+\end{figure}
+
+\begin{figure}[H]
+	\includegraphics[width= 15cm,height = 10cm]{figures/beamformer_comparison2}
+	  \caption{Second comparison scenario between choices for beamformer $\mathbf{U}_f$ using the solutions to the optimization problems in \ref{mp_opt}, and \ref{correlation_opt}.}
+	  \label{beamformer_comparison2}
 \end{figure}
 
 
@@ -725,6 +776,3 @@ Using the same simulation parameters used to generate Figures \ref{multiple_ante
 In this work, the power allocation problem for heterogeneous networks with femto cell base stations has been analyzed. The most general setup of this problem poses difficulties for distributed solutions due to the non-concavity of the resulting utility functions. It is shown that under additional beam-forming constraints on base stations equipped with antenna arrays, a unique, normalized Nash equilibrium can be achieved with a distributed solution. 
 \par
 Future work should extend the system presented here to further generalizations including interference between the femtocell basestations, and potential games for imperfect channel estimation. 
-\newpage
-\bibliography{gt_report}
-\end{document}
