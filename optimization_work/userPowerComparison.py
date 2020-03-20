@@ -18,7 +18,7 @@ def test_power_compare():
     num_antenna = 1
     step_size_pow = 1
     step_size_int = step_size_pow
-    userPowerList = [1, 1000]
+    userPowerList = [10, 750, 1000]
     num_iterations = 500
     numMacroUsers = 10
     numBaseStations = 5
@@ -34,7 +34,7 @@ def test_power_compare():
         fig_main = plt.figure()
         util_plt = fig_main.add_subplot(1, 3, 1)
         # util_plt.set_title("Power Convergence")
-        util_plt.set_ylabel("Social Utility (System Capacity)")
+        util_plt.set_ylabel("Base Station Utility")
         util_plt.set_xlabel("Iteration")
         extra_plt = fig_main.add_subplot(1, 3, 2)
         # extra_plt.set_title("Interference Constraint Slack")
@@ -47,13 +47,15 @@ def test_power_compare():
         check = []
         currNetwork = copy.deepcopy(network)
         currNetwork.change_power_limit(powerLimit)
-        utilities, duals, feasibility, constraints = currNetwork.allocate_power_step(num_iterations, step_size_pow, step_size_int)
+        utilities, min_utilities, max_utilities, duals, feasibility, constraints = currNetwork.allocate_power_step(num_iterations, step_size_pow, step_size_int)
         duals = np.asarray(duals)
-        util_plt.plot(np.arange(num_iterations + 1), utilities, label=f"FBS Power: {powerLimit}")
-        extra_plt.plot(np.arange(num_iterations), constraints[2], label=f"min.")
-        extra_plt.plot(np.arange(num_iterations), constraints[3], label=f"max.")
-        extra_plt1.plot(np.arange(num_iterations), constraints[0], '-', label=f"min.")
-        extra_plt1.plot(np.arange(num_iterations), constraints[1], '-', label=f"max.")
+        util_plt.plot(np.arange(num_iterations), utilities, label=f"FBS Power: {powerLimit}")
+        # util_plt.plot(np.arange(num_iterations), min_utilities, label=f"Min. FBS Utility: {powerLimit}")
+        # util_plt.plot(np.arange(num_iterations), max_utilities, label=f"Max. FBS Utility: {powerLimit}")
+        extra_plt.plot(np.arange(num_iterations), constraints[2], label=f"Min.")
+        extra_plt.plot(np.arange(num_iterations), constraints[3], label=f"Max.")
+        extra_plt1.plot(np.arange(num_iterations), constraints[0], '-', label=f"Min.")
+        extra_plt1.plot(np.arange(num_iterations), constraints[1], '-', label=f"Max.")
 
 
         print(feasibility, "\n")

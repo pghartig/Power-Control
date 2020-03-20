@@ -89,13 +89,14 @@ class HetNet:
 
     def allocate_power_step(self, num_iterations, step_size_pow, step_size_int):
         social_utility_vector = []
+        min_utility = []
+        max_utility = []
         dual_std = []
         feasibility = []
         interferenceSlackMin = []
         interferenceSlackMax = []
         powerSlackMin = []
         powerSlackMax = []
-        social_utility_vector.append(self.get_social_utility())
         #   intitialize with correct duals given the starting allocation
         for i in range(num_iterations):
             dual_std.append(self.get_average_duals())
@@ -103,14 +104,16 @@ class HetNet:
             [player.solve_local_opimization() for player in self.base_stations]
             #   Second step of dual ascent -> update dual variables based on values from first step
             self.__update_dual_variables(step_size_pow, step_size_int, i)
-
-            social_utility_vector.append(self.get_social_utility())
+            utilities = self.get_social_utility()
+            social_utility_vector.append(utilities[0])
+            min_utility.append(utilities[1])
+            max_utility.append(utilities[2])
             interferenceSlackMin.append(np.min(self.trackIntConstraints()))
             interferenceSlackMax.append(np.max(self.trackIntConstraints()))
             powerSlackMin.append(np.min(self.trackPowConstraints()))
             powerSlackMax.append(np.max(self.trackPowConstraints()))
         dual_std.append(self.get_average_duals())
-        return social_utility_vector, dual_std, self.verify_feasibility(), \
+        return social_utility_vector, min_utility, max_utility, dual_std, self.verify_feasibility(), \
                [interferenceSlackMin, interferenceSlackMax, powerSlackMin, powerSlackMax]
 
     def verify_feasibility(self):
@@ -177,11 +180,19 @@ class HetNet:
         return locations
 
     def get_social_utility(self):
-        total = 0
-        for base_station in self.base_stations:
+        total = min_utility = max_utility = 0
+        for ind, base_station in enumerate(self.base_stations):
+            if ind >= 1:
+                if base_station.get_utility() < min_utility:
+                    min_utility = base_station.get_utility()
+                if base_station.get_utility() > max_utility:
+                    max_utility = base_station.get_utility()
+            else:
+                min_utility = max_utility = base_station.get_utility()
             utility = base_station.get_utility()
             total += utility
-        return total
+        return total, min_utility, max_utility
+
 
     def get_base_stations(self):
         return self.base_stations
