@@ -14,11 +14,11 @@ def test_beam_former():
     int_dual = pow_dual
     pos_dual = pow_dual
     num_users = 5
-    num_antenna = 10
+    num_antenna = 9
     step_size_pow = 1e-1
     step_size_int = step_size_pow
     userPowerList = [1000]
-    num_iterations = 1000
+    num_iterations = 500
     numMacroUsers = 10
     numBaseStations = 5
     interferenceThreshold = 1
@@ -41,7 +41,7 @@ def test_beam_former():
     extra_plt1.set_ylabel("Min. Interference Constraint Slack")
     extra_plt1.set_xlabel("Iteration")
     check = []
-    beam_type = ["Moore-Penrose", "Min Correlation"]
+    beam_type = ["Moore-Penrose", "Min Correlation", "null"]
     noisePowers = 0
     for beam_former_choice in range(len(beam_type)):
         currNetwork = copy.deepcopy(network)
@@ -49,14 +49,14 @@ def test_beam_former():
         if beam_former_choice == 1:
             currNetwork.update_beam_formers(optimize=True, imperfectCsiNoisePower=noisePowers)
         if beam_former_choice == 2:
-            currNetwork.update_beam_formers(optimize=True, channel_set=True, imperfectCsiNoisePower=noisePowers)
+            currNetwork.update_beam_formers(optimize=True, null=True, imperfectCsiNoisePower=noisePowers)
         if beam_former_choice == 3:
             currNetwork.update_beam_formers(csi=True, imperfectCsiNoisePower=noisePowers)
 
-        utilities, duals, feasibility, constraints = currNetwork.allocate_power_step(num_iterations, step_size_pow,
-                                                                                     step_size_int)
+        utilities, min_utilities, max_utilities, duals, feasibility, constraints = \
+            currNetwork.allocate_power_step(num_iterations, step_size_pow, step_size_int)
         duals = np.asarray(duals)
-        util_plt.plot(np.arange(num_iterations + 1), utilities, label=f"{beam_type[beam_former_choice]}")
+        util_plt.plot(np.arange(num_iterations ), utilities, label=f"{beam_type[beam_former_choice]}")
         extra_plt.plot(np.arange(num_iterations), constraints[2], label=f"min: {beam_type[beam_former_choice]}")
         extra_plt.plot(np.arange(num_iterations), constraints[3], label=f"max: {beam_type[beam_former_choice]}")
         extra_plt1.plot(np.arange(num_iterations), constraints[0], '-', label=f"min: {beam_type[beam_former_choice]}")

@@ -126,10 +126,11 @@ class HetNet:
                 return False
         return True
 
-    def update_beam_formers(self, optimize=False, channel_set=False, csi=False, imperfectCsiNoisePower=0):
+    def update_beam_formers(self, optimize=False, channel_set=False, csi=False, null=False,
+                            imperfectCsiNoisePower=0):
         for base_station in self.base_stations:
             base_station.update_beamformer(optimize=optimize, channel_set=channel_set,
-                                           csi=csi, imperfectCsiNoisePower=imperfectCsiNoisePower)
+                                           csi=csi, imperfectCsiNoisePower=imperfectCsiNoisePower, null=null)
 
     def __update_dual_variables(self, step_size_pow, step_size_int, itr_idx):
         """
@@ -321,7 +322,8 @@ class FemtoBaseStation:
         self.utility_function = self.utility_function(self.get_user_sinr())
         pass
 
-    def update_beamformer(self, optimize=False, channel_set=False, csi=False, imperfectCsiNoisePower=0):
+    def update_beamformer(self, optimize=False, channel_set=False, csi=False,
+                          null=False, imperfectCsiNoisePower=0):
         """
         For the power vector setup this function is used to update the zero-forcing pre-coder
         to the current down-link channel
@@ -329,7 +331,8 @@ class FemtoBaseStation:
         """
         #   find zero-forcing matrix (should be a tall matrix in general)
         if optimize == True:
-            self.beam_forming_matrix = self.optimize_beam_former(channel_set, imperfectCsiNoisePower)
+            self.beam_forming_matrix = self.optimize_beam_former(channel_set,
+                                                                 imperfectCsiNoisePower, null)
         elif csi == True:
             self.beam_forming_matrix = self.optimize_beam_former_for_csi(imperfectCsiNoisePower)
         else:
@@ -342,10 +345,10 @@ class FemtoBaseStation:
         for column in range(self.beam_forming_matrix.shape[1]):
             self.beam_forming_matrix[:, column] /= np.linalg.norm(self.beam_forming_matrix[:, column])
 
-    def optimize_beam_former(self, set=False, imperfectCsiNoisePower=0):
+    def optimize_beam_former(self, set=False, imperfectCsiNoisePower=0, own_null=False):
         # Setup variables (beamformer)
         x = cp.Variable(self.beam_forming_matrix.shape)
-        if set == True:
+        if set:
             # choose set that can be nulled given the remaining degrees of freedom.
             dof = self.number_antennas - len(self.users)
             correlations = np.linalg.norm(self.H_tilde @ self.beam_forming_matrix, axis=1)
@@ -355,6 +358,15 @@ class FemtoBaseStation:
                 arg = np.argmax(correlations)
                 correlations[arg] = 0
                 macro_user_matrix[i, :] = self.H_tilde[arg, :]
+        if own_null:
+            dof = self.number_antennas - len(self.users)
+            #   First find the covariance of the user channel matrix
+            covariance = self.H.T @ np.conjugate(self.H)
+            #   Second find the eigenvectors corresponding to the smallest eigenvalues
+            eigValues, eigVectors= np.linalg.eig(covariance)
+            check = np.argmin(eigValues)
+            null_space = eigVectors[:, dof:(self.number_antennas-1)]
+            macro_user_matrix = np.vstack((self.H_tilde, null_space.T))
         else:
             macro_user_matrix = self.H_tilde
         constr = [(self.H + np.random.standard_normal(self.H.shape) * np.sqrt(imperfectCsiNoisePower)) @ x
@@ -375,6 +387,10 @@ class FemtoBaseStation:
         :param set:
         :return:
         """
+        #   First find the covariance of the user channel matrix
+        covariance = self.H@np.conjugate(self.H.T)
+        #   Second find the eigenvectors corresponding to the smallest eigenvalues
+        covariance_EVD = np.linalg.eig(covariance)
         # Setup variables (beamformer)
         x = cp.Variable(self.beam_forming_matrix.shape)
         # Setup constraints (Zero-Forcing Constraint)
