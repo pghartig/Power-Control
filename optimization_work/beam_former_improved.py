@@ -10,19 +10,18 @@ solve the central optimization problem
 """
 
 def test_beam_former():
-    pow_dual = 1
+    pow_dual = 1e-4
     int_dual = pow_dual
     pos_dual = pow_dual
     num_users = 5
     num_antenna = 9
-    step_size_pow = 1e-1
+    step_size_pow = 1e1
     step_size_int = step_size_pow
-    userPowerList = [1000]
-    num_iterations = 500
+    num_iterations = 100
     numMacroUsers = 10
     numBaseStations = 5
     interferenceThreshold = 1
-    userPower = userPowerList[0]
+    userPower = 1000
     network = HetNet(numBaseStations, numMacroUsers, num_users, num_antenna, interferenceThreshold, int_dual, pow_dual, pos_dual,
                                    userPower,
                                   power_vector_setup=True,
@@ -41,7 +40,7 @@ def test_beam_former():
     extra_plt1.set_ylabel("Min. Interference Constraint Slack")
     extra_plt1.set_xlabel("Iteration")
     check = []
-    beam_type = ["Moore-Penrose", "Min Correlation", "null"]
+    beam_type = ["Moore-Penrose", "Min Correlation"]
     noisePowers = 0
     for beam_former_choice in range(len(beam_type)):
         currNetwork = copy.deepcopy(network)

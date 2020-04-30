@@ -35,7 +35,7 @@ def test_dist_debug():
     min_correlation.update_beam_formers(csi=True, imperfectCsiNoisePower=noisePowers)
     # Choose number of iterations to allow
     network.update_beam_formers(imperfectCsiNoisePower=noisePowers)
-    utilities, duals, feasibility, intf = network.allocate_power_step(num_iterations, step_size_pow, step_size_int)
+    utilities, min_utilities, max_utilities, duals, feasibility, constraints =  network.allocate_power_step(num_iterations, step_size_pow, step_size_int)
     min_corr_utilities, min_corr_duals, min_corr_feasibility, intf = min_correlation.allocate_power_step(num_iterations, step_size_pow, step_size_int)
     csi_utilities, cse_duals, cse_feasibility, intf = imperfect_optimized.allocate_power_step(num_iterations, step_size_pow, step_size_int)
     duals = np.asarray(duals)
