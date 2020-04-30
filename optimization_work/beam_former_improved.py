@@ -14,7 +14,7 @@ def test_beam_former():
     int_dual = pow_dual
     pos_dual = pow_dual
     num_users = 5
-    num_antenna = 9
+    num_antenna = 15
     step_size_pow = 1e1
     step_size_int = step_size_pow
     num_iterations = 100
