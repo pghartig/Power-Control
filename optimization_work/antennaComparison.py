@@ -10,15 +10,16 @@ first setup the network according using the het_net class then consolidate all o
 """
 
 def test_antenna_compare():
-    pow_dual = 1
+    pow_dual = 1e-3
     int_dual = pow_dual
     pos_dual = pow_dual
     num_users = 5
-    step_size_pow = 1e-1
+    # step_size_pow = 1e-1
+    step_size_pow = 1e1
     step_size_int = step_size_pow
     numAntennaList = [7, 15, 30]
     # numAntennaList = [7]
-    num_iterations = 1000
+    num_iterations = 250
     numMacroUsers = 10
     numBaseStations = 5
     interferenceThreshold = 1
@@ -46,13 +47,13 @@ def test_antenna_compare():
         extra_plt1.set_ylabel("Min. Interference Constraint Slack")
         extra_plt1.set_xlabel("Iteration")
         check = []
-        utilities, duals, feasibility, constraints = currNetwork.allocate_power_step(num_iterations, step_size_pow, step_size_int)
+        utilities, min_utilities, max_utilities, duals, feasibility, constraints = currNetwork.allocate_power_step(num_iterations, step_size_pow, step_size_int)
         duals = np.asarray(duals)
-        util_plt.plot(np.arange(num_iterations + 1), utilities, label=f"FBS Antennas: {num_antenna}")
-        extra_plt.scatter(np.arange(num_iterations), constraints[2], label=f"min.")
-        extra_plt.scatter(np.arange(num_iterations), constraints[3], label=f"max.")
-        extra_plt1.scatter(np.arange(num_iterations), constraints[0], '-', label=f"min.")
-        extra_plt1.scatter(np.arange(num_iterations), constraints[1], '-', label=f"max.")
+        util_plt.plot(np.arange(num_iterations), utilities, label=f"FBS Antennas: {num_antenna}")
+        extra_plt.plot(np.arange(num_iterations), constraints[2], label=f"min.")
+        extra_plt.plot(np.arange(num_iterations), constraints[3], label=f"max.")
+        extra_plt1.plot(np.arange(num_iterations), constraints[0], label=f"min.")
+        extra_plt1.plot(np.arange(num_iterations), constraints[1],  label=f"max.")
 
         print(feasibility, "\n")
         check.append(np.asarray(utilities))
