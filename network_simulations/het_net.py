@@ -253,7 +253,7 @@ class HetNet:
         for bs in self.base_stations:
             bs.power_constraint = new_limit
 
-    def change_number_antenna(self, num_antenna):
+    def add_antennas(self, num_antenna):
         for bs in self.base_stations:
             bs.add_antennas(num_antenna)
 
@@ -404,10 +404,14 @@ class FemtoBaseStation:
         beam_former = x.value
         return beam_former
 
-    def reconize_macro_user(self, users):
-        for macro_user in users:
-            self.macro_users.append(macro_user)
-            macro_user.add_interferer(self)
+    def reconize_macro_user(self, users, added_antennas=0):
+        if added_antennas > 0:
+            for macro_user in users:
+                macro_user.add_interferer(self, added_antennas=added_antennas)
+        else:
+            for macro_user in users:
+                self.macro_users.append(macro_user)
+                macro_user.add_interferer(self)
 
     def connect_users(self, num_femto_users, pos_dual):
         for ind in range(num_femto_users):
@@ -415,9 +419,9 @@ class FemtoBaseStation:
             self.users.append(new_user)
         self.positivity_dual_variable = np.ones((len(self.users))) * pos_dual
 
-    def setup_users(self):
+    def setup_users(self, added_antennas=0):
         for user in self.users:
-            user.setup_channels()
+            user.setup_channels(increase_antennas=added_antennas)
         self.get_user_channel_matrices()
         self.get_macro_channel_matrices()
 
@@ -509,14 +513,11 @@ class FemtoBaseStation:
         return np.asarray(locations)
 
     def add_antennas(self, num_antenna, optimize=False):
-        if num_antenna >= len(self.users):
-            # self.number_antennas = num_antenna
-            self.setup_users()
-            self.reconize_macro_user()
-            self.update_beamformer(optimize=optimize)
-
-        else:
-            raise Exception("cannot have more users than antenna")
+        self.number_antennas += num_antenna
+        self.reconize_macro_user(self.macro_users, added_antennas=num_antenna)
+        self.setup_users(added_antennas=num_antenna)
+        self.update_beamformer(optimize=optimize)
+        pass
 
 
 class User:
@@ -555,13 +556,18 @@ class MacroUser(User):
         self.dual_variable = dual
         self.move()
 
-    def add_interferer(self, interferer: FemtoBaseStation):
+    def add_interferer(self, interferer: FemtoBaseStation , added_antennas=0):
         distance_to_base_station = interferer.get_location() - self.location + interferer.coverage_size * .001
         sqrt_gain = 1 / np.linalg.norm(distance_to_base_station)
-        channel = np.random.randn(interferer.number_antennas) * sqrt_gain
+        if added_antennas > 0:
+            channel = np.random.randn(added_antennas) * sqrt_gain
+            self.downlink_channels[str(interferer.ID)] \
+                = np.concatenate((self.downlink_channels[str(interferer.ID)], channel))
+        else:
+            channel = np.random.randn(interferer.number_antennas) * sqrt_gain
+            self.downlink_channels[str(interferer.ID)] = channel
         if np.any(channel == math.inf) or np.any(channel == - math.inf):
             raise Exception("infinite channel???")
-        self.downlink_channels[str(interferer.ID)] = channel * sqrt_gain
 
     def update_dual_variables(self, step):
         """
@@ -609,15 +615,21 @@ class FemtoUser(User):
         self.noise_power = sigma_square
         self.move()
 
-    def setup_channels(self, increase_antennas=False):
+    def setup_channels(self, increase_antennas=0):
         for base_station in self.network.base_stations:
             # Note the constant in the line below is just added so that users are not placed directly on base stations
             distance_to_base_station = base_station.get_location() - self.location + base_station.coverage_size * .001
             sqrt_gain = 1 / np.linalg.norm(distance_to_base_station)
-            channel = np.random.randn(base_station.number_antennas) * sqrt_gain
+            if increase_antennas >= 1:
+                channel = np.random.randn(increase_antennas) * sqrt_gain
+                self.downlink_channels[str(base_station.ID)] \
+                    = np.concatenate((self.downlink_channels[str(base_station.ID)], channel))
+            else:
+                channel = np.random.randn(base_station.number_antennas) * sqrt_gain
+                self.downlink_channels[str(base_station.ID)] = channel
+
             if np.any(channel == math.inf) or np.any(channel == - math.inf):
                 raise Exception("infinite channel???")
-            self.downlink_channels[str(base_station.ID)] = channel * sqrt_gain
 
     def update_power(self, power):
         self.power_from_base_station = power
