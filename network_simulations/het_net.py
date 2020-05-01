@@ -137,8 +137,10 @@ class HetNet:
         Update all dual variables in the distributed optimization problem
         :return:
         """
-        step_size_pow /= (itr_idx+1)
-        step_size_int /= (itr_idx+1)
+        # step_size_pow /= (itr_idx+1)
+        # step_size_int /= (itr_idx+1)
+        step_size_pow /= 2
+        step_size_int /= 2
         # First update the dual variables of the macro users
         [player.update_dual_variables(step_size_pow) for player in self.base_stations]
         # Second update the dual variables for the other constraints (Note this order doesn't matter)
