@@ -194,7 +194,6 @@ class HetNet:
             total += utility
         return total, min_utility, max_utility
 
-
     def get_base_stations(self):
         return self.base_stations
 
@@ -256,7 +255,7 @@ class HetNet:
 
     def change_number_antenna(self, num_antenna):
         for bs in self.base_stations:
-            bs.change_num_antenna(num_antenna)
+            bs.add_antennas(num_antenna)
 
     def change_interference_constraint(self, interferenceThreshold):
         for mu in self.macro_users:
@@ -509,9 +508,9 @@ class FemtoBaseStation:
             locations.append(user.location)
         return np.asarray(locations)
 
-    def change_num_antenna(self, num_antenna, optimize=False):
+    def add_antennas(self, num_antenna, optimize=False):
         if num_antenna >= len(self.users):
-            self.number_antennas = num_antenna
+            # self.number_antennas = num_antenna
             self.setup_users()
             self.reconize_macro_user()
             self.update_beamformer(optimize=optimize)
@@ -610,8 +609,9 @@ class FemtoUser(User):
         self.noise_power = sigma_square
         self.move()
 
-    def setup_channels(self):
+    def setup_channels(self, increase_antennas=False):
         for base_station in self.network.base_stations:
+            # Note the constant in the line below is just added so that users are not placed directly on base stations
             distance_to_base_station = base_station.get_location() - self.location + base_station.coverage_size * .001
             sqrt_gain = 1 / np.linalg.norm(distance_to_base_station)
             channel = np.random.randn(base_station.number_antennas) * sqrt_gain
