@@ -10,18 +10,18 @@ first setup the network according using the het_net class then consolidate all o
 """
 
 def test_antenna_compare():
-    pow_dual = 1e-3
+    pow_dual = 1e-1
     int_dual = pow_dual
     pos_dual = pow_dual
     num_users = 5
     step_size_pow = 1e-1
     step_size_int = step_size_pow
-    numAntennaList = [1, 2, 2]
+    numAntennaList = [10]
     num_iterations = 200
     numMacroUsers = 10
     numBaseStations = 5
-    interferenceThreshold = 1
-    userPower = 50
+    interferenceThreshold = 100
+    userPower = 1
     num_antenna = 4
     currNetwork = HetNet(numBaseStations, numMacroUsers, num_users, num_antenna, interferenceThreshold,
                          int_dual, pow_dual, pos_dual,
@@ -34,6 +34,8 @@ def test_antenna_compare():
     for add_antenna in numAntennaList:
         cur += add_antenna
         currNetwork.add_antennas(add_antenna)
+        dual_plot = plt.figure()
+        dual_plt = dual_plot.add_subplot(1, 1, 1)
         fig_main = plt.figure()
         util_plt = fig_main.add_subplot(1, 3, 1)
         # util_plt.set_title("Power Convergence")
@@ -41,11 +43,11 @@ def test_antenna_compare():
         util_plt.set_xlabel("Iteration")
         extra_plt = fig_main.add_subplot(1, 3, 2)
         # extra_plt.set_title("Interference Constraint Slack")
-        extra_plt.set_ylabel("Min. Power Constraint Slack")
+        extra_plt.set_ylabel("Power Constraint Slack")
         extra_plt.set_xlabel("Iteration")
         extra_plt1 = fig_main.add_subplot(1, 3, 3)
         # extra_plt1.set_title("Power Constraint Slack")
-        extra_plt1.set_ylabel("Min. Interference Constraint Slack")
+        extra_plt1.set_ylabel("Interference Constraint Slack")
         extra_plt1.set_xlabel("Iteration")
         check = []
         utilities, min_utilities, max_utilities, duals, feasibility, constraints = currNetwork.allocate_power_step(num_iterations, step_size_pow, step_size_int)
@@ -55,11 +57,15 @@ def test_antenna_compare():
         extra_plt.plot(np.arange(num_iterations), constraints[3], label=f"max.")
         extra_plt1.plot(np.arange(num_iterations), constraints[0], label=f"min.")
         extra_plt1.plot(np.arange(num_iterations), constraints[1],  label=f"max.")
+        dual_plt.plot(duals[:, 1], label=f"power.")
+        dual_plt.plot(duals[:, 3], label=f"interference.")
+        dual_plt.legend(loc="lower left")
+
 
         print(feasibility, "\n")
         check.append(np.asarray(utilities))
 
-        util_plt.legend(loc="lower left")
+        util_plt.legend(loc="upper right")
         # extra_plt1.legend(loc="lower left")
         # extra_plt.legend(loc="lower left")
 

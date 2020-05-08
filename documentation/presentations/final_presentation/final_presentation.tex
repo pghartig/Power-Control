@@ -1,6 +1,6 @@
 \documentclass[10pt,tgadventor, onlymath]{beamer}
 
-\usepackage{graphicx,amsmath,amssymb,tikz,psfrag,neuralnetwork, stackengine,array, multirow}
+\usepackage{graphicx,amsmath,amssymb,tikz,psfrag,neuralnetwork, stackengine,array, multirow, fontawesome}
 
 \input defs.tex
 \graphicspath{ {./figures/} }
@@ -77,7 +77,7 @@
 \begin{columns}
 
 \begin{column}{0.5\linewidth}
-	\includegraphics[width=\textwidth]{het_net}
+	\input{femto_network}
 
 \end{column}
 \begin{column}{0.5\linewidth}
@@ -92,6 +92,12 @@
   \end{table}
 \end{column}
 \end{columns}
+\begin{itemize}
+\item 
+	Players $=$ Femto Cell Base Stations (FCBS)
+\item 
+	Player Strategy $=$ FCBS Transmission Scheme
+\end{itemize}
 
 \end{frame}
 
@@ -103,14 +109,14 @@
 \begin{enumerate}
 \item Find a Nash Equilibrium between all players.
 \begin{itemize}
-\item Preferably, one which is unique and close to socially optimal.
+\item Preferably, one which is unique and close to a social optimal.
 \end{itemize}
 \item Achieve the Nash Equilibrium using a distributed solution.
 \begin{itemize}
 \item Minimize resources required to reach Nash Equilibrium.
 \end{itemize}
 \end{enumerate}
-
+\pause
 \begin{center}
 \begin{tikzpicture}{center}
 \node [block] (game) {Game with Many Players};
@@ -124,84 +130,261 @@
 \end{center}
 \end{frame}
 
+\section{Key Tools}
+
 \begin{frame}
-\frametitle{Key Tools}
-\begin{enumerate}
-\item "N-Person Concave Games"
+\frametitle{Key Tools: The Normalized Nash Equilibrium}
+A Nash equilibrium in which the dual variables "prices" corresponding to constraints are equal up to a constant.
+\begin{equation}
+\lambda_f = \frac{\lambda_{0}}{ r_f}, \; \forall [r_0 \cdots r_F] > 0 
+\end{equation}
+Choosing $r_f =1$, all players must pay the same "price" to change their strategy. 
+\end{frame}
+
+\begin{frame}
+\frametitle{Key Tools: N-Person Concave Games}
+Conditions
 \begin{itemize}
-\item Proves existence of (Pure Strategy) Nash Equilibrium.
-\item Provides sufficient conditions for uniqueness of Nash Equilibrium.
+\item All Player utility functions must be concave with respect to their own strategy.
+\item The set of strategies for the \emph{entire} game is convex. 
 \end{itemize}
+Implications
+\begin{itemize}
+\item Immediately proves existence of a pure strategy Nash Equilibrium.
+\item Provides an additional sufficient condition for uniqueness of Nash Equilibrium (diagonally strict concavity).
+\end{itemize}
+Now have a figure of convex sets and a concave function. 
+Conditions
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Key Tools: N-Person Concave Games}
+Conditions
+\begin{itemize}
+\item All Player utility functions must be concave with respect to their own strategy.
+\item The set of strategies for the \emph{entire} game is convex. 
+\end{itemize}
+Implications
+\begin{itemize}
+\item Immediately proves existence of a pure strategy Nash Equilibrium.
+\item Provides an additional sufficient condition for uniqueness of Nash Equilibrium (diagonally strict concavity).
+\end{itemize}
+Picture/equation for diagonal strict concavity
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Key Tools: Potential Games}
+\begin{enumerate}
 \item 
 Potential Games
 \begin{itemize}
 \item "Central" optimization problem with Nash Equilibria as solution(s).
-\item Zero-Forcing beamforming satisfies conditions.
 \end{itemize}
 \end{enumerate}
+
+\begin{equation}\label{potential_game_condition}
+\frac{\partial \Psi(\mathbf{b})}{\partial \mathbf{b}_{f}}
+ =
+ \frac{\partial U_f(\mathbf{b})}{\partial \mathbf{b}_{f}}.
+\end{equation} 
+\end{frame}
+
+\begin{frame}
+\frametitle{Key Tools: Distributed Optimization}
+Some optimization problems may be decomposed into "sub-problems".
+\begin{equation}
+f(x) = \sum_{i = 1}^{F} f_{i}(x_{i})
+\end{equation}
+Decomposing the corresponding Lagrangian gives
+\begin{equation}
+df
+\end{equation}
 \end{frame}
 %
+
 \section{System Model}
 \begin{frame}
 \frametitle{System Model: Femto Base Stations}
+Each FCBS is characterized by:
+\\
 \begin{itemize}
 \item 
-	Have utility function
+	$T_{f}$ antennas to transmit to $K_{f}$ femtocell users
 \item 
-	Have constraints
+	The transmitted 		
+	signal is $\mathbf{s}_{f
+	}= \mathbf{U}_{f}\mathbf{x}_{f}$
 \item 
-	Have required CSI
+	An average power constraint $E\{trace(\mathbf{U}_{f}^H\mathbf{U}_{f})\} \leq P^{Total}_{f} $
+\item 
+	A cost function $U_{f}(\boldsymbol{\gamma}_{f}) =
+	\sum_{i=1}^{K_{f}}
+    	 U_{f,i}(\gamma_{f,i}) $
+    	in which $U_{f,i}(\cdot)$ is a non-decreasing function
+\item 
+	No inter-femto interference.
 \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{System Model: FCBS Users}
+User $i$ of FBS $f$ has signal to interference plus noise ratio (SINR)
+	\begin{equation*}
+	\gamma_{f,i} = \frac{\|\mathbf{h}^H_{f,i}\mathbf{u}_{f,i}\|^2}
+	{\sigma^2_{\text{noise}}   +
+	\underbrace{
+	 \sum_{\tilde{f}=1, \tilde{f}\neq f}^{f} \sum_{u=1}^{K_{\tilde{f}}}
+	\|\mathbf{h}^H_{\tilde{f},u}\mathbf{u}_{\tilde{f},i}\|^2}_{\mathrm{inter-cell}}
+	 + 
+	 \underbrace{
+	 \sum_{\tilde{k}=1, \tilde{k}\neq i}^{K_f}
+	 \|\mathbf{h}^H_{f,\tilde{k}}\mathbf{u}_{f,\tilde{k}}\|^2}_{\mathrm{intra-cell}}},
+	  \; i \in \{1 ... K_f\}
+	  \end{equation*}
 \end{frame}
 
 \begin{frame}
 \frametitle{System Model: Macro Users}
+	A received interference constraint
+	$E\{\sum^F_{f=1} \mathbf{\tilde{h}}_{m,f}^T  \mathbf{U}_{f}					
+	\mathbf{U}_{f}^{H} \mathbf{\tilde{h}}_{m,f}^*\} \leq I^{Threshold}		
+	_{m} $. In which $\mathbf{\tilde{h}}_{m,f}$ is the channel from FBS $f$ to macro user $m$.
+\end{frame}
+
+\begin{frame}
+\frametitle{System Model: General}
 \begin{itemize}
-\item
-	
+\item 
+	No inter-femto cell interference
+\item 
+	FCBS have knowledge of channel states information 
+	\begin{itemize}
+	\item 
+	The downlink channel matrix $\mathbf{H}_f \in \mathbb{C}_{K_{f} \times T_{f}} $ to its $K_{f} $ users.
+	\item The downlink channel matrix $\tilde{\mathbf{H}_{f}} \in \mathbb{C}_{M \times T_{f}}$ 
+	to all $M$ macrocell users.
+	\end{itemize}
 \end{itemize}
+Have figure
 \end{frame}
 
 
-\section{General Formulation}
+\section{General Setups}
+
 \begin{frame}
-\frametitle{Problem Formulation}
+\frametitle{General Problem Formulation}
 \begin{enumerate}
 \item  Player $f$ has beamforming matrix $\mathbf{U}_\mathrm{f}$ as strategy
 \begin{itemize}
 \item $\mathbf{U}_\mathrm{f}$ has an implied power allocation
-\item Non-concave utility function
+\end{itemize}
+\item Enforce $\mathbf{U}_\mathrm{f}$ to be a psuedo inverse of $\mathbf{H}_\mathrm{f}$  (i.e $\mathbf{H}_\mathrm{f}\mathbf{U}_\mathrm{f} = \mathbf{I}$) such that 
+	\begin{equation*}
+	\gamma_{f,i} = \frac{\|\mathbf{h}^H_{f,i}\mathbf{u}_{f,i}\|^2}
+	{\sigma^2_{\text{noise}}}
+	\end{equation*}
+	with 
+	\begin{equation}
+	U_{f}(\boldsymbol{\gamma}_{f}) =
+	\sum_{i=1}^{K_{f}}
+    	 U_{f,i}(\gamma_{f,i}) 
+	\end{equation}
+\begin{itemize}
+\item Trying to reach N-Person concave game
 \end{itemize}
 \end{enumerate}
-Give utility function 
-* Note that this setup still admits a potential function
 \end{frame}
 
 
-\section{Convex Formulation}
+
 \begin{frame}
-\frametitle{Problem Formulation}
+\frametitle{Problem Analysis}
+Does the problem admit the N-Person Concave game Framework? 
+\\
 \begin{enumerate}
-\item  Player $f$ has beamforming matrix $\mathbf{U}_\mathrm{f}$ as variable in game
-\begin{itemize}
-\item  Allows players to null out macro users
-\item Non-concave utility function
-\end{itemize}
-\
-\item  Player $f$ has power vector $\mathbf{p}_\mathrm{f}$ as variable in game
-\begin{itemize}
-\item Concave utility function
-\end{itemize}
+\item  Set of strategies is convex \faThumbsOUp
+\item  $U_{f}(\boldsymbol{\gamma}_{f})$ is only concave if $U_{f,i}(\gamma_{f,i})$ is concave and non-increasing 
+\faThumbsODown
+\end{enumerate}
+
+\end{frame}
+
+\section{Convex Setups}
+
+\begin{frame}
+\frametitle{Convex Problem Formulation}
+\begin{enumerate}
+\item Pre-select $\mathbf{U}_\mathrm{f}$ to be a psuedo inverse of $\mathbf{H}_\mathrm{f}$  (i.e $\mathbf{H}_\mathrm{f}\mathbf{U}_\mathrm{f} = \mathbf{I}$).
+\item 
+	Normalize the columns of $\mathbf{U}_{f}$ such that 
+	 $\|\mathbf{u}_{f,i}\|^2 =1 \;\forall i \in \{1 ... K_{f}\}$.
+\item 
+	Player $f$ chooses a strategy by allocating the transmit powers using the diagonal, power allocation  	
+	matrix $\mathrm{diag}(\mathbf{p}_{f})$ with $p_{f,i} \geq 0, \forall i \in \{1 ... K_{f}\}$
+such that the transmitted 		
+	signal is 
+	$\mathbf{s}_{f	}= \mathbf{U}_{f} 
+	\mathrm{diag}(\mathbf{p}_{f})^{\frac{1}{2}}
+	\mathbf{x}_{f}$.
+\item 
+	Power constraint is now 
+	\begin{gather*}
+	\sum_{i=1}^{K_{f}} p_{f,i}
+	  \leq P^{Total}_{f}.
+	  	\end{gather*}
 \end{enumerate}
 \end{frame}
+
+\begin{frame}
+\frametitle{Problem Analysis}
+Does the problem admit the N-Person Concave game Framework? 
+\\
+\begin{enumerate}
+\item  Set of strategies is convex \faThumbsOUp
+\item  $U_{f}(\boldsymbol{\gamma}_{f})$ is only concave if 
+	$U_{f,i}(\cdot)$ is non-decreasing and \emph{strictly} concave (reasonable assumption) \faThumbsOUp
+\item 
+	Satisfies conditions for the unique Normalized Nash Equilibrium (Diagonally Strict Concavity)  \faThumbsOUp  \faThumbsOU
+\end{enumerate}
+
+\end{frame}
+
+
 
 \section{A Solution}
+\begin{frame}
+\frametitle{Player Optimization Problem}
+Each is attempts to solve the optimization problem given by 
+	\begin{subequations}
+	\begin{align}
+	    \underset{\mathbf{p}_{f} }{\text{minimize  }} \;
+	    & - \sum_{i=1}^{K_f}
+    	U_{f,i}(\gamma_{f,i}) \label{player_opt_c} \\
+	    \text{subject to  }\\
+	  &
+	  \sum^F_{f=1} E\{ \mathbf{\tilde{h}}_{m,f}^T  \mathbf{s}_{f} 						
+	\mathbf{s}_{f}^{H} \mathbf{\tilde{h}}_{m,f}^* \}
+	\leq I^{Threshold}		
+	_{m} & m \in \{1 ...m\} 
+		\label{interference_const_c}\\
+        & 
+        	\sum_{i=1}^{K_{f}} p_{f,i}
+	   \leq P_{f}^{\text{Total}}  \label{power_const_c}\\
+        & p_{f,i} \geq 0 &  i\in \{1 ...K_{f}\} \label{pos_power_const_c}
+	\end{align}
+	\end{subequations}
+
+Note that $\mathbf{U}_{f}$ is pre-selected as a pseudo-inverse to  $\mathbf{H}_f$.
+\end{frame}
+
 
 \begin{frame}
 \frametitle{Steps Outline}
 \begin{enumerate}
 \item
-	Form Potential Function (convex in this case)
+	Form Potential Function
 \item 
 	From the dual
 \item 
@@ -213,12 +396,44 @@ Give utility function
 
 \begin{frame}
 \frametitle{The Potential Function}
+Things to note
+\begin{enumerate}
+\item
+	FCBS utiltiy function $U_{f}(\boldsymbol{\gamma}_{f})$ is independent of all other player strategies. 
+	$U_{f}(\boldsymbol{\gamma}_{f})$ is also strictly concave
+\item 
+	Only the permitted set of strategies is dependent on other strategies. Still we known the entire set is convex.
+\item 
+	If we select all duals to have the same value, there is a unique Normalized Nash Equilibrium.
+\item
+	The sum of concave functions over a convex set is still concave. Does this satisfy the potential function condition?
+\end{enumerate}
+\begin{equation}\label{potential_game_condition}
+\frac{\partial \Psi(\mathbf{b})}{\partial \mathbf{b}_{f}}
+ =
+ \frac{\partial U_f(\mathbf{b})}{\partial \mathbf{b}_{f}}.
+\end{equation} 
+Yes!
+\end{frame}
 
+\begin{frame}
+\frametitle{Distributed Dual Ascent}
+Picture depicting what happens here
 \end{frame}
 
 \section{Simulation Results}
 \begin{frame}
-\frametitle{Convergence with Multiple Antennas}
+\frametitle{Single Antennas with Increasing Power: 10}
+
+\end{frame}
+\begin{frame}
+\frametitle{Single Antennas with Increasing Power: 100}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Multiple Antennas with Constant}
 
 \end{frame}
 

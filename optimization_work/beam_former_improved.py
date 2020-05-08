@@ -10,14 +10,14 @@ solve the central optimization problem
 """
 
 def test_beam_former():
-    pow_dual = 1e-4
+    pow_dual = 1e-1
     int_dual = pow_dual
     pos_dual = pow_dual
     num_users = 5
     num_antenna = 15
-    step_size_pow = 1e1
+    step_size_pow = 1e-1
     step_size_int = step_size_pow
-    num_iterations = 100
+    num_iterations = 200
     numMacroUsers = 10
     numBaseStations = 5
     interferenceThreshold = 1

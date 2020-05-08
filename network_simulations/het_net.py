@@ -137,10 +137,8 @@ class HetNet:
         Update all dual variables in the distributed optimization problem
         :return:
         """
-        # step_size_pow /= (itr_idx+1)
-        # step_size_int /= (itr_idx+1)
-        step_size_pow /= 2
-        step_size_int /= 2
+        # step_size_pow /= 2
+        # step_size_int /= 2
         # First update the dual variables of the macro users
         [player.update_dual_variables(step_size_pow) for player in self.base_stations]
         # Second update the dual variables for the other constraints (Note this order doesn't matter)
@@ -212,14 +210,14 @@ class HetNet:
             pos_dual.append(np.std(bs.positivity_dual_variable))
         for mcu in self.macro_users:
             int_dual.append(mcu.dual_variable)
-        return np.std(pow_dual), np.average(pow_dual), np.std(int_dual), np.average(int_dual)
+        return np.std(pow_dual), np.max(pow_dual), np.std(int_dual), np.max(int_dual)
 
     def trackIntConstraints(self):
         interferenceSlack = []
         for mu in self.macro_users:
             interferenceSlack.append(mu.interference_threshold - mu.interference)
             if mu.interference == 0:
-                print("check")
+                print("no power used")
         return interferenceSlack
 
     def trackPowConstraints(self):
@@ -307,8 +305,10 @@ class FemtoBaseStation:
             self.beam_forming_matrix = cp.Variable((self.number_antennas, num_femto_users), complex=True)
         else:
             self.beam_forming_matrix = np.zeros((self.number_antennas, num_femto_users))
+            #   Initialize power to hit total power constraint
             # self.power_vector = np.ones((num_femto_users)) * (power_limit / (num_femto_users))
-            self.power_vector = np.zeros((num_femto_users))*(power_limit/(num_femto_users))
+            #   Initialize powers at zero
+            self.power_vector = np.zeros((num_femto_users))
 
         self.sigma_square = 1
         self.connect_users(num_femto_users, pos_dual)
@@ -461,8 +461,8 @@ class FemtoBaseStation:
             user.move()
 
     def setup_location(self):
-        return np.array((np.random.randint(0, self.network.coverage_area[0]),
-                         np.random.randint(0, self.network.coverage_area[1])))
+        return np.array((np.random.uniform(0, self.network.coverage_area[0]),
+                         np.random.uniform(0, self.network.coverage_area[1])))
 
     def get_utility(self):
         utility = 0
@@ -483,11 +483,12 @@ class FemtoBaseStation:
             #   prohibit negative powers
             # regularizer = 1e-7
             regularizer = 0
-            check = self.sigma_square/pow(np.linalg.norm(user_i_channel@beamformer.T), 2)
-            check1 = self.sigma_square / (c+regularizer)
+            power_update = self.sigma_square / (c+regularizer) - \
+                           self.sigma_square/pow(np.linalg.norm(user_i_channel@beamformer.T), 2)
             updated_power = np.max((self.sigma_square / (c+regularizer) -
                                     self.sigma_square/pow(np.linalg.norm(user_i_channel@beamformer.T), 2), 0))
-            updated_power = np.min((updated_power, self.power_constraint/self.number_antennas))
+            #   Hard control on not breaking power constraint
+            updated_power = np.min((updated_power, self.power_constraint))
             if math.isnan(updated_power) or np.any(np.isinf(updated_power)):
                 raise Exception("problem with inversion")
             if 0 == updated_power:
@@ -499,7 +500,8 @@ class FemtoBaseStation:
     def update_dual_variables(self, step):
         # update scalar here
         self.power_dual_variable += step * (np.sum(self.power_vector) - self.power_constraint)
-        self.power_dual_variable = np.max((0, self.power_dual_variable))
+        self.power_dual_variable = np.max((1e-2, self.power_dual_variable))
+        # self.power_dual_variable = np.max((0, self.power_dual_variable))
         if math.isnan(self.power_dual_variable) or np.any(np.isinf(self.power_dual_variable)):
             raise Exception("problem with inversion")
         self.positivity_dual_variable += step * (-self.power_vector)
@@ -519,7 +521,6 @@ class FemtoBaseStation:
         self.reconize_macro_user(self.macro_users, added_antennas=num_antenna)
         self.setup_users(added_antennas=num_antenna)
         self.update_beamformer(optimize=optimize)
-        pass
 
 
 class User:
@@ -540,8 +541,8 @@ class User:
         return self.downlink_channels.get(str(base_station_index))
 
     def move(self):
-        self.location = (np.random.randint(self.network.coverage_area[0]),
-                         np.random.randint(self.network.coverage_area[1]))
+        self.location = (np.random.uniform(self.network.coverage_area[0]),
+                         np.random.uniform(self.network.coverage_area[1]))
 
 
 class MacroUser(User):
@@ -559,7 +560,7 @@ class MacroUser(User):
         self.move()
 
     def add_interferer(self, interferer: FemtoBaseStation , added_antennas=0):
-        distance_to_base_station = interferer.get_location() - self.location + interferer.coverage_size * .001
+        distance_to_base_station = interferer.get_location() - self.location + interferer.coverage_size * .01
         sqrt_gain = 1 / np.linalg.norm(distance_to_base_station)
         if added_antennas > 0:
             channel = np.random.randn(added_antennas) * sqrt_gain
@@ -586,7 +587,8 @@ class MacroUser(User):
                 if math.isnan(power * pow(np.linalg.norm(channel @ beamformer), 2)):
                     raise Exception("problem with inversion")
         self.dual_variable += step * (total - self.interference_threshold)
-        self.dual_variable = np.max((0, self.dual_variable))
+        self.dual_variable = np.max((1e-2, self.dual_variable))
+        # self.dual_variable = np.max((0, self.dual_variable))
         if math.isnan(self.dual_variable)or np.any(np.isinf(self.dual_variable)):
             raise Exception("problem with inversion")
         self.interference = total
@@ -620,7 +622,9 @@ class FemtoUser(User):
     def setup_channels(self, increase_antennas=0):
         for base_station in self.network.base_stations:
             # Note the constant in the line below is just added so that users are not placed directly on base stations
-            distance_to_base_station = base_station.get_location() - self.location + base_station.coverage_size * .001
+            distance_to_base_station = base_station.get_location() - self.location  + base_station.coverage_size * .01
+            if np.linalg.norm(distance_to_base_station) == 0:
+                print("check")
             sqrt_gain = 1 / np.linalg.norm(distance_to_base_station)
             if increase_antennas >= 1:
                 channel = np.random.randn(increase_antennas) * sqrt_gain
@@ -654,7 +658,7 @@ class FemtoUser(User):
          (not allowing for users to move between at the moment)
         :return:
         """
-        self.location = self.parent.get_location() + (np.random.randint(-self.parent.coverage_size[0],
+        self.location = self.parent.get_location() + (np.random.uniform(-self.parent.coverage_size[0],
                                                                         self.parent.coverage_size[0]),
-                                                      np.random.randint(-self.parent.coverage_size[1],
+                                                      np.random.uniform(-self.parent.coverage_size[1],
                                                                         self.parent.coverage_size[1]))

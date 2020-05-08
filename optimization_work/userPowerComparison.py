@@ -10,14 +10,14 @@ first setup the network according using the het_net class then consolidate all o
 """
 
 def test_power_compare():
-    pow_dual = 1e-1
+    pow_dual = 1
     int_dual = pow_dual
     pos_dual = pow_dual
     num_users = 1
     num_antenna = 1
-    step_size_pow = 1e-1
+    step_size_pow = 1e-2
     step_size_int = step_size_pow
-    userPowerList = [1, 10]
+    userPowerList = [10, 100]
     num_iterations = 200
     numMacroUsers = 10
     numBaseStations = 5
@@ -30,6 +30,8 @@ def test_power_compare():
     # figsize = (5, 5)
     dual_check = []
     for powerLimit in userPowerList:
+        dual_plot = plt.figure()
+        dual_plt = dual_plot.add_subplot(1, 1, 1)
         fig_main = plt.figure()
         util_plt = fig_main.add_subplot(1, 3, 1)
         # util_plt.set_title("Power Convergence")
@@ -55,15 +57,17 @@ def test_power_compare():
         extra_plt.plot(np.arange(num_iterations), constraints[3], label=f"Max.")
         extra_plt1.plot(np.arange(num_iterations), constraints[0], '-', label=f"Min.")
         extra_plt1.plot(np.arange(num_iterations), constraints[1], '-', label=f"Max.")
-
+        dual_plt.plot(duals[:, 1], label=f"power.")
+        dual_plt.plot(duals[:, 3], label=f"interference.")
+        dual_plt.legend(loc="lower left")
 
         print(feasibility, "\n")
         dual_check.append(duals[0, -1])
         check.append(np.asarray(utilities))
 
-        util_plt.legend(loc="lower left")
-        extra_plt1.legend(loc="lower right")
-        extra_plt.legend(loc="lower right")
+        # util_plt.legend(loc="lower left")
+        # extra_plt1.legend(loc="lower right")
+        # extra_plt.legend(loc="lower right")
 
         plt.tight_layout()
         time_path = "Output/utility_"+f"{time.time()}" + f"{powerLimit}" + "curves.png"
