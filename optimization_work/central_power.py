@@ -25,6 +25,11 @@ network = HetNet(numBaseStations, numMacroUsers, num_users, num_antenna, interfe
                               random=False)
 # figsize = (5, 5)
 dual_check = []
+dual_plot = plt.figure()
+utility = dual_plot.add_subplot(1, 1, 1)
+intf = dual_plot.add_subplot(3, 1, 2)
+pwr = dual_plot.add_subplot(3, 1, 2)
+
 for powerLimit in userPowerList:
     currNetwork = copy.deepcopy(network)
     currNetwork.change_power_limit(powerLimit)
