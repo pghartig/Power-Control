@@ -48,6 +48,7 @@ def test_power_compare():
         check = []
         currNetwork = copy.deepcopy(network)
         currNetwork.change_power_limit(powerLimit)
+        check_central = currNetwork.allocate_power_central()
         utilities, min_utilities, max_utilities, duals, feasibility, constraints = currNetwork.allocate_power_step(num_iterations, step_size_pow, step_size_int)
         duals = np.asarray(duals)
         util_plt.plot(np.arange(num_iterations), utilities, label=f"FBS Power: {powerLimit}")

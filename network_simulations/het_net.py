@@ -116,6 +116,47 @@ class HetNet:
         return social_utility_vector, min_utility, max_utility, dual_std, self.verify_feasibility(), \
                [interferenceSlackMin, interferenceSlackMax, powerSlackMin, powerSlackMax]
 
+    def allocate_power_central(self):
+        #   Setup optimization variables
+        powers = []
+        #   Setup constraints
+        constr = []
+        #   Power Constraints
+        for ind, base_station in enumerate(self.base_stations):
+            powers += [cp.Variable(base_station.power_vector.size, nonneg=True)]
+            constr += [cp.sum(powers[ind])<=base_station.power_constraint]
+            constr += [powers[ind]>=np.zeros(powers[ind].shape)]
+
+        #   Interference Constraints
+        for ind1, macro_user in enumerate(self.macro_users):
+            total_interference = 0
+            for ind2, base_station in enumerate(self.base_stations):
+                channel = macro_user.get_channel_for_base_station(base_station.ID)
+                for ind3, power in enumerate(powers[ind2]): #Assume that iterator for base stations is consistent
+                    beamformer = base_station.beam_forming_matrix[:, ind3]
+                    total_interference += power * pow(np.linalg.norm(channel @ beamformer), 2)
+            constr += [total_interference<=macro_user.interference_threshold]
+
+        #   Setup Utility Function
+        utility = []
+        for ind, base_station in enumerate(self.base_stations):
+            beamformer = base_station.beam_forming_matrix
+            for user_ind, user in enumerate(base_station.users):
+                downlink_channel = user.get_channel_for_base_station(base_station.ID)
+                #   For now assume zero-forcig matrix is used
+                utility += [cp.log(1 + powers[ind][user_ind]*(beamformer.T@beamformer[:, user_ind]))]
+        prob = cp.Problem(cp.Maximize(cp.sum(utility)), constr)
+        prob.solve()
+        #   Now assign the optimized powers to the base stations
+        for ind, base_station in enumerate(self.base_stations):
+            base_station.power_vector = powers[ind].value
+        # Return optimial beamforming matrix
+        interferenceSlack = self.trackIntConstraints()
+        powerSlack = self.trackPowConstraints()
+        utilities = self.get_social_utility()
+        return utilities, interferenceSlack, powerSlack
+
+
     def verify_feasibility(self):
         for bs in self.base_stations:
             if np.sum(bs.power_vector) - (.05 * bs.power_constraint) >= bs.power_constraint or np.any(
@@ -215,7 +256,7 @@ class HetNet:
     def trackIntConstraints(self):
         interferenceSlack = []
         for mu in self.macro_users:
-            interferenceSlack.append(mu.interference_threshold - mu.interference)
+            interferenceSlack.append(mu.interference_threshold - mu.get_intereference())
             if mu.interference == 0:
                 print("no power used")
         return interferenceSlack
@@ -321,7 +362,6 @@ class FemtoBaseStation:
 
     def setup_utility(self):
         self.utility_function = self.utility_function(self.get_user_sinr())
-        pass
 
     def update_beamformer(self, optimize=False, channel_set=False, csi=False,
                           null=False, imperfectCsiNoisePower=0):
@@ -592,6 +632,16 @@ class MacroUser(User):
         if math.isnan(self.dual_variable)or np.any(np.isinf(self.dual_variable)):
             raise Exception("problem with inversion")
         self.interference = total
+
+    def get_intereference(self):
+        total = 0
+        for base_station in self.network.get_base_stations():
+            channel = self.get_channel_for_base_station(base_station.ID)
+            for ind, power in enumerate(base_station.power_vector):
+                beamformer = base_station.beam_forming_matrix[:, ind]
+                total += power * pow(np.linalg.norm(channel @ beamformer), 2)
+        self.interference = total
+        return total
 
     def get_dual_variable(self):
         return self.dual_variable

@@ -21,17 +21,6 @@
 	\end{center}
 }
 
-\newcommand\footlineon{
-  \setbeamertemplate{footline} {
-    \begin{beamercolorbox}[ht=2.5ex,dp=1.125ex,leftskip=.8cm,rightskip=.6cm]{structure}
-      \footnotesize \insertsection
-      \hfill
-      {\insertframenumber}
-    \end{beamercolorbox}
-    \vskip 0.45cm
-  }
-}
-\footlineon
 
 \AtBeginSection[] 
 { 
@@ -346,7 +335,7 @@ Does the problem admit the N-Person Concave game Framework?
 \item  $U_{f}(\boldsymbol{\gamma}_{f})$ is only concave if 
 	$U_{f,i}(\cdot)$ is non-decreasing and \emph{strictly} concave (reasonable assumption) \faThumbsOUp
 \item 
-	Satisfies conditions for the unique Normalized Nash Equilibrium (Diagonally Strict Concavity)  \faThumbsOUp  \faThumbsOU
+	Satisfies conditions for the unique Normalized Nash Equilibrium (Diagonally Strict Concavity)  \faThumbsOUp
 \end{enumerate}
 
 \end{frame}
@@ -423,23 +412,44 @@ Picture depicting what happens here
 
 \section{Simulation Results}
 \begin{frame}
-\frametitle{Single Antennas with Increasing Power: 10}
+\frametitle{Single Antennas with Increasing Power: 1}
+\begin{figure}
+	\includegraphics[width=\textwidth]{results/power2}
+\caption{Single Antenna and User per FCBS with power constraint 1}
+\end{figure}
 
 \end{frame}
 \begin{frame}
-\frametitle{Single Antennas with Increasing Power: 100}
-
+\frametitle{Single Antennas with Increasing Power: 10}
+\begin{figure}
+	\includegraphics[width=\textwidth]{results/power1}
+	\caption{Single Antenna and User per FCBS with power constraint 10}
+\end{figure}
 \end{frame}
 
 
 \begin{frame}
 \frametitle{Multiple Antennas with Constant}
+\begin{figure}
+	\includegraphics[width=\textwidth]{results/antenna1}
+	\caption{5 Users per FCBS with power constraint 1 and 5 Antennas}
+\end{figure}
+\end{frame}
 
+\begin{frame}
+\frametitle{Multiple Antennas with Constant}
+\begin{figure}
+	\includegraphics[width=\textwidth]{results/antenna2}
+	\caption{5 Users per FCBS with power constraint 1 and 10 Antennas (all channels for first 5 
+	antennas are the same as in previous figure)}
+\end{figure}
 \end{frame}
 
 \begin{frame}
 \frametitle{Selecting the Beamformer}
-
+\begin{figure}
+	\includegraphics[width=\textwidth]{results/beamformer_lowpower}
+\caption{5 Users per FCBS with power constraint 1 and 15 Antennas }\end{figure}
 \end{frame}
 
 \section{Conclusion}
