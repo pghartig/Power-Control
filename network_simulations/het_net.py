@@ -144,7 +144,8 @@ class HetNet:
             for user_ind, user in enumerate(base_station.users):
                 downlink_channel = user.get_channel_for_base_station(base_station.ID)
                 #   For now assume zero-forcig matrix is used
-                utility += [cp.log(1 + powers[ind][user_ind]*(beamformer.T@beamformer[:, user_ind]))]
+                utility += [cp.log(1 + powers[ind][user_ind]*pow(
+                    np.linalg.norm(beamformer.T@beamformer[:, user_ind]),2))]
         prob = cp.Problem(cp.Maximize(cp.sum(utility)), constr)
         prob.solve()
         #   Now assign the optimized powers to the base stations
