@@ -12,9 +12,11 @@ pow_dual = 1
 int_dual = pow_dual
 pos_dual = pow_dual
 num_users = 5
-num_antenna = 5
+num_antenna = 4
 userPowerList = [100]
-num_antenna_list = [10, 15, 20, 25, 30, 35]
+# num_antenna_list = [10, 15, 20, 25, 30, 35, 40 , 45, 50]
+add_antenna_list = [1,5,5,5,5,5,5,5]
+
 # num_antenna_list = [10, 15]
 num_iterations = 200
 numMacroUsers = 10
@@ -36,16 +38,20 @@ dual_plot = plt.figure()
 utility_plt = dual_plot.add_subplot(3, 1, 1)
 intf = dual_plot.add_subplot(3, 1, 2)
 pwr = dual_plot.add_subplot(3, 1, 3)
-for num_antenna in num_antenna_list:
-    currNetwork = copy.deepcopy(network)
-    currNetwork.add_antennas(num_antenna)
+currNetwork = copy.deepcopy(network)
+curr_num= num_antenna
+num_antenna_list = []
+for add_antenna in add_antenna_list:
+    curr_num += add_antenna
+    num_antenna_list.append(curr_num)
+    currNetwork.add_antennas(add_antenna)
     utility, intereference, power = currNetwork.allocate_power_central()
     utilities.append(utility[0])
     power_max.append(np.max(power))
     power_min.append(np.min(power))
     interference_max.append(np.max(intereference))
     interference_min.append(np.min(intereference))
-    print(f"num antenna: {num_antenna}")
+    print(f"num antenna: {curr_num}")
     print(utility)
     print(intereference)
     print(power)

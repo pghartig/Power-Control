@@ -92,7 +92,6 @@ class HetNet:
         min_utility = []
         max_utility = []
         dual_std = []
-        feasibility = []
         interferenceSlackMin = []
         interferenceSlackMax = []
         powerSlackMin = []
@@ -113,6 +112,9 @@ class HetNet:
             powerSlackMin.append(np.min(self.trackPowConstraints()))
             powerSlackMax.append(np.max(self.trackPowConstraints()))
         dual_std.append(self.get_average_duals())
+        self.distributed = []
+        for bs in self.base_stations:
+            self.distributed.append(bs.power_vector)
         return social_utility_vector, min_utility, max_utility, dual_std, self.verify_feasibility(), \
                [interferenceSlackMin, interferenceSlackMax, powerSlackMin, powerSlackMax]
 
@@ -152,11 +154,11 @@ class HetNet:
         for ind, base_station in enumerate(self.base_stations):
             base_station.power_vector = powers[ind].value
         # Return optimial beamforming matrix
+        self.central_powers = powers
         interferenceSlack = self.trackIntConstraints()
         powerSlack = self.trackPowConstraints()
         utilities = self.get_social_utility()
         return utilities, interferenceSlack, powerSlack
-
 
     def verify_feasibility(self):
         for bs in self.base_stations:
@@ -520,16 +522,15 @@ class FemtoBaseStation:
                 c += m_user.get_dual_variable() * pow(np.linalg.norm(beamformer @ macro_user_channel.T), 2)
             c += self.power_dual_variable
             user_i_channel = self.users[ind].get_channel_for_base_station(self.ID)
-            # c -= self.positivity_dual_variable[ind]
-            #   prohibit negative powers
+            c -= self.positivity_dual_variable[ind]
             # regularizer = 1e-7
             regularizer = 0
-            power_update = self.sigma_square / (c+regularizer) - \
+            power_update = 1 / (c+regularizer) - \
                            self.sigma_square/pow(np.linalg.norm(user_i_channel@beamformer.T), 2)
             updated_power = np.max((self.sigma_square / (c+regularizer) -
                                     self.sigma_square/pow(np.linalg.norm(user_i_channel@beamformer.T), 2), 0))
             #   Hard control on not breaking power constraint
-            updated_power = np.min((updated_power, self.power_constraint))
+            # updated_power = np.min((updated_power, self.power_constraint))
             if math.isnan(updated_power) or np.any(np.isinf(updated_power)):
                 raise Exception("problem with inversion")
             if 0 == updated_power:
