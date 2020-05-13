@@ -31,9 +31,9 @@ class HetNet:
         self.base_stations = []
         # these loops should probably be moved out of the constructor
         if random == False:
-            [self.base_stations.append(FemtoBaseStation(i, self, max_users, max_antennas, power_vector_setup,
+            [self.base_stations.append(FemtoBaseStation(ind, self, max_users, max_antennas, power_vector_setup,
                                                         pow_dual, pos_dual,
-                                                        power_limit)) for i in range(num_femto_cells)]
+                                                        power_limit)) for ind in range(num_femto_cells)]
         else:
             [self.base_stations.append(FemtoBaseStation(i, self, np.random.randint(1, max_users + 1)
                                                         , np.random.randint(1, max_antennas + 1), power_vector_setup,
@@ -162,7 +162,7 @@ class HetNet:
 
     def verify_feasibility(self):
         for bs in self.base_stations:
-            if np.sum(bs.power_vector) - (.05 * bs.power_constraint) >= bs.power_constraint or np.any(
+            if np.sum(bs.power_vector) >= bs.power_constraint or np.any(
                     bs.power_vector < 0):
                 return False
         for mcu in self.macro_users:
@@ -181,8 +181,8 @@ class HetNet:
         Update all dual variables in the distributed optimization problem
         :return:
         """
-        # step_size_pow /= 2
-        # step_size_int /= 2
+        # step_size_pow /= 1.1
+        # step_size_int /= 1.1
         # First update the dual variables of the macro users
         [player.update_dual_variables(step_size_pow) for player in self.base_stations]
         # Second update the dual variables for the other constraints (Note this order doesn't matter)
@@ -349,9 +349,6 @@ class FemtoBaseStation:
             self.beam_forming_matrix = cp.Variable((self.number_antennas, num_femto_users), complex=True)
         else:
             self.beam_forming_matrix = np.zeros((self.number_antennas, num_femto_users))
-            #   Initialize power to hit total power constraint
-            # self.power_vector = np.ones((num_femto_users)) * (power_limit / (num_femto_users))
-            #   Initialize powers at zero
             self.power_vector = np.zeros((num_femto_users))
 
         self.sigma_square = 1
@@ -387,7 +384,9 @@ class FemtoBaseStation:
                 raise Exception("problem with inversion")
         #   normalize columns of the matrix
         for column in range(self.beam_forming_matrix.shape[1]):
-            self.beam_forming_matrix[:, column] /= np.linalg.norm(self.beam_forming_matrix[:, column])
+            # Corrected normalization so that thi
+            num_users = self.beam_forming_matrix.shape[1]
+            self.beam_forming_matrix[:, column] /= (np.linalg.norm(self.beam_forming_matrix[:, column]))
 
     def optimize_beam_former(self, set=False, imperfectCsiNoisePower=0, own_null=False):
         # Setup variables (beamformer)
@@ -472,8 +471,8 @@ class FemtoBaseStation:
 
     def get_user_channel_matrices(self):
         downlink = []
-        for m_user in self.users:
-            downlink.append(m_user.get_channel_for_base_station(self.ID))
+        for f_user in self.users:
+            downlink.append(f_user.get_channel_for_base_station(self.ID))
         downlink = np.asarray(downlink)
         # H should be a fat matrix to which we will find the right pseudo-inverse to
         self.H = downlink
@@ -516,34 +515,33 @@ class FemtoBaseStation:
     def solve_local_opimization(self):
         for ind, element in enumerate(self.power_vector):
             c = 0
+            #good
             beamformer = self.beam_forming_matrix[:, ind]
+            #good
+            user_i_channel = self.users[ind].get_channel_for_base_station(self.ID)
+            check = user_i_channel@self.beam_forming_matrix
             for m_user in self.macro_users:
+                #good
                 macro_user_channel = m_user.get_channel_for_base_station(self.ID)
                 c += m_user.get_dual_variable() * pow(np.linalg.norm(beamformer @ macro_user_channel.T), 2)
+            #This grows huge -> duals are very small -> good so it wants to give away interference
             c += self.power_dual_variable
-            user_i_channel = self.users[ind].get_channel_for_base_station(self.ID)
             c -= self.positivity_dual_variable[ind]
-            # regularizer = 1e-7
             regularizer = 0
-            power_update = 1 / (c+regularizer) - \
-                           self.sigma_square/pow(np.linalg.norm(user_i_channel@beamformer.T), 2)
-            updated_power = np.max((self.sigma_square / (c+regularizer) -
-                                    self.sigma_square/pow(np.linalg.norm(user_i_channel@beamformer.T), 2), 0))
-            #   Hard control on not breaking power constraint
+            check = user_i_channel @ beamformer.T
+            updated_power = np.max((1 / (c + regularizer) - self.sigma_square /
+                                    pow(np.linalg.norm(user_i_channel @ beamformer.T), 2), 0))
             # updated_power = np.min((updated_power, self.power_constraint))
             if math.isnan(updated_power) or np.any(np.isinf(updated_power)):
                 raise Exception("problem with inversion")
-            if 0 == updated_power:
-                pass
-                #  print("problem")
-                # raise Exception("0 power?")
             self.power_vector[ind] = updated_power
 
     def update_dual_variables(self, step):
         # update scalar here
+        # curr = np.abs(np.sum(self.power_vector) - self.power_constraint)*10
+        # self.power_dual_variable += curr*step * (np.sum(self.power_vector) - self.power_constraint)
         self.power_dual_variable += step * (np.sum(self.power_vector) - self.power_constraint)
-        self.power_dual_variable = np.max((1e-2, self.power_dual_variable))
-        # self.power_dual_variable = np.max((0, self.power_dual_variable))
+        self.power_dual_variable = np.max((0, self.power_dual_variable))
         if math.isnan(self.power_dual_variable) or np.any(np.isinf(self.power_dual_variable)):
             raise Exception("problem with inversion")
         self.positivity_dual_variable += step * (-self.power_vector)
@@ -600,8 +598,9 @@ class MacroUser(User):
         self.interference_threshold = interference_threshold
         self.dual_variable = dual
         self.move()
+        self.step_check = 0
 
-    def add_interferer(self, interferer: FemtoBaseStation , added_antennas=0):
+    def add_interferer(self, interferer: FemtoBaseStation, added_antennas=0):
         distance_to_base_station = interferer.get_location() - self.location + interferer.coverage_size * .01
         sqrt_gain = 1 / np.linalg.norm(distance_to_base_station)
         if added_antennas > 0:
@@ -623,14 +622,12 @@ class MacroUser(User):
         total = 0
         for base_station in self.network.get_base_stations():
             channel = self.get_channel_for_base_station(base_station.ID)
-            for ind, power in enumerate(base_station.power_vector):
-                beamformer = base_station.beam_forming_matrix[:, ind]
-                total += power * pow(np.linalg.norm(channel @ beamformer), 2)
-                if math.isnan(power * pow(np.linalg.norm(channel @ beamformer), 2)):
-                    raise Exception("problem with inversion")
+            total += pow(np.linalg.norm(channel @ base_station.beam_forming_matrix
+                                        @ np.sqrt(np.diag(base_station.power_vector))), 2)
+        # curr = np.abs(total - self.interference_threshold)*10
+        # self.dual_variable += curr*step * (total - self.interference_threshold)
         self.dual_variable += step * (total - self.interference_threshold)
-        self.dual_variable = np.max((1e-2, self.dual_variable))
-        # self.dual_variable = np.max((0, self.dual_variable))
+        self.dual_variable = np.max((0, self.dual_variable))
         if math.isnan(self.dual_variable)or np.any(np.isinf(self.dual_variable)):
             raise Exception("problem with inversion")
         self.interference = total

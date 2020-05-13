@@ -6,20 +6,23 @@ import copy
 import time
 
 """
-first setup the network according using the het_net class then consolidate all of the information from the network to solve the central optimization problem
+first setup the network according using the het_net class then consolidate all of the information from the network to 
+solve the central optimization problem
 """
 
-pow_dual = 1e-3
+pow_dual = 1e-2
 int_dual = pow_dual
 pos_dual = pow_dual
 num_users = 1
 step_size_pow = 1e-2
 step_size_int = step_size_pow
-numAntennaList = [1]
-num_iterations = 50
-numMacroUsers = 10
-numBaseStations = 5
-interferenceThreshold = 1
+numAntennaList = [5]
+num_iterations = 100
+numMacroUsers = 6
+numBaseStations = 3
+# interferenceThreshold = 1
+# userPower = 100
+interferenceThreshold = 100
 userPower = 1
 num_antenna = 1
 currNetwork = HetNet(numBaseStations, numMacroUsers, num_users, num_antenna, interferenceThreshold,
@@ -29,7 +32,10 @@ currNetwork = HetNet(numBaseStations, numMacroUsers, num_users, num_antenna, int
                      random=False)
 central = []
 distributed = []
+central_utilities = []
+distributed_utilities = []
 difference = []
+
 cur = num_antenna
 for ind, add_antenna in enumerate(numAntennaList):
     cur += add_antenna
@@ -40,13 +46,20 @@ for ind, add_antenna in enumerate(numAntennaList):
     utilities, min_utilities, max_utilities, duals, feasibility, constraints =\
         distributed_net.allocate_power_step(num_iterations, step_size_pow, step_size_int)
     distributed.append(distributed_net.distributed)
+    distributed_utilities.append(distributed_net.get_social_utility())
+
+    print(f"Distributed Feasibility: {distributed_net.verify_feasibility()}")
+
 
     central_net = copy.deepcopy(currNetwork)
     central_net.allocate_power_central()
     central.append(central_net.central_powers)
+    central_utilities.append(central_net.get_social_utility())
+    print(f"Central Feasibility: {central_net.verify_feasibility()}")
 
     power_dif = []
     for ind1, bs in enumerate(central[ind]):
+        print(f" central: {central[ind][ind1].value} vs distr: {distributed[ind][ind1]}")
         power_dif.append(np.linalg.norm(central[ind][ind1].value - distributed[ind][ind1]))
     difference.append(power_dif)
     duals = np.asarray(duals)
@@ -71,12 +84,10 @@ for ind, add_antenna in enumerate(numAntennaList):
     extra_plt.plot(np.arange(num_iterations), constraints[3], label=f"max.")
     extra_plt1.plot(np.arange(num_iterations), constraints[0], label=f"min.")
     extra_plt1.plot(np.arange(num_iterations), constraints[1],  label=f"max.")
+    # np.std(pow_dual), np.max(pow_dual), np.std(int_dual), np.max(int_dual)
     dual_plt.plot(duals[:, 1], label=f"power.")
     dual_plt.plot(duals[:, 3], label=f"interference.")
     dual_plt.legend(loc="lower left")
-
-
-    print(feasibility, "\n")
     check.append(np.asarray(utilities))
 
     util_plt.legend(loc="upper right")
@@ -86,6 +97,9 @@ for ind, add_antenna in enumerate(numAntennaList):
     plt.tight_layout()
     time_path = "Output/utility_"+f"{time.time()}" + f"{num_antenna}" + "curves.png"
 
-print(np.sum(difference))
-plt.show()
+print(f"central utilities {central_utilities[0]}")
+print(f"dist utilities {distributed_utilities[0]}")
+print(f"Power comparison {np.sum(difference)}")
+
+# plt.show()
 
