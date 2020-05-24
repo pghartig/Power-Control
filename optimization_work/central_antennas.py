@@ -3,6 +3,7 @@ import cvxpy as cp
 import matplotlib.pyplot as plt
 import numpy as np
 import copy
+import seaborn
 import time
 
 """
@@ -58,17 +59,19 @@ for add_antenna in add_antenna_list:
 
 utility_plt.plot(num_antenna_list, utilities, label=f"Social Utility.")
 intf.plot(num_antenna_list, interference_max, label=f"Max.")
-intf.plot(num_antenna_list, interference_min, label=f"min.")
+intf.plot(num_antenna_list, interference_min, label=f"Min.")
 pwr.plot(num_antenna_list, power_max, label=f"Max.")
 pwr.plot(num_antenna_list, power_min, label=f"Min.")
 intf.set_ylabel("Interference Constraint Slack")
-intf.set_xlabel("Number Antenna")
+# intf.set_xlabel("Number Antenna")
 pwr.set_ylabel("Power Constraint Slack")
 pwr.set_xlabel("Number Antenna")
 utility_plt.set_ylabel("Social Utility")
-utility_plt.set_xlabel("Number Antenna")
-utility_plt.legend(loc="upper right")
+# utility_plt.set_xlabel("Number Antenna")
+utility_plt.legend(loc="lower right")
 intf.legend(loc="upper right")
 pwr.legend(loc="upper right")
-
+seaborn.despine(ax=utility_plt, offset=0)
+seaborn.despine(ax=intf, offset=0)
+seaborn.despine(ax=pwr, offset=0)
 plt.show()

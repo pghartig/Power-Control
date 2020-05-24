@@ -14,16 +14,16 @@ pow_dual = 1e-2
 int_dual = pow_dual
 pos_dual = pow_dual
 num_users = 1
-step_size_pow = 1e-2
+step_size_pow = 1e-1
 step_size_int = step_size_pow
 numAntennaList = [5]
-num_iterations = 100
-numMacroUsers = 6
+num_iterations = 1000
+numMacroUsers = 3
 numBaseStations = 3
 # interferenceThreshold = 1
 # userPower = 100
-interferenceThreshold = 100
-userPower = 1
+interferenceThreshold = 1
+userPower = 1000
 num_antenna = 1
 currNetwork = HetNet(numBaseStations, numMacroUsers, num_users, num_antenna, interferenceThreshold,
                      int_dual, pow_dual, pos_dual,
@@ -101,5 +101,6 @@ print(f"central utilities {central_utilities[0]}")
 print(f"dist utilities {distributed_utilities[0]}")
 print(f"Power comparison {np.sum(difference)}")
 
-# plt.show()
+plt.show()
+
 

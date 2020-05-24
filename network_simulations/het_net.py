@@ -100,7 +100,7 @@ class HetNet:
         for i in range(num_iterations):
             dual_std.append(self.get_average_duals())
             #   First step in dual ascent -> find dual function
-            [player.solve_local_opimization() for player in self.base_stations]
+            [player.solve_local_opimization(step = step_size_pow) for player in self.base_stations]
             #   Second step of dual ascent -> update dual variables based on values from first step
             self.__update_dual_variables(step_size_pow, step_size_int, i)
             utilities = self.get_social_utility()
@@ -181,8 +181,10 @@ class HetNet:
         Update all dual variables in the distributed optimization problem
         :return:
         """
-        # step_size_pow /= 1.1
-        # step_size_int /= 1.1
+        step_size_pow = 1/(itr_idx+1)
+        step_size_int = 1/(itr_idx+1)
+        # step_size_pow /= 2
+        # step_size_int /= 2
         # First update the dual variables of the macro users
         [player.update_dual_variables(step_size_pow) for player in self.base_stations]
         # Second update the dual variables for the other constraints (Note this order doesn't matter)
@@ -194,7 +196,7 @@ class HetNet:
         :return:
         """
         for fc_base_station in self.base_stations:
-            fc_base_station.reconize_macro_user(self.macro_users)
+            fc_base_station.recognize_macro_user(self.macro_users)
 
     def setup_base_stations(self):
         self.central_utility_function = 0
@@ -328,6 +330,15 @@ class HetNet:
             self.update_macro_cells()
             self.setup_base_stations()
 
+    def get_admm_term(self):
+        interferenceSlack = []
+        for mu in self.macro_users:
+            interferenceSlack.append(mu.interference_threshold - mu.get_intereference())
+        powerSlack = []
+        for bs in self.base_stations:
+            powerSlack.append(bs.power_constraint - np.sum(bs.power_vector))
+
+
 
 class FemtoBaseStation:
     """
@@ -358,7 +369,9 @@ class FemtoBaseStation:
         self.H = None
         self.H_tilde = None
         self.power_vector_setup = power_vector_setup
-        self.power_dual_variable = pow_dual
+        # self.power_dual_variable = pow_dual
+        self.power_dual_variable = np.random.uniform(1e-3, 100)
+
 
     def setup_utility(self):
         self.utility_function = self.utility_function(self.get_user_sinr())
@@ -386,7 +399,7 @@ class FemtoBaseStation:
         for column in range(self.beam_forming_matrix.shape[1]):
             # Corrected normalization so that thi
             num_users = self.beam_forming_matrix.shape[1]
-            self.beam_forming_matrix[:, column] /= (np.linalg.norm(self.beam_forming_matrix[:, column]))
+            self.beam_forming_matrix[:, column] /= np.linalg.norm(self.beam_forming_matrix[:, column])
 
     def optimize_beam_former(self, set=False, imperfectCsiNoisePower=0, own_null=False):
         # Setup variables (beamformer)
@@ -444,11 +457,11 @@ class FemtoBaseStation:
         utility += [cp.norm2(x)]
         prob = cp.Problem(cp.Minimize(cp.sum(utility)), constr)
         prob.solve()
-        # Return optimial beamforming matrix
+        # Return optimal beamforming matrix
         beam_former = x.value
         return beam_former
 
-    def reconize_macro_user(self, users, added_antennas=0):
+    def recognize_macro_user(self, users, added_antennas=0):
         if added_antennas > 0:
             for macro_user in users:
                 macro_user.add_interferer(self, added_antennas=added_antennas)
@@ -461,7 +474,8 @@ class FemtoBaseStation:
         for ind in range(num_femto_users):
             new_user = FemtoUser(ind, self.network, self, sigma_square=self.sigma_square)
             self.users.append(new_user)
-        self.positivity_dual_variable = np.ones((len(self.users))) * pos_dual
+        # self.positivity_dual_variable = np.ones((len(self.users))) * pos_dual
+        self.positivity_dual_variable = np.random.uniform(1e-1, 1, len(self.users))
 
     def setup_users(self, added_antennas=0):
         for user in self.users:
@@ -512,23 +526,27 @@ class FemtoBaseStation:
             utility += np.log(1 + user.get_sinr())
         return utility
 
-    def solve_local_opimization(self):
+    def solve_local_opimization(self, step=0):
         for ind, element in enumerate(self.power_vector):
             c = 0
+            admm_term = 0
             #good
             beamformer = self.beam_forming_matrix[:, ind]
             #good
             user_i_channel = self.users[ind].get_channel_for_base_station(self.ID)
-            check = user_i_channel@self.beam_forming_matrix
             for m_user in self.macro_users:
                 #good
                 macro_user_channel = m_user.get_channel_for_base_station(self.ID)
-                c += m_user.get_dual_variable() * pow(np.linalg.norm(beamformer @ macro_user_channel.T), 2)
+                correlation_square = pow(np.linalg.norm(beamformer @ macro_user_channel.T), 2)
+                c += m_user.get_dual_variable() * correlation_square
+                admm_term += step*np.linalg.norm(m_user.interference_threshold -
+                                                m_user.get_intereference()) * correlation_square
             #This grows huge -> duals are very small -> good so it wants to give away interference
             c += self.power_dual_variable
-            c -= self.positivity_dual_variable[ind]
+            # c -= self.positivity_dual_variable[ind]
             regularizer = 0
-            check = user_i_channel @ beamformer.T
+            updated_power = 1 / (c + regularizer) - self.sigma_square \
+                            /pow(np.linalg.norm(user_i_channel @ beamformer.T), 2)
             updated_power = np.max((1 / (c + regularizer) - self.sigma_square /
                                     pow(np.linalg.norm(user_i_channel @ beamformer.T), 2), 0))
             # updated_power = np.min((updated_power, self.power_constraint))
@@ -541,7 +559,7 @@ class FemtoBaseStation:
         # curr = np.abs(np.sum(self.power_vector) - self.power_constraint)*10
         # self.power_dual_variable += curr*step * (np.sum(self.power_vector) - self.power_constraint)
         self.power_dual_variable += step * (np.sum(self.power_vector) - self.power_constraint)
-        self.power_dual_variable = np.max((0, self.power_dual_variable))
+        self.power_dual_variable = np.max((1e-9, self.power_dual_variable))
         if math.isnan(self.power_dual_variable) or np.any(np.isinf(self.power_dual_variable)):
             raise Exception("problem with inversion")
         self.positivity_dual_variable += step * (-self.power_vector)
@@ -558,7 +576,7 @@ class FemtoBaseStation:
 
     def add_antennas(self, num_antenna, optimize=False):
         self.number_antennas += num_antenna
-        self.reconize_macro_user(self.macro_users, added_antennas=num_antenna)
+        self.recognize_macro_user(self.macro_users, added_antennas=num_antenna)
         self.setup_users(added_antennas=num_antenna)
         self.update_beamformer(optimize=optimize)
 
@@ -596,7 +614,8 @@ class MacroUser(User):
         User.__init__(self, ID, network)
         self.interference = 0
         self.interference_threshold = interference_threshold
-        self.dual_variable = dual
+        # self.dual_variable = dual
+        self.dual_variable = np.random.uniform(1e-3, 100)
         self.move()
         self.step_check = 0
 
@@ -624,10 +643,9 @@ class MacroUser(User):
             channel = self.get_channel_for_base_station(base_station.ID)
             total += pow(np.linalg.norm(channel @ base_station.beam_forming_matrix
                                         @ np.sqrt(np.diag(base_station.power_vector))), 2)
-        # curr = np.abs(total - self.interference_threshold)*10
-        # self.dual_variable += curr*step * (total - self.interference_threshold)
-        self.dual_variable += step * (total - self.interference_threshold)
-        self.dual_variable = np.max((0, self.dual_variable))
+        self.dual_variable += step * (total - self.interference_threshold) \
+                              + np.linalg.norm(total - self.interference_threshold)
+        self.dual_variable = np.max((1e-9, self.dual_variable))
         if math.isnan(self.dual_variable)or np.any(np.isinf(self.dual_variable)):
             raise Exception("problem with inversion")
         self.interference = total

@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import copy
 import time
+import seaborn
 
 """
 first setup the network according using the het_net class then consolidate all of the information from the network to solve the central optimization problem
@@ -11,9 +12,10 @@ first setup the network according using the het_net class then consolidate all o
 pow_dual = 1
 int_dual = pow_dual
 pos_dual = pow_dual
-num_users = 10
-num_antenna = 15
-userPowerList = [10, 20 , 50 , 100 ]
+num_users = 5
+num_antenna = 10
+SNRs_dB = np.linspace(1, 15, 5)
+userPowerList = np.power(10, SNRs_dB/10)
 numMacroUsers = 20
 numBaseStations = 5
 interferenceThreshold = 1
@@ -55,20 +57,21 @@ for beam_former_choice in range(len(beam_type)):
 
 
     utility_plt.plot(userPowerList, utilities, label=f"Social Utilit: {beam_type[beam_former_choice]}.")
-    intf.plot(userPowerList, interference_max, label=f"Max: {beam_type[beam_former_choice]}")
-    intf.plot(userPowerList, interference_min, label=f"Min: {beam_type[beam_former_choice]}")
-    pwr.plot(userPowerList, power_max, label=f"Max: {beam_type[beam_former_choice]}")
-    pwr.plot(userPowerList, power_min, label=f"Min: {beam_type[beam_former_choice]}")
+    # intf.plot(userPowerList, interference_max, label=f"Max: {beam_type[beam_former_choice]}")
+    intf.plot(SNRs_dB, interference_min, label=f"Min: {beam_type[beam_former_choice]}")
+    # pwr.plot(userPowerList, power_max, label=f"Max: {beam_type[beam_former_choice]}")
+    pwr.plot(SNRs_dB, power_min, label=f"Min: {beam_type[beam_former_choice]}")
 
 intf.set_ylabel("Interference Constraint Slack")
-intf.set_xlabel("Power")
+pwr.set_xlabel("FCBS Power (dB)")
 pwr.set_ylabel("Power Constraint Slack")
-pwr.set_xlabel("Power")
 utility_plt.set_ylabel("Social Utility")
-utility_plt.set_xlabel("Power")
 utility_plt.legend(loc="upper left")
 intf.legend(loc="upper left")
 pwr.legend(loc="upper left")
 time_path = "Output/utility_" + f"{time.time()}" + "curves.png"
 plt.savefig(time_path, format="png")
+seaborn.despine(ax=utility_plt, offset=0)
+seaborn.despine(ax=intf, offset=0)
+seaborn.despine(ax=pwr, offset=0)
 plt.show()
