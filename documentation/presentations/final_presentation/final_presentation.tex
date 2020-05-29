@@ -66,7 +66,7 @@
 \begin{columns}
 
 \begin{column}{0.5\linewidth}
-	\input{femto_network}
+	\includegraphics[width=\textwidth]{het_net}
 
 \end{column}
 \begin{column}{0.5\linewidth}
@@ -91,12 +91,35 @@
 
 \end{frame}
 
+%\begin{frame}
+%\frametitle{The Heterogeneous Network Game}
+%\begin{table}
+%    \setlength{\extrarowheight}{2pt}
+%    \begin{tabular}{cc|c|c|}
+%      & \multicolumn{1}{c}{} & \multicolumn{2}{c}{Player $2$}\\
+%      & \multicolumn{1}{c}{} & \multicolumn{1}{c}{$A$}  & \multicolumn{1}{c}{$B$} \\\cline{3-4}
+%      \multirow{2}*{Player $1$}  & $A$ & $(8,8)$ & $(2,15)$ \\\cline{3-4}
+%      & $B$ & $(15,2)$ & $(3,3)$ \\\cline{3-4}
+%    \end{tabular}
+%  \end{table}
+%\bigskip
+%\begin{itemize}
+%\item 
+%	Players $=$ Femto Cell Base Stations (FCBS)
+%\item 
+%	Player Strategy $=$ FCBS Transmission Scheme
+%\end{itemize}
+%
+%\end{frame}
+
 
 \section{Project Goals}
 
 \begin{frame}
 \frametitle{Objectives}
 \begin{enumerate}
+\setlength\itemsep{2em}
+
 \item Find a Nash Equilibrium between all players.
 \begin{itemize}
 \item Preferably close to a social optimal.
@@ -162,7 +185,7 @@ Potential Games
  \frac{\partial U_f(\mathbf{b})}{\partial \mathbf{b}_{f}}.
 \end{equation} 
 \item 
-When all utility functions are strictly convex, the optimum of the potential function over the feasible set corresponds to a NNE.
+When all utility functions are strictly concave, the optimum of the potential function over the feasible set corresponds to a NNE.
 \end{enumerate}
 \end{frame}
 
@@ -182,11 +205,13 @@ L(x,y) = \sum_{i = 1}^{F} L_i(x_i,y)
 \section{System Model}
 \begin{frame}
 \frametitle{System Model: Femto Base Stations}
-Each FCBS is characterized by:
+Each FCBS is a player in the game and is characterized by:
 \\
 \begin{itemize}
+\setlength\itemsep{2em}
+
 \item 
-	$T_{f}$ antennas to transmit to $K_{f}$ femtocell users.
+	$T_{f}$ antennas to transmit to $K_{f}$ femtocell users ($T_{f} \geq K_{f}$).
 \item 
 	The transmitted 		
 	signal is $\mathbf{s}_{f
@@ -194,30 +219,29 @@ Each FCBS is characterized by:
 \item 
 	An average power constraint $E\{trace(\mathbf{U}_{f}^H\mathbf{U}_{f})\} \leq P^{Total}_{f} $.
 \item 
-	A cost function $U_{f}(\boldsymbol{\gamma}_{f}) =
+	A utility function $U_{f}(\boldsymbol{\gamma}_{f}) =
 	\sum_{i=1}^{K_{f}}
     	 U_{f,i}(\gamma_{f,i}) $
     	in which $U_{f,i}(\cdot)$ is a non-decreasing function.
-
 \end{itemize}
 \end{frame}
 
-\begin{frame}
-\frametitle{System Model: FCBS Users}
-User $i$ of FBS $f$ has signal to interference plus noise ratio (SINR)
-	\begin{equation*}
-	\gamma_{f,i} = \frac{\|\mathbf{h}^H_{f,i}\mathbf{u}_{f,i}\|^2}
-	{\sigma^2_{\text{noise}}   +
-	\underbrace{
-	 \sum_{\tilde{f}=1, \tilde{f}\neq f}^{f} \sum_{u=1}^{K_{\tilde{f}}}
-	\|\mathbf{h}^H_{\tilde{f},u}\mathbf{u}_{\tilde{f},i}\|^2}_{\mathrm{inter-cell}}
-	 + 
-	 \underbrace{
-	 \sum_{\tilde{k}=1, \tilde{k}\neq i}^{K_f}
-	 \|\mathbf{h}^H_{f,\tilde{k}}\mathbf{u}_{f,\tilde{k}}\|^2}_{\mathrm{intra-cell}}},
-	  \; i \in \{1 ... K_f\}
-	  \end{equation*}
-\end{frame}
+%\begin{frame}
+%\frametitle{System Model: FCBS Users}
+%User $i$ of FBS $f$ has signal to interference plus noise ratio (SINR)
+%	\begin{equation*}
+%	\gamma_{f,i} = \frac{\|\mathbf{h}^H_{f,i}\mathbf{u}_{f,i}\|^2}
+%	{\sigma^2_{\text{noise}}   +
+%	\underbrace{
+%	 \sum_{\tilde{f}=1, \tilde{f}\neq f}^{f} \sum_{u=1}^{K_{\tilde{f}}}
+%	\|\mathbf{h}^H_{\tilde{f},u}\mathbf{u}_{\tilde{f},i}\|^2}_{\mathrm{inter-cell}}
+%	 + 
+%	 \underbrace{
+%	 \sum_{\tilde{k}=1, \tilde{k}\neq i}^{K_f}
+%	 \|\mathbf{h}^H_{f,\tilde{k}}\mathbf{u}_{f,\tilde{k}}\|^2}_{\mathrm{intra-cell}}},
+%	  \; i \in \{1 ... K_f\}
+%	  \end{equation*}
+%\end{frame}
 
 \begin{frame}
 \frametitle{System Model: Macro Users}
@@ -225,13 +249,19 @@ User $i$ of FBS $f$ has signal to interference plus noise ratio (SINR)
 	\begin{equation}
 	E\{\sum^F_{f=1} \mathbf{\tilde{h}}_{m,f}^T  \mathbf{U}_{f}					
 	\mathbf{U}_{f}^{H} \mathbf{\tilde{h}}_{m,f}^*\} \leq I^{Threshold}		
-	_{m} .
-	\end{equation} In which $\mathbf{\tilde{h}}_{m,f}$ is the channel from FBS $f$ to macro user $m$.
+	_{m}
+	\end{equation}
+	\bigskip
+	\centering
+		\includegraphics[scale=.2]{het_net}
+
 \end{frame}
 
 \begin{frame}
 \frametitle{System Model: General}
 \begin{itemize}
+\setlength\itemsep{2em}
+
 \item 
 	No inter-femto cell interference
 \item 
@@ -249,8 +279,11 @@ User $i$ of FBS $f$ has signal to interference plus noise ratio (SINR)
 \section{General Setups}
 
 \begin{frame}
+
 \frametitle{General Problem Formulation}
 \begin{enumerate}
+\setlength\itemsep{2em}
+
 \item  Player $f$ has beamforming matrix $\mathbf{U}_f$ as strategy
 \begin{itemize}
 \item $\mathbf{U}_f$ has an implied power allocation
@@ -266,9 +299,6 @@ User $i$ of FBS $f$ has signal to interference plus noise ratio (SINR)
 	\sum_{i=1}^{K_{f}}
     	 U_{f,i}(\gamma_{f,i}) .
 	\end{equation*}
-\begin{itemize}
-\item We will eventually try to reach N-Person concave game
-\end{itemize}
 \end{enumerate}
 \end{frame}
 
@@ -279,9 +309,10 @@ User $i$ of FBS $f$ has signal to interference plus noise ratio (SINR)
 Does the problem admit the N-Person Concave game Framework? 
 \\
 \begin{enumerate}
+\setlength\itemsep{2em}
 \item  Set of strategies is convex \faThumbsOUp
 \pause
-\item  $U_{f}(\boldsymbol{\gamma}_{f})$ is concave \emph{only} when $U_{f,i}(\gamma_{f,i})$ is concave and non-increasing 
+\item  $U_{f}(\boldsymbol{\gamma}_{f})$ is concave only when $U_{f,i}(\gamma_{f,i})$ is concave and non-increasing 
 \faThumbsODown
 \end{enumerate}
 \end{frame}
@@ -292,12 +323,13 @@ Does the problem admit the N-Person Concave game Framework?
 \begin{frame}
 \frametitle{Convex Problem Formulation}
 \begin{enumerate}
+\setlength\itemsep{2em}
 \item Pre-select $\mathbf{U}_f$ to be a psuedo inverse of $\mathbf{H}_f$  (i.e $\mathbf{H}_\mathrm{f}\mathbf{U}_\mathrm{f} = \mathbf{I}$).
 \item 
 	Normalize the columns of $\mathbf{U}_{f}$ such that 
 	 $\|\mathbf{u}_{f,i}\|^2 =1 \;\forall i \in \{1 ... K_{f}\}$.
 \item 
-	Player $f$ chooses a strategy by allocating the transmit powers using the diagonal, power allocation  	
+	Player $f$ strategy is now the diagonal, power allocation  	
 	matrix $\mathrm{diag}(\mathbf{p}_{f})$ with $p_{f,i} \geq 0, \forall i \in \{1 ... K_{f}\}$
 such that the transmitted 		
 	signal is 
@@ -305,7 +337,7 @@ such that the transmitted
 	\mathrm{diag}(\mathbf{p}_{f})^{\frac{1}{2}}
 	\mathbf{x}_{f}$.
 \item 
-	Power constraint is now 
+	Power constraint given by 
 	\begin{gather*}
 	\sum_{i=1}^{K_{f}} p_{f,i}
 	  \leq P^{Total}_{f}.
@@ -318,9 +350,10 @@ such that the transmitted
 Does the problem admit the N-Person Concave game Framework? 
 \\
 \begin{enumerate}
+\setlength\itemsep{2em}
 \item  Set of strategies is convex \faThumbsOUp
-\item  $U_{f}(\boldsymbol{\gamma}_{f})$ is only concave if 
-	$U_{f,i}(\cdot)$ is non-decreasing and \emph{strictly} concave (reasonable assumption) \faThumbsOUp
+\item  $U_{f}(\boldsymbol{\gamma}_{f})$ is concave if 
+	$U_{f,i}(\cdot)$ is non-decreasing and concave (reasonable assumption) \faThumbsOUp
 \item 
 	Satisfies conditions for the unique Normalized Nash Equilibrium (Diagonally Strict Concavity)  \faThumbsOUp
 \end{enumerate}
@@ -359,6 +392,8 @@ Note that $\mathbf{U}_{f}$ is pre-selected as a pseudo-inverse to  $\mathbf{H}_f
 \begin{frame}
 \frametitle{Steps Outline}
 \begin{enumerate}
+\setlength\itemsep{2em}
+
 \item
 	Form Potential Function.
 \item 
@@ -378,7 +413,7 @@ Things to note
 	FCBS utiltiy function $U_{f}(\boldsymbol{\gamma}_{f})$ is independent of all other player strategies. 
 	$U_{f}(\boldsymbol{\gamma}_{f})$ is also strictly concave.
 \item
-	The sum of concave functions over a convex set is still concave. Does this satisfy the potential function 			condition?
+	The sum of concave functions over a convex set is also concave. Does this satisfy the potential function 			condition?
 	\begin{equation*}\label{potential_game_condition}
 \frac{\partial \Psi(\mathbf{b})}{\partial \mathbf{b}_{f}}
  =
@@ -392,11 +427,14 @@ Yes!
 \begin{frame}
 \frametitle{Solving for a NNE}
 \begin{enumerate}
+\setlength\itemsep{2em}
+
 \item
 	The potential function of a game with strictly concave utility functions has optimum corresponding to NNE.
 \item
 	Satisfying the Diagonally Strict Concavity conditions means the NNE is unique.
 \end{enumerate}
+\bigskip
 Just need to solve for the unique optimum of a convex problem. Can we distribute this problem?
 \end{frame}
 
@@ -425,19 +463,14 @@ We arrive at a central, convex optimization problem given by
 \end{frame}
 
 \begin{frame}
-\frametitle{Distributed Dual Ascent}
-\begin{figure}
-	\includegraphics[width=\textwidth]{results/power2}
-\caption{Single Antenna and User per FCBS with power constraint 1}
-\end{figure}
-
-\end{frame}
 
 \section{Simulation Results}
 
 \begin{frame}
 \frametitle{Expected Results}
 \begin{enumerate}
+\setlength\itemsep{2em}
+
 \item
 	When players have sufficient power, interference constraints should be active.
 \item
@@ -449,18 +482,18 @@ We arrive at a central, convex optimization problem given by
 
 
 \begin{frame}
-\frametitle{Multiple Antennas with Constant}
+\frametitle{Multiple Antennas with Constant Power}
 \begin{figure}
 	\includegraphics[width=\textwidth]{results/central_antenna}
-	\caption{5 Users per FCBS with power constraint 1 and 5 Antennas}
+	\caption{With $K_f = 5$ (users) and $T_f = 15$ (antennas), increasing antennas allows players with constant power to increase utility.}
 \end{figure}
 \end{frame}
 
 \begin{frame}
-\frametitle{Multiple Antennas with Constant}
+\frametitle{Increasing Power at FCBS}
 \begin{figure}
 	\includegraphics[width=\textwidth]{results/central_power}
-	\caption{5}
+	\caption{For $K_f = 5$ and $T_f = 15$, increasing FCBS power constraint is limited by interference.}
 \end{figure}
 \end{frame}
 
@@ -468,7 +501,7 @@ We arrive at a central, convex optimization problem given by
 \frametitle{Selecting the Beamformer}
 \begin{figure}
 	\includegraphics[width=\textwidth]{results/central_beamformer}
-\caption{5 Users per FCBS with power constraint 1 and 15 Antennas }
+\caption{For $K_f = 5$ and $T_f = 15$, the beamformer choice depends on the active system constraints.}
 \end{figure}
 \end{frame}
 
