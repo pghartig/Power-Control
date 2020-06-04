@@ -124,23 +124,23 @@
 \begin{itemize}
 \item Preferably close to a social optimal.
 \end{itemize}
-\item Achieve the Nash Equilibrium using a distributed solution.
-\begin{itemize}
 \item Minimize resources required to reach Nash Equilibrium.
-\end{itemize}
 \end{enumerate}
-\pause
+%\pause
 \begin{center}
-\begin{tikzpicture}{center}
-\node [block] (game) {Game with Many Players};
-\node [block, right = of game] (central) {Central Problem};
-\node [block, right = of central] (distributed) {Distributed Solution to Central Problem};
+%\begin{tikzpicture}{center}
+%\node [block] (game) {Game with Many Players};
+%\node [block, right = of game] (central) {Central Problem};
+%\node [block, right = of central] (distributed) {Distributed Solution to Central Problem};
+%
+%\path[line] (game) -- (central);
+%\path[line] (central) -- (distributed);
+%
+%\end{tikzpicture}
+		\includegraphics[scale=.2]{het_net}
 
-\path[line] (game) -- (central);
-\path[line] (central) -- (distributed);
-
-\end{tikzpicture}
 \end{center}
+
 \end{frame}
 
 \section{Key Tools}
@@ -165,7 +165,7 @@ Conditions
 \bigskip
 Implications
 \begin{itemize}
-\item Immediately proves existence of a pure strategy Nash Equilibrium.
+\item Immediately proves existence of a \emph{pure strategy} Nash Equilibrium.
 \item Provides an additional sufficient condition for uniqueness of Nash Equilibrium (diagonally strict concavity).
 \end{itemize}
 \end{frame}
@@ -177,12 +177,12 @@ Implications
 \item 
 Potential Games
 \begin{itemize}
-\item "Central" optimization function $\Psi(\mathbf{b})$ with
+\item "Central" optimization function $\Psi(\mathbf{s})$ with
 \end{itemize}
 \begin{equation}\label{potential_game_condition}
-\frac{\partial \Psi(\mathbf{b})}{\partial \mathbf{b}_{f}}
+\frac{\partial \Psi(\mathbf{s})}{\partial \mathbf{s}_{f}}
  =
- \frac{\partial U_f(\mathbf{b})}{\partial \mathbf{b}_{f}}.
+ \frac{\partial U_f(\mathbf{s})}{\partial \mathbf{s}_{f}}.
 \end{equation} 
 \item 
 When all utility functions are strictly concave, the optimum of the potential function over the feasible set corresponds to a NNE.
@@ -254,7 +254,6 @@ Each FCBS is a player in the game and is characterized by:
 	\bigskip
 	\centering
 		\includegraphics[scale=.2]{het_net}
-
 \end{frame}
 
 \begin{frame}
@@ -273,10 +272,13 @@ Each FCBS is a player in the game and is characterized by:
 	to all $M$ macrocell users.
 	\end{itemize}
 \end{itemize}
+	\bigskip
+	\centering
+		\includegraphics[scale=.2]{het_net}
 \end{frame}
 
 
-\section{General Setups}
+\section{General Setup}
 
 \begin{frame}
 
@@ -288,28 +290,20 @@ Each FCBS is a player in the game and is characterized by:
 \begin{itemize}
 \item $\mathbf{U}_f$ has an implied power allocation
 \end{itemize}
-\item Simplify by selecting $\mathbf{U}_f$ as a pseudo inverse of $\mathbf{H}_f$  (i.e $\mathbf{H}_f\mathbf{U}_f = \mathbf{I}$) such that 
-	\begin{equation*}
-	\gamma_{f,i} = \frac{\|\mathbf{h}^H_{f,i}\mathbf{u}_{f,i}\|^2}
-	{\sigma^2_{\text{noise}}}
-	\end{equation*}
-	with 
-	\begin{equation*}
-	U_{f}(\boldsymbol{\gamma}_{f}) =
-	\sum_{i=1}^{K_{f}}
-    	 U_{f,i}(\gamma_{f,i}) .
-	\end{equation*}
-\end{enumerate}
-\end{frame}
-
-
-
-\begin{frame}
-\frametitle{Problem Analysis}
+%\item Simplify by selecting $\mathbf{U}_f$ as a pseudo inverse of $\mathbf{H}_f$  (i.e $\mathbf{H}_f\mathbf{U}_f = \mathbf{I}$) such that 
+%	\begin{equation*}
+%	\gamma_{f,i} = \frac{\|\mathbf{h}^H_{f,i}\mathbf{u}_{f,i}\|^2}
+%	{\sigma^2_{\text{noise}}}
+%	\end{equation*}
+%	with 
+%	\begin{equation*}
+%	U_{f}(\boldsymbol{\gamma}_{f}) =
+%	\sum_{i=1}^{K_{f}}
+%    	 U_{f,i}(\gamma_{f,i}) .
+%	\end{equation*}
+\pause
 Does the problem admit the N-Person Concave game Framework? 
-\\
-\begin{enumerate}
-\setlength\itemsep{2em}
+
 \item  Set of strategies is convex \faThumbsOUp
 \pause
 \item  $U_{f}(\boldsymbol{\gamma}_{f})$ is concave only when $U_{f,i}(\gamma_{f,i})$ is concave and non-increasing 
@@ -317,8 +311,7 @@ Does the problem admit the N-Person Concave game Framework?
 \end{enumerate}
 \end{frame}
 
-
-\section{Convex Setups}
+\section{Convex Setup}
 
 \begin{frame}
 \frametitle{Convex Problem Formulation}
@@ -355,7 +348,7 @@ Does the problem admit the N-Person Concave game Framework?
 \item  $U_{f}(\boldsymbol{\gamma}_{f})$ is concave if 
 	$U_{f,i}(\cdot)$ is non-decreasing and concave (reasonable assumption) \faThumbsOUp
 \item 
-	Satisfies conditions for the unique Normalized Nash Equilibrium (Diagonally Strict Concavity)  \faThumbsOUp
+	If $U_{f,i}(\cdot)$ is strictly concave, this satisfies conditions for the unique Normalized Nash Equilibrium (Diagonally Strict Concavity)  \faThumbsOUp
 \end{enumerate}
 
 \end{frame}
@@ -396,10 +389,6 @@ Note that $\mathbf{U}_{f}$ is pre-selected as a pseudo-inverse to  $\mathbf{H}_f
 
 \item
 	Form Potential Function.
-\item 
-	Form the dual.
-\item 
-	Find decomposition of dual.
 \item
 	Setup distributed algorithm.
 \end{enumerate}
@@ -415,9 +404,9 @@ Things to note
 \item
 	The sum of concave functions over a convex set is also concave. Does this satisfy the potential function 			condition?
 	\begin{equation*}\label{potential_game_condition}
-\frac{\partial \Psi(\mathbf{b})}{\partial \mathbf{b}_{f}}
+\frac{\partial \Psi(\boldsymbol{\gamma})}{\partial \boldsymbol{\gamma}_{f}}
  =
- \frac{\partial U_f(\mathbf{b})}{\partial \mathbf{b}_{f}}
+ \frac{\partial U_f(\boldsymbol{\gamma})}{\partial \boldsymbol{\gamma}_{f}}
 \end{equation*} 
 Yes!
 \end{enumerate}
@@ -435,7 +424,10 @@ Yes!
 	Satisfying the Diagonally Strict Concavity conditions means the NNE is unique.
 \end{enumerate}
 \bigskip
-Just need to solve for the unique optimum of a convex problem. Can we distribute this problem?
+Just need to solve for the unique optimum of a convex problem.
+\pause
+\par
+ Can the problem be distributed?
 \end{frame}
 
 \begin{frame}
@@ -462,7 +454,6 @@ We arrive at a central, convex optimization problem given by
 	\end{subequations}.
 \end{frame}
 
-\begin{frame}
 
 \section{Simulation Results}
 
