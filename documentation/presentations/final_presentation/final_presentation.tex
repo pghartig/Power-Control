@@ -399,10 +399,10 @@ Note that $\mathbf{U}_{f}$ is pre-selected as a pseudo-inverse to  $\mathbf{H}_f
 Things to note
 \begin{enumerate}
 \item
-	FCBS utiltiy function $U_{f}(\boldsymbol{\gamma}_{f})$ is independent of all other player strategies. 
-	$U_{f}(\boldsymbol{\gamma}_{f})$ is also strictly concave.
+	Spacing assumption makes $U_{f}(\boldsymbol{\gamma}_{f})$ independent of all other player strategies. 
+
 \item
-	The sum of concave functions over a convex set is also concave. Does this satisfy the potential function 			condition?
+	The sum of concave functions over a convex set is also concave. Does this satisfy the potential function condition?
 	\begin{equation*}\label{potential_game_condition}
 \frac{\partial \Psi(\boldsymbol{\gamma})}{\partial \boldsymbol{\gamma}_{f}}
  =
@@ -463,11 +463,11 @@ We arrive at a central, convex optimization problem given by
 \setlength\itemsep{2em}
 
 \item
-	When players have sufficient power, interference constraints should be active.
+	When players have sufficient power, at least one interference constraint should be active.
 \item
 	With sufficient power, increasing the number of antennas at the base stations should allow for higher utility.
 \item
-	With sufficient power, choice of the zero-forcing beamformer should be improved. 
+	The choice of the psuedoinverse, $\mathbf{U}_{f}$, should be further optimized. 
 \end{enumerate}
 \end{frame}
 
@@ -492,7 +492,7 @@ We arrive at a central, convex optimization problem given by
 \frametitle{Selecting the Beamformer}
 \begin{figure}
 	\includegraphics[width=\textwidth]{results/central_beamformer}
-\caption{For $K_f = 5$ and $T_f = 15$, the beamformer choice depends on the active system constraints.}
+\caption{With $K_f = 5$ (users) and $T_f = 10$ (antennas), choice of $\mathbf{U}_{f}$ may depend on the active system constraints.}
 \end{figure}
 \end{frame}
 
