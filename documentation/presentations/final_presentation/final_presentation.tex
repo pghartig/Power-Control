@@ -42,7 +42,7 @@
 
 \title{\large \bfseries Power Allocation in Heterogeneous Networks for Base Stations with Multiple Antennas}
 
-\author{Peter Hartig\\[3ex]
+\author{Peter Hartig \\ \and Supervisor: Prof. Laura  Cottatellucci
 }
 
 \date{\today}
@@ -122,7 +122,7 @@
 
 \item Find a Nash Equilibrium between all players.
 \begin{itemize}
-\item Preferably close to a social optimal.
+\item Preferably a "social optimal" Nash Equilibrium.
 \end{itemize}
 \item Minimize resources required to reach Nash Equilibrium.
 \end{enumerate}
@@ -159,7 +159,7 @@ Choosing $r_f =1$, all players must pay the same "price" to change their strateg
 \frametitle{Key Tools: N-Person Concave Games}
 Conditions
 \begin{itemize}
-\item All Player utility functions must be concave with respect to their own strategy.
+\item All player utility functions must be concave with respect to their own strategy.
 \item The set of strategies for the \emph{entire} game is convex. 
 \end{itemize}
 \bigskip
@@ -185,7 +185,7 @@ Potential Games
  \frac{\partial U_f(\mathbf{s})}{\partial \mathbf{s}_{f}}.
 \end{equation} 
 \item 
-When all utility functions are strictly concave, the optimum of the potential function over the feasible set corresponds to a NNE.
+When all utility functions are concave, the optimum of the potential function corresponds to a Nash Equilibrium.
 \end{enumerate}
 \end{frame}
 
@@ -199,6 +199,7 @@ Decomposing the corresponding Lagrangian gives
 \begin{equation}
 L(x,y) = \sum_{i = 1}^{F} L_i(x_i,y)
 \end{equation}
+allows for dual ascent with distributed updates.
 \end{frame}
 %
 
@@ -222,7 +223,7 @@ Each FCBS is a player in the game and is characterized by:
 	A utility function $U_{f}(\boldsymbol{\gamma}_{f}) =
 	\sum_{i=1}^{K_{f}}
     	 U_{f,i}(\gamma_{f,i}) $
-    	in which $U_{f,i}(\cdot)$ is a non-decreasing function.
+    	with non-decreasing function $U_{f,i}(\cdot)$.
 \end{itemize}
 \end{frame}
 
@@ -268,8 +269,7 @@ Each FCBS is a player in the game and is characterized by:
 	\begin{itemize}
 	\item 
 	The downlink channel matrix $\mathbf{H}_f \in \mathbb{C}_{K_{f} \times T_{f}} $ to its $K_{f} $ users.
-	\item The downlink channel matrix $\tilde{\mathbf{H}_{f}} \in \mathbb{C}_{M \times T_{f}}$ 
-	to all $M$ macrocell users.
+
 	\end{itemize}
 \end{itemize}
 	\bigskip
@@ -286,7 +286,8 @@ Each FCBS is a player in the game and is characterized by:
 \begin{enumerate}
 \setlength\itemsep{2em}
 
-\item  Player $f$ has beamforming matrix $\mathbf{U}_f$ as strategy
+\item  Player $f$ has trasnmitted signal $\mathbf{s}_{f
+	}= \mathbf{U}_{f}\mathbf{x}_{f}$ with strategy $\mathbf{U}_f$.
 \begin{itemize}
 \item $\mathbf{U}_f$ has an implied power allocation
 \end{itemize}
@@ -304,9 +305,9 @@ Each FCBS is a player in the game and is characterized by:
 \pause
 Does the problem admit the N-Person Concave game Framework? 
 
-\item  Set of strategies is convex \faThumbsOUp
+\item  Set of strategies is convex. \faThumbsOUp
 \pause
-\item  $U_{f}(\boldsymbol{\gamma}_{f})$ is concave only when $U_{f,i}(\gamma_{f,i})$ is concave and non-increasing 
+\item  $U_{f}(\boldsymbol{\gamma}_{f})$ is concave only when $U_{f,i}(\gamma_{f,i})$ is concave and non-increasing.
 \faThumbsODown
 \end{enumerate}
 \end{frame}
@@ -344,11 +345,11 @@ Does the problem admit the N-Person Concave game Framework?
 \\
 \begin{enumerate}
 \setlength\itemsep{2em}
-\item  Set of strategies is convex \faThumbsOUp
+\item  Set of strategies is convex. \faThumbsOUp
 \item  $U_{f}(\boldsymbol{\gamma}_{f})$ is concave if 
-	$U_{f,i}(\cdot)$ is non-decreasing and concave (reasonable assumption) \faThumbsOUp
+	$U_{f,i}(\cdot)$ is non-decreasing and concave (reasonable assumption). \faThumbsOUp
 \item 
-	If $U_{f,i}(\cdot)$ is strictly concave, this satisfies conditions for the unique Normalized Nash Equilibrium (Diagonally Strict Concavity)  \faThumbsOUp
+	If $U_{f,i}(\cdot)$ is strictly concave, this satisfies conditions for the unique Normalized Nash Equilibrium (diagonally strict concavity) . \faThumbsOUp
 \end{enumerate}
 
 \end{frame}
@@ -451,7 +452,7 @@ We arrive at a central, convex optimization problem given by
         & \forall f \in \{1 ... f\}\\
         & p_{f,i} \geq 0 &  \forall i \in \{1 ...K_{f}\} \; \forall f \in \{1 ... F\}\label{pos_power_const}
 	\end{align}
-	\end{subequations}.
+	\end{subequations}
 \end{frame}
 
 
@@ -463,9 +464,9 @@ We arrive at a central, convex optimization problem given by
 \setlength\itemsep{2em}
 
 \item
-	When players have sufficient power, at least one interference constraint should be active.
+	Power not limiting, at least one interference constraint should be active.
 \item
-	With sufficient power, increasing the number of antennas at the base stations should allow for higher utility.
+	Power not limiting, increasing the number of antennas at the base stations should allow for higher utility.
 \item
 	The choice of the psuedoinverse, $\mathbf{U}_{f}$, should be further optimized. 
 \end{enumerate}
@@ -476,7 +477,7 @@ We arrive at a central, convex optimization problem given by
 \frametitle{Multiple Antennas with Constant Power}
 \begin{figure}
 	\includegraphics[width=\textwidth]{results/central_antenna}
-	\caption{With $K_f = 5$ (users) and $T_f = 15$ (antennas), increasing antennas allows players with constant power to increase utility.}
+	\caption{With $K_f = 5$ (users), increasing antennas allows players with constant power to increase utility.}
 \end{figure}
 \end{frame}
 

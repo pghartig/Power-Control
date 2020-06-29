@@ -471,7 +471,7 @@ and satisfying \eqref{potential_game_condition} is proposed to state the followi
 
 \subsection{Distributed Solution to the Potential Game}
 A distributed solution to \eqref{optim} is now proposed using the steps from Section \ref{tools}.
-\subsubsection{Central Problem Resulting from the Potential Game}
+\subsubsection{Central Problem Resulting from the Potential Game}\label{central_solution}
 The Lagrangian of the potential game (the primal problem) is
 \begin{multline}
 L(\mathbf{\mathbf{p},\boldsymbol{\lambda},\boldsymbol{\chi},\boldsymbol{\nu}}) = 
@@ -639,10 +639,32 @@ Lastly, we consider the case in which FBSs minimize correlation with macrocell u
 
 \chapter{Simulation and Results}\label{numerical}
 \subsection{Simulation System Description}
-The heterogeneous network is simulated by randomly placing $F$ FBSs and $M$ macrocell users within a predefined area. $K_{f}$ femto users are served by FBS $f$ and channels between FBSs and users (both femto and macro) are modeled as a composition of Rayleigh fading and pathloss with the attenuation coefficient $d^{- \beta}$ where $\beta=2$ and $d$ is the distance between user and base-station. Case-specific parameters of the simulation environment are detailed in the following.
+The heterogeneous network is simulated by randomly placing $F$ FBSs and $M$ macrocell users within a predefined area. $K_{f}$ femto users are served by each FBS $f$ and channels between FBSs and users (both femto and macro) are modeled as Rayleigh fading with a pathloss attenuation coefficient $d^{- \beta}$ where $\beta=2$ and $d$ is the distance between user and base-station. Case-specific parameters of the simulation environment are detailed in the following.
 
+\subsection{Simulation Results: Central Solution}
+As shown in Section \ref{central_solution} the game has a unique NE. This ensures the equivalence of any central or distributed solution to the system game. Here we consider simulation results from the central solution. These results confirm the expected behavior of the system and offer insight into further optimization. In order to compare the performance of different systems (e.g. transmit power or number of antennas) we define the social utility as the sum of the utilities of all FCBSs. In addition to the social utility we also compare the slack in the system constraints. By observing the constraint slack, we can compare when the FCBSs are limited by macro user interference or transmission power. 
+In Figure \ref{central_power} it is seen that with a constant number of FCBS antennas, increasing the available transmission power can increase the social utility only up to the point at which the macro user interference constraints are tight. This result motivates the results in Figure \ref{central_antenna} comparing the case in which the number of FCBS antennas is increased while all FCBSs are provided with excess transmission power. Figure \ref{central_antenna} indicates that increasing the number of antennas allows FCBSs to transmit more of their excess power while satisfying the interference constraints. 
+\par
+In Figures \ref{central_power} and \ref{central_antenna} the beamforming matrix at each FCBS was chosen according to \ref{mp_opt} (the Moore-Pensrose pseudo-inverse). We now want to compare the choice for $\mathbf{U}_f$ when FCBSs choose their beamformer according to  \eqref{mp_opt} or \eqref{correlation_opt}. In Figure \ref{central_beamformer} it is observed that from a social utility perspective, the optimal choise for $\mathbf{U}_f$ depends on whether transmission power or macro user interference is the limiting constraint. This observation could motivate further investigation of a FCBS control loop for choosing $\mathbf{U}_f$ based on \eqref{mp_opt} or \eqref{correlation_opt} (or any other choice of the pseudo-inverse) by identifying the limiting constraint for each FCBS. 
 
-\subsection{Simulation Results}
+\begin{figure}[H]
+	\includegraphics[width= 15cm,height = 10cm]{figures/central_power}
+	  \caption{Increasing Power}
+	  \label{central_power}
+\end{figure}
+
+\begin{figure}[H]
+	\includegraphics[width= 15cm,height = 10cm]{figures/central_antenna}
+	  \caption{Increasing Antenna}
+	  \label{central_antenna}
+\end{figure}
+\begin{figure}[H]
+	\includegraphics[width= 15cm,height = 10cm]{figures/central_beamformer}
+	  \caption{Beamformer Comparison}
+	  \label{central_beamformer}
+\end{figure}
+
+\subsection{Simulation Results: Distributed Solution}
 Using the algorithm from \ref{algo1}, convergence to a Nash equilibrium is observed over different system scenarios by plotting the value of the potential function over iterations of the algorithm. Note that in this case, the potential function value is equivalent to the total capacity of the femto base station network and is therefore referred to as the "social utility". By observing convergence of this value, we can infer that players cannot increase their utility by changing their current strategy and thus a NNE of the system has been reached.  In addition, we track the \emph{minimum} and \emph{maximum} residual tolerance (referred to as slack) for both the transmit power and interference constraints in each iteration. By ensuring that there is no positive slack in the interference constraint, we can verify that player strategies are coupled and therefore, that strategies of some players limit the strategies of others. 
 \par
 The first systems considered are characterized by the parameters in Table \ref{table1} and the results for the simulations are shown in Figures \ref{single_power1}, \ref{single_power2} and \ref{single_power3}. The results of Figure \ref{single_power1} indicate that FBSs do not have sufficient power to begin violating the interference constraints of the macro cell users. This is seen by noting that the maximum slack on the power constraints in Figure \ref{single_power1} is $0$ (no slack) while even the minimum slack on interference is greater than $0$. In contrast, Figures \ref{single_power2} and \ref{single_power3} illustrate the case in which FBSs do have sufficient power to violate interference constraints and thus cannot use all of their power. This is seen by noting that the minimum power constraint slack is greater than 0 while the minimum interference constraint slack is $0$. The comparison of Figures \ref{single_power2} and \ref{single_power3} also highlights that when the interference constraints are tight, the addition of additional power to FBS does not increase the social utility. One additional point illustrated in Figures \ref{single_power2} and \ref{single_power3} is that this allocation strategy may enforce that some FBSs transmit with very low power in order to satisfy the interference constraints. Noting that the maximum slack in the power constraint of Figures \ref{single_power2} and \ref{single_power3} is very close to the total power available (and thus very little power is transmitted) suggests that this strategy may give some FBSs very high utility while others have very low utility. Such "unfairness" can be resolved using methods discussed in \cite{kelly1998rate} but are not investigated here.
@@ -680,11 +702,6 @@ Dual variable step size $\alpha^k$& $\alpha^k= 1$ $\forall k$\\
 \end{figure}
 \end{center}
 
-%\begin{figure}[H]
-%	\includegraphics[width=\textwidth,height = 10cm]{figures/system_figure_single}
-%	  \caption{Simulation Environment: 5 FBSs each with 1 antenna and 1 user in an environment of 10 macro cell users.}
-%	  \label{system_figure_single}
-%\end{figure}
 
 \begin{figure}[H]
 	\includegraphics[width= 15cm,height = 10cm]{figures/single_power1}
