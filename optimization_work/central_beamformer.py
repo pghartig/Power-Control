@@ -13,12 +13,12 @@ pow_dual = 1
 int_dual = pow_dual
 pos_dual = pow_dual
 num_users = 5
-num_antenna = 10
-SNRs_dB = np.linspace(1, 15, 5)
+num_antenna = 15
+SNRs_dB = np.linspace(1, 10, 5)
 userPowerList = np.power(10, SNRs_dB/10)
 numMacroUsers = 20
 numBaseStations = 5
-interferenceThreshold = 1
+interferenceThreshold = 1e-1
 userPower = userPowerList[0]
 network = HetNet(numBaseStations, numMacroUsers, num_users, num_antenna, interferenceThreshold, int_dual, pow_dual, pos_dual,
                                userPower,
@@ -56,7 +56,7 @@ for beam_former_choice in range(len(beam_type)):
         interference_min.append(np.min(intereference))
 
 
-    utility_plt.plot(userPowerList, utilities, label=f"Social Utilit: {beam_type[beam_former_choice]}.")
+    utility_plt.plot(userPowerList, utilities, label=f"Social Utility: {beam_type[beam_former_choice]}.")
     # intf.plot(userPowerList, interference_max, label=f"Max: {beam_type[beam_former_choice]}")
     intf.plot(SNRs_dB, interference_min, label=f"Min: {beam_type[beam_former_choice]}")
     # pwr.plot(userPowerList, power_max, label=f"Max: {beam_type[beam_former_choice]}")
